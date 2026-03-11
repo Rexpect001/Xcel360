@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
 import Link from 'next/link'
 

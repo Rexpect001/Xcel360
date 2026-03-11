@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'

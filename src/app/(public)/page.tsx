@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import Hero3D from '@/components/landing/Hero3D'
 import FeaturedOpportunities from '@/components/landing/FeaturedOpportunities'
 import CategoryBrowse from '@/components/landing/CategoryBrowse'

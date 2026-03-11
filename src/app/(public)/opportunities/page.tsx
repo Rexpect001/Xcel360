@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import OpportunitiesClient from '@/components/opportunities/OpportunitiesClient'
 import prisma from '@/lib/prisma'
