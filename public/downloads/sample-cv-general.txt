@@ -1,0 +1,64 @@
+========================================
+SAMPLE CV — GENERAL TEMPLATE
+Xcel360 | xcel360.com
+========================================
+
+[YOUR FULL NAME]
+Email: your.email@example.com | Phone: +1 (000) 000-0000
+LinkedIn: linkedin.com/in/yourname | Location: City, Country
+
+----------------------------------------
+EDUCATION
+----------------------------------------
+[Degree Name], [Field of Study]
+[University Name], [Country]          [Month Year – Month Year]
+• GPA: X.X/4.0
+• Relevant coursework: [Course 1], [Course 2], [Course 3]
+• Thesis: "[Title of thesis if applicable]"
+
+[Bachelor's Degree], [Field of Study]
+[University Name], [Country]          [Year – Year]
+• GPA: X.X/4.0
+• Graduated [with honors / cum laude / distinction]
+
+----------------------------------------
+RESEARCH EXPERIENCE
+----------------------------------------
+[Research Assistant / Graduate Researcher]
+[Lab/Institution Name], [Country]     [Month Year – Present]
+• [Describe your key research contribution in 1–2 lines]
+• [Methodology used, tools, outcomes]
+• Published/presented: [title if applicable]
+
+----------------------------------------
+WORK EXPERIENCE
+----------------------------------------
+[Job Title]
+[Organization Name], [Country]        [Month Year – Month Year]
+• [Key responsibility or achievement]
+• [Quantify where possible: "Led a team of 5...", "Increased X by 30%..."]
+
+----------------------------------------
+PUBLICATIONS & PRESENTATIONS
+----------------------------------------
+• [Author(s)]. "[Title]." Journal/Conference, Year.
+• [Poster/Presentation title], [Conference], Year.
+
+----------------------------------------
+SKILLS
+----------------------------------------
+• Languages: English (Fluent), [Language] ([Level])
+• Technical: [Software], [Tools], [Methods]
+• Other: Leadership, Communication, Research
+
+----------------------------------------
+AWARDS & HONORS
+----------------------------------------
+• [Award Name], [Institution], [Year]
+• [Scholarship/Fellowship Name], [Year]
+
+----------------------------------------
+REFERENCES
+Available upon request.
+========================================
+Template by Xcel360 — xcel360.com

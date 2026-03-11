@@ -1,0 +1,87 @@
+========================================
+SAMPLE CV — STEM TEMPLATE
+Xcel360 | xcel360.com
+========================================
+
+[YOUR FULL NAME]
+Email: your.email@example.com | Phone: +1 (000) 000-0000
+GitHub: github.com/yourname | Google Scholar: [link]
+LinkedIn: linkedin.com/in/yourname | Location: City, Country
+
+----------------------------------------
+RESEARCH INTERESTS
+----------------------------------------
+[2–3 sentence summary of your research focus, e.g.:]
+"My research focuses on machine learning applications in biomedical imaging,
+with emphasis on deep learning models for early disease detection."
+
+----------------------------------------
+EDUCATION
+----------------------------------------
+[PhD / MSc], [Field, e.g. Computer Science]
+[University Name], [Country]          [Year – Present / Year]
+• Advisor: Prof. [Name]
+• Thesis: "[Title of your thesis]"
+• GPA: X.X/4.0
+
+[BSc / BEng], [Field]
+[University Name], [Country]          [Year – Year]
+• GPA: X.X/4.0 | First Class Honors
+• Final Year Project: "[Title]"
+
+----------------------------------------
+RESEARCH EXPERIENCE
+----------------------------------------
+[Graduate Research Assistant]
+[Lab Name, University], [Country]     [Month Year – Present]
+• Developed [algorithm/model/system] achieving [X% accuracy / result]
+• Tools: Python, TensorFlow, MATLAB, R
+• [Key outcome or publication]
+
+[Undergraduate Research Intern]
+[Institution], [Country]              [Month Year – Month Year]
+• [Brief description of project and your contribution]
+
+----------------------------------------
+PUBLICATIONS
+----------------------------------------
+[1] [Your Name], [Co-authors]. "[Paper Title]."
+    [Journal/Conference Name], Vol. X, pp. XX–XX, Year. DOI: xxx
+
+[2] [Your Name] et al. "[Paper Title]." [Conference], Year.
+
+----------------------------------------
+TECHNICAL SKILLS
+----------------------------------------
+• Programming: Python, R, MATLAB, C++, Java
+• ML/AI: TensorFlow, PyTorch, Scikit-learn, Keras
+• Tools: Git, Docker, LaTeX, SPSS, AutoCAD
+• Lab: [Specific equipment or lab techniques]
+• Databases: SQL, MongoDB, PostgreSQL
+
+----------------------------------------
+PROJECTS
+----------------------------------------
+[Project Title] | [github.com/link]   [Year]
+• [What it does, tech stack, outcome]
+
+[Project Title]                        [Year]
+• [Brief description]
+
+----------------------------------------
+AWARDS & FUNDING
+----------------------------------------
+• [Scholarship/Award Name], [Org], [Year]
+• Best Paper Award, [Conference], [Year]
+
+----------------------------------------
+PROFESSIONAL MEMBERSHIPS
+----------------------------------------
+• [IEEE / ACM / ACS / relevant body], Member since [Year]
+
+----------------------------------------
+REFERENCES
+Prof. [Name] — [Institution] — [email]
+Dr. [Name]  — [Institution] — [email]
+========================================
+Template by Xcel360 — xcel360.com
