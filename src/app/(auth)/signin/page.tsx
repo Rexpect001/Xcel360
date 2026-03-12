@@ -89,6 +89,9 @@ function SignInContent() {
             </button>
           </div>
         </div>
+        <div className="text-right">
+          <Link href="/forgot-password" className="text-sm text-brand-600 hover:text-brand-700">Forgot password?</Link>
+        </div>
         <button
           type="submit"
           disabled={loading}
