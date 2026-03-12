@@ -138,9 +138,11 @@ export const requireAuth = async () => {
   return session
 }
 
+const ADMIN_ROLES = ['ADMIN', 'MANAGER', 'EDITOR', 'MODERATOR', 'MENTOR'] as const
+
 export const requireAdmin = async () => {
   const session = await requireAuth()
-  if (session.user.role !== 'ADMIN') throw new Error('Forbidden')
+  if (!(ADMIN_ROLES as readonly string[]).includes(session.user.role)) throw new Error('Forbidden')
   return session
 }
 

@@ -9,6 +9,10 @@ datasource db {
 
 enum Role {
   USER
+  EDITOR
+  MODERATOR
+  MENTOR
+  MANAGER
   ADMIN
 }
 
@@ -243,6 +247,26 @@ model Beneficiary {
   programId  String?
   program    Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
   createdAt  DateTime @default(now())
+}
+
+model ActivityLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  userEmail    String?
+  userRole     String?
+  action       String   // CREATE, UPDATE, DELETE, PUBLISH, UNPUBLISH, LOGIN, LOGIN_FAILED, SIGNUP, ASSIGN_ROLE, etc.
+  resource     String?  // opportunity, blog, event, user, mentor, program, resource
+  resourceId   String?
+  resourceName String?
+  details      String?  @db.Text
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
 }
 
 // NextAuth models

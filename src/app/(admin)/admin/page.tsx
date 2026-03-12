@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 import { getAuth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowRight } from 'lucide-react'
+import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowRight, Activity } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminPage() {
@@ -80,6 +80,15 @@ export default async function AdminPage() {
       count: `${saved} saves`,
       color: 'text-rose-600',
       bg: 'bg-rose-50',
+    },
+    {
+      href: '/admin/activity',
+      icon: Activity,
+      label: 'Activity Log',
+      desc: 'Audit trail of all admin and user actions — logins, role changes, content edits.',
+      count: 'Live feed',
+      color: 'text-gray-600',
+      bg: 'bg-gray-100',
     },
   ]
 
