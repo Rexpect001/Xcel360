@@ -4,8 +4,9 @@ import prisma from '@/lib/prisma'
 import { formatDate, daysUntilDeadline, getFundingBadgeColor } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import ShareButtons from '@/components/ui/ShareButtons'
-import { Calendar, MapPin, ExternalLink, BookOpen, FileText, CheckCircle, Bookmark } from 'lucide-react'
+import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Bookmark } from 'lucide-react'
 import Link from 'next/link'
+import ApplyButton from '@/components/ui/ApplyButton'
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
   const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
@@ -45,14 +46,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
           </div>
 
           <div className="flex flex-wrap gap-3 mt-6 items-center">
-            <a
-              href={opp.applicationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
-            >
-              Apply Now <ExternalLink className="h-4 w-4" />
-            </a>
+            <ApplyButton href={opp.applicationLink} title={opp.title} />
             <Link
               href="/signup"
               className="inline-flex items-center gap-2 border-2 border-brand-700 text-brand-700 px-6 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
