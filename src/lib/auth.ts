@@ -34,20 +34,11 @@ export const authOptions: NextAuthOptions = {
         const ip = headers?.['x-forwarded-for'] ?? headers?.['x-real-ip'] ?? 'unknown'
         const userAgent = headers?.['user-agent'] ?? 'unknown'
 
-        // Check if account is locked out
-        try {
-          const mockReq = { ip, headers: { get: (h: string) => headers?.[h.toLowerCase()] } } as any
-          const isLocked = await trackFailedLogin(mockReq)
-          if (isLocked) {
-            throw new Error('ACCOUNT_LOCKED')
-          }
-        } catch (e: any) {
-          if (e.message === 'ACCOUNT_LOCKED') {
-            throw new Error('Account temporarily locked due to too many failed attempts. Try again in 15 minutes.')
-          }
-        }
+        // (rate limiting handled by trackFailedLogin on failed attempts only)
 
-        const user = await prisma.user.findUnique({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+        const user = await db.user.findUnique({
           where: { email: credentials.email },
         })
 
@@ -58,8 +49,17 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        // Block suspended or disabled accounts (status may be null for legacy rows — treat as ACTIVE)
+        if (user.status === 'SUSPENDED') {
+          throw new Error('Your account has been suspended. Please contact support.')
+        }
+        if (user.status === 'DISABLED') {
+          throw new Error('Your account has been disabled. Please contact support.')
+        }
+        // (status null or ACTIVE → proceed)
+
         const isValid = await bcrypt.compare(credentials.password, user.password)
-        
+
         if (!isValid) {
           // Track failed attempt
           const mockReq = { ip, headers: { get: (h: string) => headers?.[h.toLowerCase()] } } as any
@@ -70,6 +70,9 @@ export const authOptions: NextAuthOptions = {
         // Reset failed login attempts on successful login
         const mockReq = { ip, headers: { get: (h: string) => headers?.[h.toLowerCase()] } } as any
         await resetLoginAttempts(mockReq)
+
+        // Track last login time (non-blocking — may fail if Prisma client not yet regenerated)
+        db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }).catch(() => {})
 
         return {
           id: user.id,

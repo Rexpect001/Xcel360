@@ -1,10 +1,31 @@
 export const dynamic = 'force-dynamic'
+import type { Metadata } from 'next'
 import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import { BookOpen, Calendar, Tag, Download, FileText, ArrowRight, ExternalLink } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 
-export const metadata = { title: 'Resources — Xcel360' }
+export const metadata: Metadata = {
+  title: 'Free Resources — Templates, Guides & SOP Samples',
+  description:
+    'Download free scholarship application templates, statement of purpose samples, CV guides, and interview preparation resources for students applying abroad.',
+  keywords: [
+    'scholarship application template',
+    'statement of purpose sample',
+    'SOP template',
+    'scholarship CV template',
+    'study abroad guide',
+    'free student resources',
+  ],
+  alternates: { canonical: '/resources' },
+  openGraph: {
+    title: 'Free Resources — Xcel360',
+    description: 'Download free templates, SOP samples, and guides to strengthen your scholarship applications.',
+    url: '/resources',
+  },
+}
+
+
 
 async function getPosts() {
   try {

@@ -16,6 +16,12 @@ enum Role {
   ADMIN
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DISABLED
+}
+
 enum ApplicationStatus {
   INTERESTED
   PREPARING
@@ -37,15 +43,17 @@ enum NotificationType {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String     @id @default(cuid())
+  email         String     @unique
   name          String?
   password      String?
   image         String?
-  role          Role      @default(USER)
+  role          Role       @default(USER)
+  status        UserStatus @default(ACTIVE)
   emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   profile       Profile?
   savedOpps     SavedOpportunity[]
@@ -151,16 +159,57 @@ model Notification {
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String?  @db.Text
-  type        String
-  date        DateTime
-  link        String?
-  host        String?
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String              @id @default(cuid())
+  title         String
+  description   String?             @db.Text
+  type          String
+  date          DateTime
+  link          String?
+  host          String?
+  published     Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  registrations EventRegistration[]
+  questions     EventQuestion[]
+}
+
+model EventRegistration {
+  id        String        @id @default(cuid())
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fullName  String
+  email     String
+  phone     String?
+  createdAt DateTime      @default(now())
+  answers   EventAnswer[]
+
+  @@index([eventId])
+}
+
+model EventQuestion {
+  id        String        @id @default(cuid())
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  label     String
+  type      String        @default("text") // "text", "textarea", "select"
+  options   String[]
+  required  Boolean       @default(false)
+  sortOrder Int           @default(0)
+  answers   EventAnswer[]
+
+  @@index([eventId])
+}
+
+model EventAnswer {
+  id             String            @id @default(cuid())
+  registrationId String
+  registration   EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       EventQuestion     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answer         String            @db.Text
+
+  @@index([registrationId])
+  @@index([questionId])
 }
 
 model MentorshipOffering {

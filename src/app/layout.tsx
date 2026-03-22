@@ -5,14 +5,73 @@ import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+
 export const metadata: Metadata = {
-  title: 'Xcel360 — Scholarships, Mentorship & Deadline Tracking',
-  description: 'Discover scholarships, track applications, manage deadlines, and get mentorship — all in one place.',
-  keywords: ['scholarships', 'fully funded', 'study abroad', 'mentorship', 'deadline tracker'],
+  metadataBase: new URL(BASE),
+  title: {
+    default: 'Xcel360 — Scholarships, Mentorship & Deadline Tracking',
+    template: '%s — Xcel360',
+  },
+  description:
+    'Xcel360 helps African students discover fully funded scholarships, track application deadlines, connect with mentors, and build a clear plan to study abroad.',
+  keywords: [
+    'scholarships for Africans',
+    'fully funded scholarships',
+    'study abroad scholarships',
+    'scholarship deadlines',
+    'Nigerian scholarships',
+    'undergraduate scholarships',
+    'postgraduate scholarships',
+    'PhD scholarships',
+    'mentorship for students',
+    'scholarship tracker',
+    'Xcel360',
+  ],
+  authors: [{ name: 'Xcel360', url: BASE }],
+  creator: 'Xcel360',
   openGraph: {
-    title: 'Xcel360 — Funding, mentorship, and a clear plan.',
-    description: 'Discover scholarships, track deadlines, and get guided support.',
     type: 'website',
+    locale: 'en_US',
+    url: BASE,
+    siteName: 'Xcel360',
+    title: 'Xcel360 — Scholarships, Mentorship & Deadline Tracking',
+    description:
+      'Discover fully funded scholarships, track deadlines, and get mentorship to study abroad — all in one place for African students.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Xcel360 — Scholarships & Mentorship Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Xcel360 — Scholarships, Mentorship & Deadline Tracking',
+    description:
+      'Discover fully funded scholarships, track deadlines, and get mentorship to study abroad.',
+    images: ['/og-image.png'],
+    creator: '@Xcel_360',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: BASE,
+  },
+  verification: {
+    // Add your Google Search Console verification token here after deploying:
+    // google: 'your-google-site-verification-token',
   },
 }
 

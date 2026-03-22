@@ -1,11 +1,24 @@
 export const dynamic = 'force-dynamic'
+import type { Metadata } from 'next'
 import prisma from '@/lib/prisma'
-import { Calendar, Video, ExternalLink, Users, BookOpen, MessageCircle, ArrowRight } from 'lucide-react'
+import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Events & Webinars',
+  description:
+    'Join free webinars, workshops, and Q&A sessions on scholarships, study abroad, and career development. Register for upcoming Xcel360 events.',
+  alternates: { canonical: '/events' },
+  openGraph: {
+    title: 'Events & Webinars — Xcel360',
+    description: 'Join free webinars, workshops, and Q&A sessions on scholarships and study abroad.',
+    url: '/events',
+  },
+}
+
 import ScrollingBeneficiaries from '@/components/programs/ScrollingBeneficiaries'
 
-export const metadata = { title: 'Events & Programs — Xcel360' }
 
 async function getData() {
   try {
@@ -71,16 +84,12 @@ export default async function EventsPage() {
                     <Calendar className="h-4 w-4 text-brand-600" />
                     {formatDate(event.date)}
                   </div>
-                  {event.link && (
-                    <a
-                      href={event.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors"
-                    >
-                      Register <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
+                  <Link
+                    href={`/events/${event.id}`}
+                    className="inline-flex items-center gap-1.5 bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors"
+                  >
+                    Register <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
               ))}
             </div>

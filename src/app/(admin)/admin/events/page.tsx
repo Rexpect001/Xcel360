@@ -1,34 +1,67 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Calendar } from 'lucide-react'
+import { Plus, Pencil, Trash2, Calendar, Users, FileText, X, GripVertical, Clock, User, Video, MapPin, ChevronRight, Loader2 } from 'lucide-react'
 import { Event } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
+import Link from 'next/link'
 
 const emptyForm = {
   title: '',
   description: '',
   type: 'Zoom',
   date: '',
-  link: '',
   host: '',
   published: false,
 }
 
+interface Question {
+  id?: string
+  label: string
+  type: string
+  options: string[]
+  required: boolean
+  _optionsText?: string // local textarea state for options
+}
+
+const emptyQuestion = (): Question => ({
+  label: '',
+  type: 'text',
+  options: [],
+  required: false,
+  _optionsText: '',
+})
+
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Event form modal
   const [modalOpen, setModalOpen] = useState(false)
   const [editEvent, setEditEvent] = useState<Event | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+
+  // Questions modal
+  const [qModalOpen, setQModalOpen] = useState(false)
+  const [qEventId, setQEventId] = useState<string | null>(null)
+  const [qEventTitle, setQEventTitle] = useState('')
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [qSaving, setQSaving] = useState(false)
+
+  // Detail modal
+  const [detailEvent, setDetailEvent] = useState<any | null>(null)
+  const [detailData, setDetailData] = useState<{ registrations: any[]; questions: any[] } | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
 
   useEffect(() => {
     fetch('/api/admin/events')
       .then((r) => r.json())
       .then((d) => { setEvents(Array.isArray(d) ? d : []); setLoading(false) })
   }, [])
+
+  // ── Event CRUD ──
 
   const openAdd = () => {
     setEditEvent(null)
@@ -43,7 +76,6 @@ export default function AdminEventsPage() {
       description: e.description ?? '',
       type: e.type,
       date: new Date(e.date).toISOString().slice(0, 16),
-      link: e.link ?? '',
       host: e.host ?? '',
       published: e.published,
     })
@@ -51,10 +83,7 @@ export default function AdminEventsPage() {
   }
 
   const handleSave = async () => {
-    if (!form.title || !form.date) {
-      toast.error('Title and date are required')
-      return
-    }
+    if (!form.title || !form.date) { toast.error('Title and date are required'); return }
     setSaving(true)
     const body = { ...form, date: new Date(form.date).toISOString() }
     const url = editEvent ? `/api/admin/events/${editEvent.id}` : '/api/admin/events'
@@ -77,12 +106,79 @@ export default function AdminEventsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this event?')) return
+    if (!confirm('Delete this event and all its registrations?')) return
     const res = await fetch(`/api/admin/events/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setEvents((p) => p.filter((e) => e.id !== id))
       toast.success('Deleted')
     }
+  }
+
+  // ── Detail modal ──
+
+  const openDetail = async (event: any) => {
+    setDetailEvent(event)
+    setDetailData(null)
+    setDetailLoading(true)
+    const res = await fetch(`/api/admin/events/${event.id}/registrations`)
+    if (res.ok) {
+      const data = await res.json()
+      setDetailData({ registrations: data.registrations ?? [], questions: data.questions ?? [] })
+    }
+    setDetailLoading(false)
+  }
+
+  // ── Questions modal ──
+
+  const openQuestions = async (event: Event) => {
+    setQEventId(event.id)
+    setQEventTitle(event.title)
+    setQModalOpen(true)
+    setQuestions([])
+    const res = await fetch(`/api/admin/events/${event.id}/questions`)
+    if (res.ok) {
+      const data = await res.json()
+      setQuestions(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.map((q: any) => ({ ...q, _optionsText: q.options?.join('\n') ?? '' }))
+      )
+    }
+  }
+
+  const addQuestion = () => setQuestions((p) => [...p, emptyQuestion()])
+
+  const removeQuestion = (i: number) => setQuestions((p) => p.filter((_, idx) => idx !== i))
+
+  const updateQuestion = (i: number, patch: Partial<Question>) =>
+    setQuestions((p) => p.map((q, idx) => (idx === i ? { ...q, ...patch } : q)))
+
+  const saveQuestions = async () => {
+    if (!qEventId) return
+    setQSaving(true)
+    const payload = questions
+      .filter((q) => q.label.trim())
+      .map((q, i) => ({
+        label: q.label.trim(),
+        type: q.type,
+        options: q.type === 'select'
+          ? (q._optionsText ?? '').split('\n').map((s) => s.trim()).filter(Boolean)
+          : [],
+        required: q.required,
+        sortOrder: i,
+      }))
+
+    const res = await fetch(`/api/admin/events/${qEventId}/questions`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    if (res.ok) {
+      toast.success('Questions saved!')
+      setQModalOpen(false)
+    } else {
+      toast.error('Error saving questions')
+    }
+    setQSaving(false)
   }
 
   return (
@@ -125,37 +221,56 @@ export default function AdminEventsPage() {
               {events.map((event) => (
                 <tr key={event.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900">{event.title}</div>
-                    {event.host && <div className="text-xs text-gray-500">{event.host}</div>}
+                    <button onClick={() => openDetail(event)} className="text-left group">
+                      <div className="font-medium text-gray-900 group-hover:text-brand-700 transition-colors">{event.title}</div>
+                      {event.host && <div className="text-xs text-gray-500">{event.host}</div>}
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {(event as any)._count?.registrations > 0 && (
+                        <div className="text-xs text-brand-600 mt-0.5">
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                          {(event as any)._count.registrations} registered
+                        </div>
+                      )}
+                    </button>
                   </td>
-                  <td className="px-4 py-3 text-gray-600 hidden md:table-cell">
-                    {formatDate(event.date)}
-                  </td>
+                  <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{formatDate(event.date)}</td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-medium">
                       {event.type}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        event.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${event.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                       {event.published ? 'Published' : 'Draft'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={`/admin/events/${event.id}/registrations`}
+                        className="p-1.5 rounded-lg text-gray-400 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+                        title="View registrations"
+                      >
+                        <Users className="h-4 w-4" />
+                      </Link>
+                      <button
+                        onClick={() => openQuestions(event)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        title="Manage registration questions"
+                      >
+                        <FileText className="h-4 w-4" />
+                      </button>
                       <button
                         onClick={() => openEdit(event)}
                         className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                        title="Edit event"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(event.id)}
                         className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        title="Delete event"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -168,11 +283,123 @@ export default function AdminEventsPage() {
         </div>
       )}
 
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editEvent ? 'Edit Event' : 'Add Event'}
-      >
+      {/* ── Detail Modal ── */}
+      {detailEvent && (
+        <Modal open={!!detailEvent} onClose={() => setDetailEvent(null)} title="Event Overview" size="lg">
+          <div className="space-y-6">
+
+            {/* Event header */}
+            <div>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className="text-xs font-semibold bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full">{detailEvent.type}</span>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${detailEvent.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                  {detailEvent.published ? 'Published' : 'Draft'}
+                </span>
+                {new Date(detailEvent.date) < new Date() && (
+                  <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">Past</span>
+                )}
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 leading-snug">{detailEvent.title}</h2>
+              {detailEvent.description && (
+                <p className="text-sm text-gray-500 mt-2 leading-relaxed">{detailEvent.description}</p>
+              )}
+            </div>
+
+            {/* Meta info */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> Date</p>
+                <p className="text-sm font-semibold text-gray-800">{formatDate(detailEvent.date)}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1"><Clock className="h-3 w-3" /> Time</p>
+                <p className="text-sm font-semibold text-gray-800">
+                  {new Date(detailEvent.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+              {detailEvent.host && (
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-1 flex items-center gap-1"><User className="h-3 w-3" /> Host</p>
+                  <p className="text-sm font-semibold text-gray-800 truncate">{detailEvent.host}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-brand-50 rounded-2xl p-5 text-center">
+                <p className="text-3xl font-bold text-brand-700">
+                  {detailLoading ? <Loader2 className="h-7 w-7 animate-spin mx-auto text-brand-400" /> : (detailData?.registrations.length ?? 0)}
+                </p>
+                <p className="text-sm text-brand-600 mt-1 font-medium">Registered</p>
+              </div>
+              <div className="bg-purple-50 rounded-2xl p-5 text-center">
+                <p className="text-3xl font-bold text-purple-700">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(detailEvent as any)._count?.questions ?? detailData?.questions.length ?? 0}
+                </p>
+                <p className="text-sm text-purple-600 mt-1 font-medium">Custom Questions</p>
+              </div>
+            </div>
+
+            {/* Recent registrants */}
+            {!detailLoading && detailData && detailData.registrations.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+                  Recent Registrations
+                </p>
+                <div className="space-y-2">
+                  {detailData.registrations.slice(0, 5).map((reg: any) => (
+                    <div key={reg.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+                      <div className="w-8 h-8 bg-brand-100 rounded-full flex items-center justify-center shrink-0">
+                        <span className="text-brand-700 font-bold text-xs">{reg.fullName.charAt(0).toUpperCase()}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{reg.fullName}</p>
+                        <p className="text-xs text-gray-400 truncate">{reg.email}</p>
+                      </div>
+                      <p className="text-xs text-gray-400 shrink-0">
+                        {new Date(reg.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                {detailData.registrations.length > 5 && (
+                  <p className="text-xs text-gray-400 mt-2 text-center">
+                    +{detailData.registrations.length - 5} more registrations
+                  </p>
+                )}
+              </div>
+            )}
+
+            {!detailLoading && detailData?.registrations.length === 0 && (
+              <div className="text-center py-4 text-gray-400 text-sm">
+                No registrations yet for this event.
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-1">
+              <Link
+                href={`/admin/events/${detailEvent.id}/registrations`}
+                onClick={() => setDetailEvent(null)}
+                className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors"
+              >
+                <Users className="h-4 w-4" /> View All Registrations <ChevronRight className="h-4 w-4" />
+              </Link>
+              <button
+                onClick={() => { setDetailEvent(null); openEdit(detailEvent) }}
+                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
+              >
+                <Pencil className="h-4 w-4" /> Edit
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* ── Event Form Modal ── */}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editEvent ? 'Edit Event' : 'Add Event'}>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Title *</label>
@@ -216,15 +443,6 @@ export default function AdminEventsPage() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Registration Link</label>
-            <input
-              value={form.link}
-              onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="https://zoom.us/... or registration URL"
-            />
-          </div>
-          <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
             <textarea
               rows={3}
@@ -242,23 +460,105 @@ export default function AdminEventsPage() {
               onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
               className="w-4 h-4 rounded text-brand-600 border-gray-300"
             />
-            <label htmlFor="published" className="text-sm font-medium text-gray-700">
-              Publish immediately
-            </label>
+            <label htmlFor="published" className="text-sm font-medium text-gray-700">Publish immediately</label>
           </div>
+          {editEvent && (
+            <p className="text-xs text-purple-600 bg-purple-50 px-3 py-2 rounded-lg">
+              To add custom registration questions, save the event then click the <FileText className="inline h-3 w-3" /> icon in the table.
+            </p>
+          )}
           <div className="flex gap-3">
-            <button
-              onClick={() => setModalOpen(false)}
-              className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
-            >
+            <button onClick={() => setModalOpen(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">
               Cancel
             </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60 transition-colors"
-            >
+            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60 transition-colors">
               {saving ? 'Saving...' : editEvent ? 'Update' : 'Create'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ── Questions Modal ── */}
+      <Modal open={qModalOpen} onClose={() => setQModalOpen(false)} title={`Registration Questions`}>
+        <div className="space-y-4">
+          <p className="text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded-lg">
+            <strong className="text-gray-700">{qEventTitle}</strong> — These questions appear on the registration form in addition to Name, Email, and Phone.
+          </p>
+
+          {questions.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-4">No custom questions yet. Add one below.</p>
+          )}
+
+          <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+            {questions.map((q, i) => (
+              <div key={i} className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white">
+                <div className="flex items-start gap-2">
+                  <GripVertical className="h-4 w-4 text-gray-300 mt-2.5 shrink-0" />
+                  <div className="flex-1 space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        value={q.label}
+                        onChange={(e) => updateQuestion(i, { label: e.target.value })}
+                        placeholder="Question text, e.g. Year of Study"
+                        className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      />
+                      <select
+                        value={q.type}
+                        onChange={(e) => updateQuestion(i, { type: e.target.value })}
+                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      >
+                        <option value="text">Short text</option>
+                        <option value="textarea">Long text</option>
+                        <option value="select">Dropdown</option>
+                      </select>
+                    </div>
+                    {q.type === 'select' && (
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Options (one per line)</label>
+                        <textarea
+                          rows={3}
+                          value={q._optionsText}
+                          onChange={(e) => updateQuestion(i, { _optionsText: e.target.value })}
+                          placeholder="100 Level&#10;200 Level&#10;300 Level&#10;400 Level"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`req-${i}`}
+                        checked={q.required}
+                        onChange={(e) => updateQuestion(i, { required: e.target.checked })}
+                        className="w-3.5 h-3.5 rounded text-brand-600"
+                      />
+                      <label htmlFor={`req-${i}`} className="text-xs text-gray-600">Required</label>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => removeQuestion(i)}
+                    className="p-1 text-gray-300 hover:text-red-500 transition-colors mt-1 shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={addQuestion}
+            className="w-full py-2.5 border-2 border-dashed border-gray-200 text-gray-500 rounded-xl text-sm font-medium hover:border-brand-400 hover:text-brand-600 transition-colors flex items-center justify-center gap-2"
+          >
+            <Plus className="h-4 w-4" /> Add Question
+          </button>
+
+          <div className="flex gap-3">
+            <button onClick={() => setQModalOpen(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">
+              Cancel
+            </button>
+            <button onClick={saveQuestions} disabled={qSaving} className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60 transition-colors">
+              {qSaving ? 'Saving...' : 'Save Questions'}
             </button>
           </div>
         </div>

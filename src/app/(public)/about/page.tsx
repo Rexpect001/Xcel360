@@ -2,7 +2,17 @@ export const dynamic = 'force-dynamic'
 import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = { title: 'About — Xcel360' }
+export const metadata = {
+  title: 'About Xcel360 — Our Mission & Story',
+  description:
+    'Xcel360 was built to bridge the information gap for African students seeking scholarships and opportunities abroad. Learn about our mission, values, and the team behind the platform.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About Xcel360',
+    description: 'Our mission: no African student should miss a scholarship opportunity because of lack of information.',
+    url: '/about',
+  },
+}
 
 export default function AboutPage() {
   return (

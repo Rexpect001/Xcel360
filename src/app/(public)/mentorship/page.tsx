@@ -1,7 +1,29 @@
 export const dynamic = 'force-dynamic'
+import type { Metadata } from 'next'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
+
+export const metadata: Metadata = {
+  title: 'Find a Mentor — Scholarship & Study Abroad Guidance',
+  description:
+    'Connect with experienced mentors who have won scholarships and studied abroad. Get personalised guidance on applications, essays, and interview preparation.',
+  keywords: [
+    'scholarship mentorship',
+    'study abroad mentor',
+    'scholarship application help',
+    'SOP writing help',
+    'interview preparation',
+    'African scholarship mentor',
+  ],
+  alternates: { canonical: '/mentorship' },
+  openGraph: {
+    title: 'Find a Mentor — Xcel360',
+    description: 'Connect with mentors who have won scholarships and studied abroad. Get guidance on your journey.',
+    url: '/mentorship',
+  },
+}
+
 
 async function getMentors() {
   try {
@@ -50,7 +72,6 @@ const defaultMentors = [
   },
 ]
 
-export const metadata = { title: 'Mentorship — Xcel360' }
 
 export default async function MentorshipPage() {
   const dbMentors = await getMentors()

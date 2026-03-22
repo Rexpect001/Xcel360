@@ -1,6 +1,46 @@
 export const dynamic = 'force-dynamic'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
+
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
+  if (!opp) return { title: 'Scholarship Not Found' }
+
+  const description = opp.description
+    ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? '…' : '')
+    : `${opp.fundingType} scholarship by ${opp.hostOrg} for ${opp.programLevel.join(', ')} students in ${opp.country}. Deadline: ${opp.deadline?.toLocaleDateString('en-GB') ?? 'TBC'}.`
+
+  return {
+    title: opp.title,
+    description,
+    keywords: [
+      opp.title,
+      opp.hostOrg,
+      opp.fundingType,
+      opp.country,
+      opp.field,
+      ...opp.programLevel,
+      'scholarship',
+      'study abroad',
+    ].filter(Boolean),
+    alternates: { canonical: `/opportunities/${opp.id}` },
+    openGraph: {
+      title: opp.title,
+      description,
+      url: `${BASE}/opportunities/${opp.id}`,
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title: opp.title,
+      description,
+    },
+  }
+}
+
 import { formatDate, daysUntilDeadline, getFundingBadgeColor } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import ShareButtons from '@/components/ui/ShareButtons'
@@ -16,7 +56,35 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
   const pageUrl = `${appUrl}/opportunities/${opp.id}`
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOccupationalProgram',
+    name: opp.title,
+    description: opp.description ?? `${opp.fundingType} scholarship by ${opp.hostOrg}`,
+    provider: {
+      '@type': 'Organization',
+      name: opp.hostOrg,
+    },
+    url: pageUrl,
+    applicationDeadline: opp.deadline?.toISOString(),
+    educationalProgramMode: 'full-time',
+    occupationalCategory: opp.field,
+    offers: {
+      '@type': 'Offer',
+      category: opp.fundingType,
+      eligibleRegion: {
+        '@type': 'Place',
+        name: opp.country,
+      },
+    },
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="min-h-screen bg-gray-50 pt-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100">
@@ -120,5 +188,6 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
         </div>
       </div>
     </div>
+    </>
   )
 }

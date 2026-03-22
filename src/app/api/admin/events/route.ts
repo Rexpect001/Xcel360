@@ -6,7 +6,14 @@ import prisma from '@/lib/prisma'
 export async function GET() {
   try {
     await requireAdmin()
-    const events = await prisma.event.findMany({ orderBy: { date: 'asc' } })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = prisma as any
+    const events = await db.event.findMany({
+      orderBy: { date: 'asc' },
+      include: {
+        _count: { select: { registrations: true, questions: true } },
+      },
+    })
     return NextResponse.json(events)
   } catch {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

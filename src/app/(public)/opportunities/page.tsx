@@ -1,23 +1,51 @@
 export const dynamic = 'force-dynamic'
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import OpportunitiesClient from '@/components/opportunities/OpportunitiesClient'
 import prisma from '@/lib/prisma'
 
+export const metadata: Metadata = {
+  title: 'Scholarships & Funding Opportunities',
+  description:
+    'Browse hundreds of fully funded scholarships, grants, and fellowships for African students. Filter by country, funding type, and deadline to find the right opportunity.',
+  keywords: [
+    'fully funded scholarships',
+    'scholarships for Africans',
+    'study abroad 2025',
+    'undergraduate scholarships',
+    'postgraduate scholarships',
+    'PhD scholarships',
+    'scholarship deadlines',
+    'grants for students',
+  ],
+  alternates: { canonical: '/opportunities' },
+  openGraph: {
+    title: 'Scholarships & Funding Opportunities — Xcel360',
+    description: 'Browse hundreds of fully funded scholarships, grants, and fellowships for African students.',
+    url: '/opportunities',
+  },
+}
+
+
 async function getOpportunities() {
   try {
-    return await prisma.opportunity.findMany({
+    const all = await prisma.opportunity.findMany({
       where: { status: 'OPEN' },
       orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
+    })
+    // Deduplicate by normalised title — keep first occurrence (featured/soonest deadline first)
+    const seen = new Set<string>()
+    return all.filter((o) => {
+      const key = o.title.toLowerCase().trim()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
     })
   } catch {
     return []
   }
 }
 
-export const metadata = {
-  title: 'Scholarship Opportunities — Xcel360',
-  description: 'Browse 500+ scholarships filtered by level, field, country, and funding type.',
-}
 
 export default async function OpportunitiesPage() {
   const opportunities = await getOpportunities()
