@@ -4,17 +4,26 @@ import { useSession } from 'next-auth/react'
 import { ExternalLink, X, LogIn, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 
-export default function ApplyButton({ href, title }: { href: string; title: string }) {
+export default function ApplyButton({ href, title }: { href: string | null; title: string }) {
   const { data: session } = useSession()
   const [showModal, setShowModal] = useState(false)
 
+  const safeHref = href
+    ? href.startsWith('http://') || href.startsWith('https://')
+      ? href
+      : `https://${href}`
+    : null
+
   const handleClick = () => {
+    if (!safeHref) return
     if (session) {
-      window.open(href, '_blank', 'noopener,noreferrer')
+      window.open(safeHref, '_blank', 'noopener,noreferrer')
     } else {
       setShowModal(true)
     }
   }
+
+  if (!safeHref) return null
 
   return (
     <>

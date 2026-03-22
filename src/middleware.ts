@@ -28,8 +28,9 @@ export default withAuth(
     const { pathname } = req.nextUrl
     const token = req.nextauth.token
 
-    // Admin routes require ADMIN role — redirect non-admins to dashboard
-    if (pathname.startsWith('/admin') && token?.role !== 'ADMIN') {
+    // Admin routes require an admin role — redirect non-admins to dashboard
+    const adminRoles = ['ADMIN', 'MANAGER', 'EDITOR', 'MODERATOR', 'MENTOR']
+    if (pathname.startsWith('/admin') && !adminRoles.includes(token?.role as string)) {
       const response = NextResponse.redirect(new URL('/dashboard', req.url))
       return applySecurityHeaders(response, req)
     }
@@ -48,5 +49,6 @@ export default withAuth(
 
 export const config = {
   // Protect dashboard and admin routes at the edge — before any page renders
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/:path*'],
+  // NOTE: /api/auth/ must be excluded so NextAuth sign-in callbacks can complete
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/).*)'],
 }

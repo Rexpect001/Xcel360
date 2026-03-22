@@ -70,8 +70,7 @@ export const metadata: Metadata = {
     canonical: BASE,
   },
   verification: {
-    // Add your Google Search Console verification token here after deploying:
-    // google: 'your-google-site-verification-token',
+    google: 'HqtM8s2pElCiihxma2gV07HWCRTF8hM4J6AZ9gPGaW0',
   },
 }
 
