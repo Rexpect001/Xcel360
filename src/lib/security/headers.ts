@@ -44,10 +44,9 @@ export const securityHeaders = {
     'fullscreen=(self)',
   ].join(', '),
   
-  // Cross-origin policies
-  'Cross-Origin-Embedder-Policy': 'require-corp',
-  'Cross-Origin-Opener-Policy': 'same-origin',
-  'Cross-Origin-Resource-Policy': 'same-origin',
+  // Cross-origin policies — allow-popups so external links (Apply Now) can open in new tabs
+  'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+  'Cross-Origin-Resource-Policy': 'cross-origin',
 }
 
 // CORS configuration
