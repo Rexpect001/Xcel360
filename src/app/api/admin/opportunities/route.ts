@@ -85,17 +85,21 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data
 
-    // Convert deadline string to Date
-    const deadlineDate = new Date(data.deadline)
-    
-    // Check if deadline is in the past
-    if (deadlineDate < new Date()) {
+    // Check for duplicate title
+    const existing = await prisma.opportunity.findFirst({
+      where: { title: { equals: data.title.trim(), mode: 'insensitive' } },
+      select: { id: true },
+    })
+    if (existing) {
       return createSecureResponse(
-        { error: 'Deadline cannot be in the past' },
-        400,
+        { error: 'An opportunity with this title already exists. Please use a different title or edit the existing one.' },
+        409,
         req
       )
     }
+
+    // Convert deadline string to Date
+    const deadlineDate = new Date(data.deadline)
 
     const opp = await prisma.opportunity.create({
       data: {
