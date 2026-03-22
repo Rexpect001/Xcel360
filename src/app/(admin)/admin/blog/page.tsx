@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Eye, EyeOff, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Eye, EyeOff, Search, CheckSquare, Square, X } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
@@ -28,6 +28,14 @@ export default function AdminBlogPage() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
 
+  // Bulk select state
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkLoading, setBulkLoading] = useState(false)
+
+  // Detail modal state
+  const [detailPost, setDetailPost] = useState<any | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
+
   useEffect(() => {
     fetch('/api/admin/blog')
       .then((r) => r.json())
@@ -41,6 +49,8 @@ export default function AdminBlogPage() {
   }
 
   const openEdit = (post: any) => {
+    setDetailOpen(false)
+    setDetailPost(null)
     setEditPost(post)
     setForm({
       title: post.title,
@@ -52,6 +62,11 @@ export default function AdminBlogPage() {
       published: post.published,
     })
     setModalOpen(true)
+  }
+
+  const openDetail = (post: any) => {
+    setDetailPost(post)
+    setDetailOpen(true)
   }
 
   const handleTitleChange = (title: string) => {
@@ -96,6 +111,8 @@ export default function AdminBlogPage() {
     const res = await fetch(`/api/admin/blog/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setPosts((p) => p.filter((x) => x.id !== id))
+      setSelected((s) => { const n = new Set(s); n.delete(id); return n })
+      if (detailPost?.id === id) setDetailOpen(false)
       toast.success('Deleted')
     }
   }
@@ -109,13 +126,73 @@ export default function AdminBlogPage() {
     if (res.ok) {
       const updated = await res.json()
       setPosts((p) => p.map((x) => (x.id === updated.id ? updated : x)))
+      if (detailPost?.id === updated.id) setDetailPost(updated)
     }
   }
 
+  // Bulk selection helpers
   const filtered = posts.filter(
     (p) => p.title?.toLowerCase().includes(search.toLowerCase()) ||
            p.author?.toLowerCase().includes(search.toLowerCase())
   )
+
+  const allFilteredSelected = filtered.length > 0 && filtered.every((p) => selected.has(p.id))
+  const someSelected = selected.size > 0
+
+  const toggleSelectAll = () => {
+    if (allFilteredSelected) {
+      setSelected((s) => {
+        const n = new Set(s)
+        filtered.forEach((p) => n.delete(p.id))
+        return n
+      })
+    } else {
+      setSelected((s) => {
+        const n = new Set(s)
+        filtered.forEach((p) => n.add(p.id))
+        return n
+      })
+    }
+  }
+
+  const toggleSelectOne = (id: string) => {
+    setSelected((s) => {
+      const n = new Set(s)
+      if (n.has(id)) n.delete(id)
+      else n.add(id)
+      return n
+    })
+  }
+
+  const handleBulkAction = async (action: 'publish' | 'unpublish' | 'delete') => {
+    const ids = Array.from(selected)
+    if (ids.length === 0) return
+    if (action === 'delete' && !confirm(`Delete ${ids.length} post${ids.length > 1 ? 's' : ''}? This cannot be undone.`)) return
+
+    setBulkLoading(true)
+    const res = await fetch('/api/admin/blog/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, action }),
+    })
+    if (res.ok) {
+      if (action === 'delete') {
+        setPosts((p) => p.filter((x) => !ids.includes(x.id)))
+      } else {
+        const published = action === 'publish'
+        setPosts((p) => p.map((x) => ids.includes(x.id) ? { ...x, published } : x))
+      }
+      setSelected(new Set())
+      toast.success(
+        action === 'delete'
+          ? `Deleted ${ids.length} post${ids.length > 1 ? 's' : ''}`
+          : `${action === 'publish' ? 'Published' : 'Unpublished'} ${ids.length} post${ids.length > 1 ? 's' : ''}`
+      )
+    } else {
+      toast.error('Bulk action failed')
+    }
+    setBulkLoading(false)
+  }
 
   return (
     <div>
@@ -151,6 +228,18 @@ export default function AdminBlogPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
+                <th className="px-4 py-3 w-10">
+                  <button
+                    onClick={toggleSelectAll}
+                    className="text-gray-400 hover:text-brand-700 transition-colors"
+                    title={allFilteredSelected ? 'Deselect all' : 'Select all'}
+                  >
+                    {allFilteredSelected
+                      ? <CheckSquare className="h-4 w-4 text-brand-700" />
+                      : <Square className="h-4 w-4" />
+                    }
+                  </button>
+                </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Title</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Author</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Tags</th>
@@ -161,13 +250,29 @@ export default function AdminBlogPage() {
             <tbody className="divide-y divide-gray-50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">No posts found</td>
+                  <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm">No posts found</td>
                 </tr>
               ) : (
                 filtered.map((post) => (
                   <tr key={post.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 w-10">
+                      <button
+                        onClick={() => toggleSelectOne(post.id)}
+                        className="text-gray-400 hover:text-brand-700 transition-colors"
+                      >
+                        {selected.has(post.id)
+                          ? <CheckSquare className="h-4 w-4 text-brand-700" />
+                          : <Square className="h-4 w-4" />
+                        }
+                      </button>
+                    </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 line-clamp-1">{post.title}</div>
+                      <button
+                        onClick={() => openDetail(post)}
+                        className="font-medium text-gray-900 hover:text-brand-700 transition-colors text-left line-clamp-1"
+                      >
+                        {post.title}
+                      </button>
                       <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${post.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                         {post.published ? 'Published' : 'Draft'}
                       </span>
@@ -202,6 +307,120 @@ export default function AdminBlogPage() {
         </div>
       )}
 
+      {/* Floating bulk action bar */}
+      {someSelected && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl">
+          <span className="text-sm font-medium text-gray-300">
+            {selected.size} selected
+          </span>
+          <div className="w-px h-5 bg-gray-600" />
+          <button
+            onClick={() => handleBulkAction('publish')}
+            disabled={bulkLoading}
+            className="flex items-center gap-1.5 text-sm font-medium text-green-400 hover:text-green-300 disabled:opacity-50 transition-colors"
+          >
+            <Eye className="h-4 w-4" />
+            Publish
+          </button>
+          <button
+            onClick={() => handleBulkAction('unpublish')}
+            disabled={bulkLoading}
+            className="flex items-center gap-1.5 text-sm font-medium text-yellow-400 hover:text-yellow-300 disabled:opacity-50 transition-colors"
+          >
+            <EyeOff className="h-4 w-4" />
+            Unpublish
+          </button>
+          <button
+            onClick={() => handleBulkAction('delete')}
+            disabled={bulkLoading}
+            className="flex items-center gap-1.5 text-sm font-medium text-red-400 hover:text-red-300 disabled:opacity-50 transition-colors"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete
+          </button>
+          <div className="w-px h-5 bg-gray-600" />
+          <button
+            onClick={() => setSelected(new Set())}
+            className="p-1 rounded-lg hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
+            title="Clear selection"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Detail modal */}
+      <Modal open={detailOpen} onClose={() => setDetailOpen(false)} title="Post Details" size="lg">
+        {detailPost && (
+          <div className="space-y-5">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="text-lg font-bold text-gray-900 leading-snug">{detailPost.title}</h3>
+              <span className={`shrink-0 text-xs px-2 py-1 rounded-full font-semibold ${detailPost.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                {detailPost.published ? 'Published' : 'Draft'}
+              </span>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-0.5">Author</p>
+                <p className="text-gray-900">{detailPost.author}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-0.5">Created</p>
+                <p className="text-gray-900">{formatDate(detailPost.createdAt)}</p>
+              </div>
+            </div>
+
+            {(detailPost.tags ?? []).length > 0 && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1.5">Tags</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(detailPost.tags ?? []).map((tag: string) => (
+                    <span key={tag} className="text-xs bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full font-medium">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailPost.excerpt && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">Excerpt</p>
+                <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-xl px-3 py-2.5">{detailPost.excerpt}</p>
+              </div>
+            )}
+
+            {detailPost.content && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">Content</p>
+                <div className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-xl px-3 py-2.5 whitespace-pre-wrap">
+                  {detailPost.content.length > 300
+                    ? detailPost.content.slice(0, 300) + '...'
+                    : detailPost.content}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2 border-t border-gray-100">
+              <button
+                onClick={() => handleDelete(detailPost.id)}
+                className="flex items-center gap-2 px-4 py-2.5 border-2 border-red-100 text-red-600 rounded-xl font-medium text-sm hover:bg-red-50 transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </button>
+              <button
+                onClick={() => openEdit(detailPost)}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors"
+              >
+                <Pencil className="h-4 w-4" />
+                Edit Post
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Add / Edit modal */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editPost ? 'Edit Post' : 'New Post'} size="lg">
         <div className="space-y-4">
           <div>

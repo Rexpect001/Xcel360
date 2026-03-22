@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Calendar, Users, FileText, X, GripVertical, Clock, User, Video, MapPin, ChevronRight, Loader2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Calendar, Users, FileText, X, GripVertical, Clock, User, ChevronRight, Loader2, CheckSquare2 } from 'lucide-react'
 import { Event } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
@@ -49,6 +49,22 @@ export default function AdminEventsPage() {
   const [qEventTitle, setQEventTitle] = useState('')
   const [questions, setQuestions] = useState<Question[]>([])
   const [qSaving, setQSaving] = useState(false)
+
+  // Bulk select
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const toggleSelect = (id: string) => setSelected(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
+  const toggleSelectAll = () => setSelected(p => p.size === events.length ? new Set() : new Set(events.map(e => e.id)))
+  const bulkAction = async (action: string) => {
+    const ids = Array.from(selected)
+    if (action === 'delete' && !confirm(`Delete ${ids.length} event(s) and all their registrations?`)) return
+    const res = await fetch('/api/admin/events/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, action }) })
+    if (res.ok) {
+      if (action === 'delete') setEvents(p => p.filter(e => !selected.has(e.id)))
+      else setEvents(p => p.map(e => selected.has(e.id) ? { ...e, published: action === 'publish' } : e))
+      setSelected(new Set())
+      toast.success(`Done — ${ids.length} event(s) updated`)
+    } else toast.error('Action failed')
+  }
 
   // Detail modal
   const [detailEvent, setDetailEvent] = useState<any | null>(null)
@@ -196,6 +212,18 @@ export default function AdminEventsPage() {
         </button>
       </div>
 
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 bg-brand-700 text-white px-5 py-3 rounded-2xl shadow-lg">
+          <CheckSquare2 className="h-4 w-4 shrink-0" />
+          <span className="text-sm font-semibold flex-1">{selected.size} selected</span>
+          <button onClick={() => bulkAction('publish')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">Publish</button>
+          <button onClick={() => bulkAction('unpublish')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">Unpublish</button>
+          <button onClick={() => bulkAction('delete')} className="text-xs px-3 py-1.5 bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors">Delete</button>
+          <button onClick={() => setSelected(new Set())} className="p-1 hover:bg-white/20 rounded-lg transition-colors"><X className="h-4 w-4" /></button>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" />
@@ -210,6 +238,9 @@ export default function AdminEventsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
+                <th className="px-4 py-3 w-10">
+                  <input type="checkbox" checked={selected.size === events.length && events.length > 0} onChange={toggleSelectAll} className="w-4 h-4 rounded text-brand-600 border-gray-300 cursor-pointer" />
+                </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Event</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Date</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Type</th>
@@ -219,7 +250,10 @@ export default function AdminEventsPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {events.map((event) => (
-                <tr key={event.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={event.id} className={`hover:bg-gray-50 transition-colors ${selected.has(event.id) ? 'bg-brand-50' : ''}`}>
+                  <td className="px-4 py-3">
+                    <input type="checkbox" checked={selected.has(event.id)} onChange={() => toggleSelect(event.id)} className="w-4 h-4 rounded text-brand-600 border-gray-300 cursor-pointer" />
+                  </td>
                   <td className="px-4 py-3">
                     <button onClick={() => openDetail(event)} className="text-left group">
                       <div className="font-medium text-gray-900 group-hover:text-brand-700 transition-colors">{event.title}</div>

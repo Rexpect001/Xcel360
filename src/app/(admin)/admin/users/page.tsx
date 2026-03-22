@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import {
   Search, ChevronDown, User, Mail, Phone, BookOpen, MapPin,
   KeyRound, X, Loader2, Shield, CheckCircle2, Trash2,
-  UserCheck, UserX, AlertTriangle, Clock, Filter,
+  UserCheck, UserX, AlertTriangle, Clock, Filter, CheckSquare2,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
@@ -36,6 +36,38 @@ export default function AdminUsersPage() {
   const [filterRole, setFilterRole] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const toggleSelect = (id: string) => setSelected(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
+  const toggleSelectAll = () => setSelected(p => p.size === filtered.length ? new Set() : new Set(filtered.map(u => u.id)))
+
+  const deleteUser = async (user: any) => {
+    if (!confirm(`Permanently delete ${user.name || user.email}? This cannot be undone.`)) return
+    const res = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' })
+    if (res.ok) {
+      setUsers(p => p.filter(u => u.id !== user.id))
+      if (detailUser?.id === user.id) setDetailUser(null)
+      toast.success('User deleted')
+    } else {
+      const d = await res.json()
+      toast.error(d.error ?? 'Delete failed')
+    }
+  }
+
+  const bulkAction = async (action: string) => {
+    const ids = Array.from(selected)
+    if (action === 'delete' && !confirm(`Permanently delete ${ids.length} user(s)? This cannot be undone.`)) return
+    const res = await fetch('/api/admin/users/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, action }) })
+    if (res.ok) {
+      if (action === 'delete') setUsers(p => p.filter(u => !selected.has(u.id)))
+      else {
+        const statusMap: Record<string, string> = { suspend: 'SUSPENDED', disable: 'DISABLED', activate: 'ACTIVE' }
+        const newStatus = statusMap[action]
+        setUsers(p => p.map(u => selected.has(u.id) ? { ...u, status: newStatus } : u))
+      }
+      setSelected(new Set())
+      toast.success(`Done — ${ids.length} user(s) updated`)
+    } else toast.error('Action failed')
+  }
 
   // Detail modal
   const [detailUser, setDetailUser] = useState<any | null>(null)
@@ -254,6 +286,19 @@ export default function AdminUsersPage() {
 
       <p className="text-sm text-gray-500 mb-3">{filtered.length} user{filtered.length !== 1 ? 's' : ''} shown</p>
 
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-brand-700 text-white px-5 py-3 rounded-2xl shadow-lg">
+          <CheckSquare2 className="h-4 w-4 shrink-0" />
+          <span className="text-sm font-semibold flex-1">{selected.size} selected</span>
+          <button onClick={() => bulkAction('activate')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">Activate</button>
+          <button onClick={() => bulkAction('suspend')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">Suspend</button>
+          <button onClick={() => bulkAction('disable')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">Disable</button>
+          <button onClick={() => bulkAction('delete')} className="text-xs px-3 py-1.5 bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors">Delete</button>
+          <button onClick={() => setSelected(new Set())} className="p-1 hover:bg-white/20 rounded-lg transition-colors"><X className="h-4 w-4" /></button>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" />
@@ -263,6 +308,9 @@ export default function AdminUsersPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
+                <th className="px-4 py-3 w-10">
+                  <input type="checkbox" checked={selected.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} className="w-4 h-4 rounded text-brand-600 border-gray-300 cursor-pointer" />
+                </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">User</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 hidden sm:table-cell">Status</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Role</th>
@@ -284,7 +332,10 @@ export default function AdminUsersPage() {
                   const isUpdating = updatingId === user.id
 
                   return (
-                    <tr key={user.id} className={`hover:bg-gray-50 transition-colors ${status === 'DISABLED' ? 'opacity-60' : ''}`}>
+                    <tr key={user.id} className={`hover:bg-gray-50 transition-colors ${status === 'DISABLED' ? 'opacity-60' : ''} ${selected.has(user.id) ? 'bg-brand-50' : ''}`}>
+                      <td className="px-4 py-3">
+                        <input type="checkbox" checked={selected.has(user.id)} onChange={() => toggleSelect(user.id)} className="w-4 h-4 rounded text-brand-600 border-gray-300 cursor-pointer" />
+                      </td>
                       <td className="px-4 py-3">
                         <button onClick={() => openDetail(user)} className="flex items-center gap-3 text-left group">
                           <div className="relative">
@@ -361,6 +412,13 @@ export default function AdminUsersPage() {
                           >
                             <KeyRound className="h-4 w-4" />
                           </button>
+                          <button
+                            onClick={() => deleteUser(user)}
+                            className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            title="Delete user"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                           <div className="relative">
                             <select
                               value={user.role ?? 'USER'}
@@ -415,12 +473,20 @@ export default function AdminUsersPage() {
                   )}
                 </div>
               </div>
-              <button
-                onClick={() => { setDetailUser(null); setPwModal({ userId: detailUser.id, userName: detailUser.name || detailUser.email }) }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-semibold hover:bg-orange-100 transition-colors flex-shrink-0"
-              >
-                <KeyRound className="h-3.5 w-3.5" /> Reset PW
-              </button>
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={() => { setDetailUser(null); setPwModal({ userId: detailUser.id, userName: detailUser.name || detailUser.email }) }}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-semibold hover:bg-orange-100 transition-colors"
+                >
+                  <KeyRound className="h-3.5 w-3.5" /> Reset PW
+                </button>
+                <button
+                  onClick={() => { setDetailUser(null); deleteUser(detailUser) }}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-semibold hover:bg-red-100 transition-colors"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                </button>
+              </div>
             </div>
 
             {/* Status action buttons */}

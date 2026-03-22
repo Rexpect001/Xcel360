@@ -16,3 +16,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   })
   return NextResponse.json(user)
 }
+
+export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+  const session = await getAuth()
+  if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  // Prevent deleting yourself
+  if (params.id === session.user.id) return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 })
+  await prisma.user.delete({ where: { id: params.id } })
+  return NextResponse.json({ ok: true })
+}
