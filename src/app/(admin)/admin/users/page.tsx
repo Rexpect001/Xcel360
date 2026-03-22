@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import {
   Search, ChevronDown, User, Mail, Phone, BookOpen, MapPin,
   KeyRound, X, Loader2, Shield, CheckCircle2, Trash2,
-  UserCheck, UserX, AlertTriangle, Clock, Filter, CheckSquare2,
+  UserCheck, UserX, AlertTriangle, Clock, Filter, CheckSquare2, Pencil,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
@@ -80,6 +80,77 @@ export default function AdminUsersPage() {
   const [newPassword, setNewPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [pwSaving, setPwSaving] = useState(false)
+
+  // Edit user modal
+  const [editModal, setEditModal] = useState<any | null>(null) // holds the user being edited
+  const [editForm, setEditForm] = useState({ name: '', email: '', school: '', department: '', level: '', whatsappNumber: '', bio: '', targetCountries: '' })
+  const [editSaving, setEditSaving] = useState(false)
+
+  const openEditUser = (user: any) => {
+    const p = detailData?.user?.profile ?? {}
+    setEditForm({
+      name: user.name ?? '',
+      email: user.email ?? '',
+      school: p.school ?? '',
+      department: p.department ?? '',
+      level: p.level ?? '',
+      whatsappNumber: p.whatsappNumber ?? '',
+      bio: p.bio ?? '',
+      targetCountries: (p.targetCountries ?? []).join(', '),
+    })
+    setEditModal(user)
+  }
+
+  const handleEditSave = async () => {
+    if (!editModal) return
+    if (!editForm.name.trim()) { toast.error('Name is required'); return }
+    if (!editForm.email.trim()) { toast.error('Email is required'); return }
+    setEditSaving(true)
+    const res = await fetch(`/api/admin/users/${editModal.id}/edit`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: editForm.name.trim(),
+        email: editForm.email.trim(),
+        school: editForm.school.trim(),
+        department: editForm.department.trim(),
+        level: editForm.level.trim(),
+        whatsappNumber: editForm.whatsappNumber.trim(),
+        bio: editForm.bio.trim(),
+        targetCountries: editForm.targetCountries.split(',').map(s => s.trim()).filter(Boolean),
+      }),
+    })
+    setEditSaving(false)
+    if (res.ok) {
+      // Update local list
+      setUsers(p => p.map(u => u.id === editModal.id ? { ...u, name: editForm.name, email: editForm.email } : u))
+      // Update detail data if open
+      if (detailData?.user?.id === editModal.id) {
+        setDetailData(d => d ? {
+          ...d,
+          user: {
+            ...d.user,
+            name: editForm.name,
+            email: editForm.email,
+            profile: {
+              ...d.user.profile,
+              school: editForm.school,
+              department: editForm.department,
+              level: editForm.level,
+              whatsappNumber: editForm.whatsappNumber,
+              bio: editForm.bio,
+              targetCountries: editForm.targetCountries.split(',').map((s: string) => s.trim()).filter(Boolean),
+            },
+          },
+        } : d)
+      }
+      toast.success('User updated')
+      setEditModal(null)
+    } else {
+      const d = await res.json()
+      toast.error(d.error ?? 'Failed to save')
+    }
+  }
 
   // Inactive purge
   const [purgePreview, setPurgePreview] = useState<{ count: number; cutoff: string } | null>(null)
@@ -473,7 +544,13 @@ export default function AdminUsersPage() {
                   )}
                 </div>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-2 flex-shrink-0 flex-wrap">
+                <button
+                  onClick={() => openEditUser(detailData?.user ?? detailUser)}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-brand-50 text-brand-700 rounded-xl text-xs font-semibold hover:bg-brand-100 transition-colors"
+                >
+                  <Pencil className="h-3.5 w-3.5" /> Edit
+                </button>
                 <button
                   onClick={() => { setDetailUser(null); setPwModal({ userId: detailUser.id, userName: detailUser.name || detailUser.email }) }}
                   className="flex items-center gap-1.5 px-3 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-semibold hover:bg-orange-100 transition-colors"
@@ -687,6 +764,133 @@ export default function AdminUsersPage() {
                 className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-semibold text-sm hover:bg-orange-600 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
               >
                 {pwSaving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> : <><KeyRound className="h-4 w-4" /> Reset Password</>}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* ── Edit User Modal ── */}
+      {editModal && (
+        <Modal open={!!editModal} onClose={() => setEditModal(null)} title="Edit User Details" size="lg">
+          <div className="space-y-4">
+            <p className="text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded-lg">
+              Changes here update the user&apos;s account details and profile. The user will see the updated info when they sign in.
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Full Name *</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    value={editForm.name}
+                    onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="Full name"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Email *</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="email"
+                    value={editForm.email}
+                    onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="email@example.com"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">School / University</label>
+                <div className="relative">
+                  <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    value={editForm.school}
+                    onChange={e => setEditForm(f => ({ ...f, school: e.target.value }))}
+                    placeholder="e.g. University of Lagos"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Department</label>
+                <div className="relative">
+                  <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    value={editForm.department}
+                    onChange={e => setEditForm(f => ({ ...f, department: e.target.value }))}
+                    placeholder="e.g. Computer Science"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Level / Year</label>
+                <div className="relative">
+                  <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    value={editForm.level}
+                    onChange={e => setEditForm(f => ({ ...f, level: e.target.value }))}
+                    placeholder="e.g. 300 Level / Masters"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">WhatsApp Number</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    value={editForm.whatsappNumber}
+                    onChange={e => setEditForm(f => ({ ...f, whatsappNumber: e.target.value }))}
+                    placeholder="+234 800 000 0000"
+                    className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Target Countries <span className="text-gray-400">(comma separated)</span></label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <input
+                  value={editForm.targetCountries}
+                  onChange={e => setEditForm(f => ({ ...f, targetCountries: e.target.value }))}
+                  placeholder="e.g. UK, Canada, USA"
+                  className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Bio / About</label>
+              <textarea
+                rows={3}
+                value={editForm.bio}
+                onChange={e => setEditForm(f => ({ ...f, bio: e.target.value }))}
+                placeholder="Short bio about this user..."
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => setEditModal(null)}
+                className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditSave}
+                disabled={editSaving}
+                className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60 transition-colors flex items-center justify-center gap-2"
+              >
+                {editSaving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> : <><Pencil className="h-4 w-4" /> Save Changes</>}
               </button>
             </div>
           </div>
