@@ -44,12 +44,17 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 import { formatDate, daysUntilDeadline, getFundingBadgeColor } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import ShareButtons from '@/components/ui/ShareButtons'
-import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Bookmark } from 'lucide-react'
+import { Calendar, MapPin, BookOpen, FileText, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
+import SaveButton from '@/components/ui/SaveButton'
+import { getAuth } from '@/lib/auth'
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
-  const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
+  const [opp, session] = await Promise.all([
+    prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null),
+    getAuth(),
+  ])
   if (!opp) notFound()
 
   const days = daysUntilDeadline(opp.deadline)
@@ -115,12 +120,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
 
           <div className="flex flex-wrap gap-3 mt-6 items-center">
             <ApplyButton href={opp.applicationLink} title={opp.title} />
-            <Link
-              href="/signup"
-              className="inline-flex items-center gap-2 border-2 border-brand-700 text-brand-700 px-6 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
-            >
-              <Bookmark className="h-4 w-4" /> Save
-            </Link>
+            <SaveButton opportunityId={opp.id} />
           </div>
 
           {/* Share buttons */}
@@ -177,13 +177,15 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
               </dl>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <h3 className="font-semibold text-gray-900 mb-3">Track this scholarship</h3>
-              <p className="text-sm text-gray-500 mb-4">Save it to your dashboard and get deadline reminders automatically.</p>
-              <Link href="/signup" className="block w-full text-center bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors">
-                Create Free Account
-              </Link>
-            </div>
+            {!session && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                <h3 className="font-semibold text-gray-900 mb-3">Track this scholarship</h3>
+                <p className="text-sm text-gray-500 mb-4">Save it to your dashboard and get deadline reminders automatically.</p>
+                <Link href="/signup" className="block w-full text-center bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors">
+                  Create Free Account
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

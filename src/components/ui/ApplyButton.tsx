@@ -27,12 +27,23 @@ export default function ApplyButton({ href, title }: { href: string | null; titl
 
   return (
     <>
-      <button
-        onClick={handleClick}
-        className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
-      >
-        Apply Now <ExternalLink className="h-4 w-4" />
-      </button>
+      {session ? (
+        <a
+          href={safeHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
+        >
+          Apply Now <ExternalLink className="h-4 w-4" />
+        </a>
+      ) : (
+        <button
+          onClick={handleClick}
+          className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
+        >
+          Apply Now <ExternalLink className="h-4 w-4" />
+        </button>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
