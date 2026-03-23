@@ -1,7 +1,7 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, lazy, Suspense } from 'react'
 import { Opportunity } from '@prisma/client'
-import { Search, SlidersHorizontal, X, Bookmark, ExternalLink } from 'lucide-react'
+import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
@@ -9,6 +9,8 @@ import { formatDate, daysUntilDeadline, getFundingBadgeColor, cn } from '@/lib/u
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
+
+const ScholarshipMap = lazy(() => import('./ScholarshipMap'))
 
 interface Props {
   initialOpportunities: Opportunity[]
@@ -26,6 +28,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
   })
   const [showFilters, setShowFilters] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
 
   const filtered = useMemo(() => {
     let result = initialOpportunities
@@ -118,6 +121,21 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
           Filters
           {hasFilters && <span className="w-2 h-2 bg-orange-400 rounded-full" />}
         </button>
+        {/* List / Map toggle */}
+        <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white">
+          <button
+            onClick={() => setViewMode('list')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-brand-700 text-white' : 'text-gray-600 hover:bg-gray-50')}
+          >
+            <LayoutGrid className="h-4 w-4" /> List
+          </button>
+          <button
+            onClick={() => setViewMode('map')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-brand-700 text-white' : 'text-gray-600 hover:bg-gray-50')}
+          >
+            <Map className="h-4 w-4" /> Map
+          </button>
+        </div>
         <select
           value={filters.sortBy}
           onChange={(e) => setFilters((f) => ({ ...f, sortBy: e.target.value }))}
@@ -189,15 +207,22 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       {/* Results count */}
       <p className="text-sm text-gray-500 mb-4">{filtered.length} opportunit{filtered.length !== 1 ? 'ies' : 'y'} found</p>
 
+      {/* Map view */}
+      {viewMode === 'map' && (
+        <Suspense fallback={<div className="h-[520px] bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-sm">Loading map...</div>}>
+          <ScholarshipMap opportunities={filtered} />
+        </Suspense>
+      )}
+
       {/* Grid */}
-      {filtered.length === 0 ? (
+      {viewMode === 'list' && filtered.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <Search className="h-12 w-12 mx-auto mb-3 opacity-30" />
           <p className="text-lg font-medium text-gray-500">No results found</p>
           <p className="text-sm mt-1">Try adjusting your search or filters</p>
           <button onClick={clearFilters} className="mt-4 text-brand-600 text-sm font-medium">Clear filters</button>
         </div>
-      ) : (
+      ) : viewMode === 'list' ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((opp) => {
             const days = daysUntilDeadline(opp.deadline)
@@ -269,7 +294,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
             )
           })}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
