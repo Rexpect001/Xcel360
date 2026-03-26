@@ -43,19 +43,27 @@ export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>
 // Opportunity schema
 export const opportunitySchema = z.object({
   title: z.string().min(5).max(500),
-  programLevel: z.array(z.enum(['Undergrad', 'Masters', 'PhD', 'Postdoc'])).min(1),
+  category: z.enum(['SCHOLARSHIP', 'JOB', 'INTERNSHIP']).optional(),
+  programLevel: z.array(z.enum(['Undergrad', 'Masters', 'PhD', 'Postdoc'])).min(0).default([]),
   field: z.enum(['STEM', 'Non-STEM']),
   fieldTags: z.array(z.string()).max(20),
   country: z.string().min(2).max(100),
   region: z.string().max(100).nullable().optional(),
   hostOrg: z.string().min(2).max(200),
-  fundingType: z.enum(['Fully funded', 'Partial', 'Stipend', 'Tuition waiver']),
+  fundingType: z.enum(['Fully funded', 'Partial', 'Stipend', 'Tuition waiver', 'Paid', 'Unpaid', 'Competitive salary']).default('Fully funded'),
   deadline: z.string().datetime(),
-  eligibility: z.string().min(10).max(10000),
+  eligibility: z.string().min(5).max(10000),
   requiredDocs: z.array(z.string()).max(50),
   applicationLink: z.string().url(),
   description: z.string().max(10000).nullable().optional(),
   featured: z.boolean().optional(),
+  // Job/Internship-specific fields
+  jobType: z.string().max(50).nullable().optional(),
+  salary: z.string().max(100).nullable().optional(),
+  company: z.string().max(200).nullable().optional(),
+  remote: z.boolean().optional(),
+  experienceLevel: z.string().max(50).nullable().optional(),
+  skills: z.array(z.string()).max(20).optional(),
 })
 
 export type OpportunityInput = z.infer<typeof opportunitySchema>

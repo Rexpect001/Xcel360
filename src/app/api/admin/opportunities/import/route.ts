@@ -12,25 +12,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
     }
 
-    // ── Dedup within incoming batch (remove duplicate titles in the file itself) ──
+    // ── Dedup within incoming batch by title+deadline ──
     const seenInBatch = new Set<string>()
     const uniqueRows = rows.filter((r: any) => {
-      const t = r.title?.toLowerCase().trim()
-      if (!t || seenInBatch.has(t)) return false
-      seenInBatch.add(t)
+      const key = `${r.title?.toLowerCase().trim()}|${r.deadline}`
+      if (!r.title?.trim() || seenInBatch.has(key)) return false
+      seenInBatch.add(key)
       return true
     })
 
-    // ── Dedup: fetch existing titles and filter out matches ──
-    const existing = await prisma.opportunity.findMany({
+    // ── Dedup against DB: fetch existing title+deadline combos ──
+    const db = prisma as any
+    const existing = await db.opportunity.findMany({
       where: { title: { in: uniqueRows.map((r: any) => r.title).filter(Boolean) } },
-      select: { title: true },
+      select: { title: true, deadline: true },
     })
-    const existingTitles = new Set(existing.map((e: any) => e.title.toLowerCase().trim()))
+    const existingKeys = new Set(
+      existing.map((e: any) => `${e.title.toLowerCase().trim()}|${new Date(e.deadline).toISOString().split('T')[0]}`)
+    )
 
     const deduped = uniqueRows.filter((r: any) => {
-      const t = r.title?.toLowerCase().trim()
-      return t && !existingTitles.has(t)
+      const deadlineStr = r.deadline ? new Date(r.deadline).toISOString().split('T')[0] : ''
+      const key = `${r.title?.toLowerCase().trim()}|${deadlineStr}`
+      return !existingKeys.has(key)
     })
     const duplicates = rows.length - deduped.length
 
@@ -42,18 +46,16 @@ export async function POST(req: NextRequest) {
     let failed = 0
     const errors: string[] = []
 
-    // Batch createMany in groups of 50
     const BATCH = 50
     for (let i = 0; i < deduped.length; i += BATCH) {
       const batch = deduped.slice(i, i + BATCH)
       try {
-        const result = await prisma.opportunity.createMany({ data: batch, skipDuplicates: true })
+        const result = await db.opportunity.createMany({ data: batch, skipDuplicates: true })
         created += result.count
       } catch {
-        // Fall back to row-by-row
         for (const row of batch) {
           try {
-            await prisma.opportunity.create({ data: row })
+            await db.opportunity.create({ data: row })
             created++
           } catch (rowErr: any) {
             failed++

@@ -3,12 +3,13 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
   GraduationCap, LayoutDashboard, BookOpen, Calendar,
-  BarChart3, ArrowLeft, FileText, Users, UserCheck, Award, FolderOpen
+  BarChart3, ArrowLeft, FileText, Users, UserCheck, Award, FolderOpen, Briefcase
 } from 'lucide-react'
 
 const adminNav = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard },
   { href: '/admin/opportunities', label: 'Scholarships', icon: BookOpen },
+  { href: '/admin/jobs', label: 'Jobs & Internships', icon: Briefcase },
   { href: '/admin/programs', label: 'Programs', icon: Award },
   { href: '/admin/resources', label: 'Resources', icon: FolderOpen },
   { href: '/admin/blog', label: 'Blog & Guides', icon: FileText },

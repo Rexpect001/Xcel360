@@ -2,16 +2,19 @@ export const dynamic = 'force-dynamic'
 import { getAuth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowRight, Activity } from 'lucide-react'
+import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowRight, Activity, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminPage() {
   const session = await getAuth()
   if (!session || session.user.role !== 'ADMIN') redirect('/')
 
-  const [users, opportunities, saved, applications, events, blogPosts, mentors] = await Promise.all([
+  const db = prisma as any
+  const [users, scholarships, jobs, internships, saved, applications, events, blogPosts, mentors] = await Promise.all([
     prisma.user.count(),
-    prisma.opportunity.count(),
+    db.opportunity.count({ where: { category: 'SCHOLARSHIP' } }),
+    db.opportunity.count({ where: { category: 'JOB' } }),
+    db.opportunity.count({ where: { category: 'INTERNSHIP' } }),
     prisma.savedOpportunity.count(),
     prisma.application.count(),
     prisma.event.count(),
@@ -21,7 +24,9 @@ export default async function AdminPage() {
 
   const stats = [
     { label: 'Total Users', value: users, icon: Users, color: 'bg-blue-50 text-blue-700', href: '/admin/users' },
-    { label: 'Scholarships', value: opportunities, icon: BookOpen, color: 'bg-indigo-50 text-indigo-700', href: '/admin/opportunities' },
+    { label: 'Scholarships', value: scholarships, icon: BookOpen, color: 'bg-indigo-50 text-indigo-700', href: '/admin/opportunities' },
+    { label: 'Jobs', value: jobs, icon: Briefcase, color: 'bg-emerald-50 text-emerald-700', href: '/admin/jobs' },
+    { label: 'Internships', value: internships, icon: Briefcase, color: 'bg-purple-50 text-purple-700', href: '/admin/jobs' },
     { label: 'Total Saves', value: saved, icon: Bookmark, color: 'bg-green-50 text-green-700', href: '/admin/analytics' },
     { label: 'Applications', value: applications, icon: FileText, color: 'bg-orange-50 text-orange-700', href: '/admin/analytics' },
   ]
@@ -32,9 +37,18 @@ export default async function AdminPage() {
       icon: BookOpen,
       label: 'Scholarships',
       desc: 'Add, edit, delete scholarships and mark them as featured.',
-      count: `${opportunities} total`,
+      count: `${scholarships} total`,
       color: 'text-indigo-600',
       bg: 'bg-indigo-50',
+    },
+    {
+      href: '/admin/jobs',
+      icon: Briefcase,
+      label: 'Jobs & Internships',
+      desc: 'Post full-time jobs, internships, and remote opportunities.',
+      count: `${jobs} jobs · ${internships} internships`,
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
     },
     {
       href: '/admin/blog',
@@ -100,7 +114,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-10">
         {stats.map((s) => {
           const Icon = s.icon
           return (

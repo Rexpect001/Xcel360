@@ -35,6 +35,12 @@ enum OpportunityStatus {
   CLOSED
 }
 
+enum OpportunityCategory {
+  SCHOLARSHIP
+  JOB
+  INTERNSHIP
+}
+
 enum NotificationType {
   DEADLINE_REMINDER
   NEW_OPPORTUNITY
@@ -83,8 +89,9 @@ model Profile {
 }
 
 model Opportunity {
-  id              String            @id @default(cuid())
+  id              String               @id @default(cuid())
   title           String
+  category        OpportunityCategory  @default(SCHOLARSHIP)
   programLevel    String[]
   field           String
   fieldTags       String[]
@@ -93,15 +100,22 @@ model Opportunity {
   hostOrg         String
   fundingType     String
   deadline        DateTime
-  eligibility     String            @db.Text
+  eligibility     String               @db.Text
   requiredDocs    String[]
   applicationLink String
-  status          OpportunityStatus @default(OPEN)
-  featured        Boolean           @default(false)
-  description     String?           @db.Text
-  views           Int               @default(0)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  status          OpportunityStatus    @default(OPEN)
+  featured        Boolean              @default(false)
+  description     String?              @db.Text
+  views           Int                  @default(0)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  // Job/Internship-specific fields
+  jobType         String?
+  salary          String?
+  company         String?
+  remote          Boolean              @default(false)
+  experienceLevel String?
+  skills          String[]
 
   savedBy      SavedOpportunity[]
   applications Application[]
@@ -263,8 +277,12 @@ model Resource {
   title       String
   description String?  @db.Text
   category    String   // "CV Template", "SOP Template", "Guide", etc.
-  fileUrl     String   // External link (Google Drive, Dropbox, direct URL)
+  fileUrl     String   // Vercel Blob URL or external link
   filename    String?  // Suggested filename when downloaded
+  fileSize    Int?     // File size in bytes
+  fileType    String?  // MIME type: application/pdf, application/vnd.openxmlformats...
+  isUploaded  Boolean  @default(false) // true = stored in Vercel Blob, false = external link
+  downloads   Int      @default(0)
   published   Boolean  @default(true)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())

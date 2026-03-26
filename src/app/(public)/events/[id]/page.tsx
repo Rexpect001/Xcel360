@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
-import { Calendar, Clock, User, Video, MapPin, ArrowLeft } from 'lucide-react'
+import { Calendar, Clock, User, Video, MapPin, ArrowLeft, Users, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import RegisterForm from './RegisterForm'
+import CountdownTimer from '@/components/events/CountdownTimer'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 
@@ -17,29 +18,23 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     title: event.title,
     description,
     alternates: { canonical: `/events/${event.id}` },
-    openGraph: {
-      title: event.title,
-      description,
-      url: `${BASE}/events/${event.id}`,
-      type: 'article',
-    },
+    openGraph: { title: event.title, description, url: `${BASE}/events/${event.id}`, type: 'article' },
   }
 }
 
-const TYPE_ICONS: Record<string, typeof Video> = {
-  Zoom: Video,
-  Webinar: Video,
-  Workshop: MapPin,
-  'In-person': MapPin,
+const TYPE_GRAD: Record<string, string> = {
+  Webinar: 'from-brand-950 via-brand-900 to-sky-700',
+  Workshop: 'from-violet-950 via-violet-900 to-purple-700',
+  'Q&A': 'from-emerald-950 via-emerald-900 to-teal-700',
+  'Info Session': 'from-orange-900 via-orange-800 to-amber-700',
+  Zoom: 'from-brand-950 via-brand-900 to-sky-700',
 }
 
 export default async function EventDetailPage({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = prisma as any
 
-  const event = await prisma.event.findUnique({
-    where: { id: params.id, published: true },
-  })
+  const event = await prisma.event.findUnique({ where: { id: params.id, published: true } })
   if (!event) notFound()
 
   const questions = await db.eventQuestion.findMany({
@@ -48,7 +43,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
   })
 
   const isPast = new Date(event.date) < new Date()
-  const Icon = TYPE_ICONS[event.type] ?? Calendar
+  const heroGrad = TYPE_GRAD[event.type] ?? 'from-brand-950 via-brand-900 to-brand-700'
 
   const eventDate = new Date(event.date)
   const dateStr = eventDate.toLocaleDateString('en-GB', {
@@ -69,90 +64,134 @@ export default async function EventDetailPage({ params }: { params: { id: string
       event.type === 'In-person'
         ? 'https://schema.org/OfflineEventAttendanceMode'
         : 'https://schema.org/OnlineEventAttendanceMode',
-    organizer: {
-      '@type': 'Organization',
-      name: event.host ?? 'Xcel360',
-      url: BASE,
-    },
+    organizer: { '@type': 'Organization', name: event.host ?? 'Xcel360', url: BASE },
     url: `${BASE}/events/${event.id}`,
   }
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-    <div className="min-h-screen bg-gray-50">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <div className="min-h-screen bg-gray-50">
 
-      {/* ── Hero ── */}
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-20 px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-1.5 text-blue-200 hover:text-white text-sm mb-6 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Events
-          </Link>
+        {/* Hero */}
+        <div className={`relative bg-gradient-to-br ${heroGrad} pt-28 pb-24 px-4 overflow-hidden`}>
+          {/* Decorative blobs */}
+          <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-2xl" />
 
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-5">
-            <span className="text-xs font-semibold text-brand-700 bg-white px-3 py-1 rounded-full">{event.type}</span>
-            {isPast ? (
-              <span className="text-xs font-semibold text-gray-400 bg-white/20 px-3 py-1 rounded-full">Past Event</span>
-            ) : (
-              <span className="text-xs font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full">Upcoming</span>
+          <div className="max-w-3xl mx-auto relative">
+            <Link href="/events" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white text-sm mb-6 transition-colors">
+              <ArrowLeft className="h-4 w-4" /> Back to Events
+            </Link>
+
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="text-xs font-semibold text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
+                {event.type}
+              </span>
+              {isPast ? (
+                <span className="text-xs font-semibold text-gray-300 bg-black/20 px-3 py-1 rounded-full">Past Event</span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-green-300 bg-green-500/20 px-3 py-1.5 rounded-full border border-green-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                  Registration Open
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
+              {event.title}
+            </h1>
+
+            {/* Countdown */}
+            {!isPast && (
+              <div className="mb-8">
+                <p className="text-white/50 text-xs font-medium uppercase tracking-widest mb-3">Starts in</p>
+                <CountdownTimer targetDate={event.date} />
+              </div>
             )}
-          </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">{event.title}</h1>
-
-          <div className="flex flex-wrap gap-4 text-blue-100 text-sm justify-center">
-            <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" />{dateStr}</div>
-            <div className="flex items-center gap-1.5"><Clock className="h-4 w-4" />{timeStr}</div>
-            {event.host && <div className="flex items-center gap-1.5"><User className="h-4 w-4" />{event.host}</div>}
-            <div className="flex items-center gap-1.5"><Icon className="h-4 w-4" />{event.type}</div>
+            {/* Event meta chips */}
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
+                <Calendar className="h-4 w-4 text-white/70" />
+                <span className="text-sm text-white font-medium">{dateStr}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
+                <Clock className="h-4 w-4 text-white/70" />
+                <span className="text-sm text-white font-medium">{timeStr}</span>
+              </div>
+              {event.host && (
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
+                  <User className="h-4 w-4 text-white/70" />
+                  <span className="text-sm text-white font-medium">{event.host}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
+                {event.type === 'In-person' || event.type === 'Workshop'
+                  ? <MapPin className="h-4 w-4 text-white/70" />
+                  : <Video className="h-4 w-4 text-white/70" />
+                }
+                <span className="text-sm text-white font-medium">{event.type}</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Body ── */}
-      <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
+        {/* Body */}
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
 
-        {/* About */}
-        {event.description && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-3 text-center">About this Event</h2>
-            <p className="text-gray-600 leading-relaxed whitespace-pre-line text-center">{event.description}</p>
-          </div>
-        )}
-
-        {/* Registration form / closed state */}
-        {isPast ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
-            <Calendar className="h-10 w-10 text-gray-200 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium mb-1">This event has ended</p>
-            <p className="text-sm text-gray-400 mb-6">Registration is now closed.</p>
-            <a
-              href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-green-600 transition-colors"
-            >
-              Join WhatsApp for future events
-            </a>
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">Register for this Event</h2>
-              <p className="text-sm text-gray-500">Fill in your details below to secure your spot.</p>
+          {/* About card */}
+          {event.description && (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-5 w-5 text-brand-600" />
+                <h2 className="text-lg font-bold text-gray-900">About this Event</h2>
+              </div>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-line">{event.description}</p>
             </div>
-            <RegisterForm eventId={event.id} eventTitle={event.title} questions={questions} />
-          </div>
-        )}
+          )}
 
+          {/* Registration */}
+          {isPast ? (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="h-1.5 bg-gradient-to-r from-gray-300 to-gray-400" />
+              <div className="p-10 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="h-8 w-8 text-gray-300" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">This event has ended</h3>
+                <p className="text-sm text-gray-400 mb-8">Registration is now closed. Join our community to hear about future events.</p>
+                <a
+                  href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-green-600 transition-colors"
+                >
+                  <Users className="h-4 w-4" /> Join WhatsApp for future events
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className={`h-1.5 bg-gradient-to-r ${heroGrad.replace('from-', 'from-').split(' ').slice(0, 2).join(' ')}`} />
+              <div className="p-8">
+                {/* Form header */}
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                    <Users className="h-6 w-6 text-brand-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Secure your spot</h2>
+                    <p className="text-sm text-gray-500">Free registration · Takes less than a minute</p>
+                  </div>
+                </div>
+                <RegisterForm eventId={event.id} eventTitle={event.title} questions={questions} />
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
-    </div>
     </>
   )
 }

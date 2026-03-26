@@ -32,7 +32,11 @@ export async function GET(req: NextRequest) {
       success: true,
     })
 
-    const opportunities = await prisma.opportunity.findMany({
+    const { searchParams } = new URL(req.url)
+    const category = searchParams.get('category')
+    const db = prisma as any
+    const opportunities = await db.opportunity.findMany({
+      where: category ? { category } : undefined,
       orderBy: { createdAt: 'desc' },
       include: {
         _count: { select: { savedBy: true, applications: true } },
@@ -85,26 +89,30 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data
 
-    // Check for duplicate title
-    const existing = await prisma.opportunity.findFirst({
-      where: { title: { equals: data.title.trim(), mode: 'insensitive' } },
+    // Check for duplicate: same title + same deadline
+    const deadlineDate = new Date(data.deadline)
+    const db2 = prisma as any
+    const existing = await db2.opportunity.findFirst({
+      where: {
+        title: { equals: data.title.trim(), mode: 'insensitive' },
+        deadline: deadlineDate,
+      },
       select: { id: true },
     })
     if (existing) {
       return createSecureResponse(
-        { error: 'An opportunity with this title already exists. Please use a different title or edit the existing one.' },
+        { error: 'A posting with this title and deadline already exists. Please use a different title or deadline.' },
         409,
         req
       )
     }
 
-    // Convert deadline string to Date
-    const deadlineDate = new Date(data.deadline)
-
-    const opp = await prisma.opportunity.create({
+    const db = prisma as any
+    const opp = await db.opportunity.create({
       data: {
         ...data,
         deadline: deadlineDate,
+        skills: data.skills ?? [],
       },
     })
 

@@ -29,13 +29,13 @@ export const metadata: Metadata = {
 
 async function getOpportunities() {
   try {
-    const all = await prisma.opportunity.findMany({
-      where: { status: 'OPEN' },
+    const all = await (prisma as any).opportunity.findMany({
+      where: { status: 'OPEN', category: 'SCHOLARSHIP' },
       orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
     })
     // Deduplicate by normalised title — keep first occurrence (featured/soonest deadline first)
     const seen = new Set<string>()
-    return all.filter((o) => {
+    return all.filter((o: any) => {
       const key = o.title.toLowerCase().trim()
       if (seen.has(key)) return false
       seen.add(key)
