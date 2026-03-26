@@ -58,23 +58,26 @@ interface AuditLogEntry {
 // Log an admin action
 export async function logAdminAction(entry: AuditLogEntry): Promise<void> {
   try {
-    // Store in database
-    await prisma.$executeRaw`
-      INSERT INTO "AuditLog" (
-        "id", "action", "userId", "userEmail", "userRole", 
-        "targetType", "targetId", "details", "ipAddress", 
-        "userAgent", "success", "errorMessage", "createdAt"
-      ) VALUES (
-        gen_random_uuid(), ${entry.action}, ${entry.userId ?? null}, 
-        ${entry.userEmail ?? null}, ${entry.userRole ?? null}, 
-        ${entry.targetType ?? null}, ${entry.targetId ?? null}, 
-        ${entry.details ? JSON.stringify(entry.details) : null}, 
-        ${entry.ipAddress ?? null}, ${entry.userAgent ?? null}, 
-        ${entry.success}, ${entry.errorMessage ?? null}, NOW()
-      )
-    `
-    
-    // Also log to console in development
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = prisma as any
+    await db.activityLog.create({
+      data: {
+        userId: entry.userId ?? null,
+        userEmail: entry.userEmail ?? null,
+        userRole: entry.userRole ?? null,
+        action: entry.action,
+        resource: entry.targetType ?? null,
+        resourceId: entry.targetId ?? null,
+        details: entry.details
+          ? JSON.stringify({ ...entry.details, success: entry.success, error: entry.errorMessage })
+          : entry.errorMessage
+          ? JSON.stringify({ success: entry.success, error: entry.errorMessage })
+          : null,
+        ipAddress: entry.ipAddress ?? null,
+        userAgent: entry.userAgent ?? null,
+      },
+    })
+
     if (process.env.NODE_ENV === 'development') {
       console.log('[AUDIT]', {
         action: entry.action,
@@ -131,61 +134,43 @@ export async function getAuditLogs(options: {
   endDate?: Date
 } = {}): Promise<AuditLogEntry[]> {
   const { limit = 50, offset = 0, userId, action, startDate, endDate } = options
-  
+
   try {
-    const logs = await prisma.$queryRaw<AuditLogEntry[]>`
-      SELECT * FROM "AuditLog"
-      WHERE (${userId}::text IS NULL OR "userId" = ${userId})
-        AND (${action}::text IS NULL OR "action" = ${action})
-        AND (${startDate}::timestamp IS NULL OR "createdAt" >= ${startDate})
-        AND (${endDate}::timestamp IS NULL OR "createdAt" <= ${endDate})
-      ORDER BY "createdAt" DESC
-      LIMIT ${limit}
-      OFFSET ${offset}
-    `
-    
-    return logs
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = prisma as any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows = await db.activityLog.findMany({
+      where: {
+        ...(userId && { userId }),
+        ...(action && { action }),
+        ...(startDate && { createdAt: { gte: startDate } }),
+        ...(endDate && { createdAt: { lte: endDate } }),
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return rows.map((r: any) => ({
+      action: r.action as AuditAction,
+      userId: r.userId ?? undefined,
+      userEmail: r.userEmail ?? undefined,
+      userRole: r.userRole ?? undefined,
+      targetType: r.resource ?? undefined,
+      targetId: r.resourceId ?? undefined,
+      details: r.details ? JSON.parse(r.details) : undefined,
+      ipAddress: r.ipAddress ?? undefined,
+      userAgent: r.userAgent ?? undefined,
+      success: true,
+    }))
   } catch (error) {
     console.error('[AUDIT QUERY ERROR]', error)
     return []
   }
 }
 
-// Create audit log table if it doesn't exist
+// No-op: ActivityLog table is managed by Prisma schema (was previously raw AuditLog table)
 export async function initAuditLogTable(): Promise<void> {
-  try {
-    await prisma.$executeRaw`
-      CREATE TABLE IF NOT EXISTS "AuditLog" (
-        "id" TEXT PRIMARY KEY,
-        "action" TEXT NOT NULL,
-        "userId" TEXT,
-        "userEmail" TEXT,
-        "userRole" TEXT,
-        "targetType" TEXT,
-        "targetId" TEXT,
-        "details" JSONB,
-        "ipAddress" TEXT,
-        "userAgent" TEXT,
-        "success" BOOLEAN NOT NULL DEFAULT true,
-        "errorMessage" TEXT,
-        "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
-      )
-    `
-    
-    // Create indexes for common queries
-    await prisma.$executeRaw`
-      CREATE INDEX IF NOT EXISTS "idx_audit_userId" ON "AuditLog"("userId")
-    `
-    await prisma.$executeRaw`
-      CREATE INDEX IF NOT EXISTS "idx_audit_action" ON "AuditLog"("action")
-    `
-    await prisma.$executeRaw`
-      CREATE INDEX IF NOT EXISTS "idx_audit_createdAt" ON "AuditLog"("createdAt")
-    `
-    await prisma.$executeRaw`
-      CREATE INDEX IF NOT EXISTS "idx_audit_target" ON "AuditLog"("targetType", "targetId")
-    `
-  } catch (error) {
-    console.error('[AUDIT INIT ERROR]', error)
-  }
+  // Table already exists via prisma db push
 }
