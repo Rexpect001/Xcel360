@@ -1,29 +1,55 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Mail, Lock, Eye, EyeOff, CheckCircle2, ArrowRight } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 function ForgotPasswordContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const tokenFromUrl = searchParams.get('token')
 
-  const [step, setStep] = useState<'email' | 'newpassword' | 'done'>('email')
+  // If a token is in the URL, jump straight to the new-password step
+  const [step, setStep] = useState<'email' | 'sent' | 'newpassword' | 'done'>(
+    tokenFromUrl ? 'newpassword' : 'email'
+  )
   const [email, setEmail] = useState(searchParams.get('email') ?? '')
+  const [token, setToken] = useState(tokenFromUrl ?? '')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl)
+      setStep('newpassword')
+    }
+  }, [tokenFromUrl])
+
+  // Step 1: Send reset email
   const handleEmailStep = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
-    // Just move to the password step — no server call needed
-    setStep('newpassword')
+    setLoading(true)
+    try {
+      await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      // Always move to "sent" regardless — no email enumeration
+      setStep('sent')
+    } catch {
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
+  // Step 3: Submit new password with token from email link
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {
@@ -34,16 +60,24 @@ function ForgotPasswordContent() {
       toast.error('Password must be at least 6 characters')
       return
     }
+    if (!token) {
+      toast.error('Invalid reset link. Please request a new one.')
+      setStep('email')
+      return
+    }
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/simple-reset', {
+      const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword }),
+        body: JSON.stringify({ token, password: newPassword }),
       })
       const data = await res.json()
       if (!res.ok) {
         toast.error(data.error ?? 'Something went wrong')
+        if (data.error?.includes('expired') || data.error?.includes('Invalid')) {
+          setStep('email')
+        }
         return
       }
       setStep('done')
@@ -54,6 +88,7 @@ function ForgotPasswordContent() {
     }
   }
 
+  // Done
   if (step === 'done') {
     return (
       <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
@@ -72,14 +107,44 @@ function ForgotPasswordContent() {
     )
   }
 
+  // Email sent — waiting for user to click link
+  if (step === 'sent') {
+    return (
+      <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
+        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="h-8 w-8 text-brand-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your inbox</h1>
+        <p className="text-gray-500 text-sm mb-1">
+          If <span className="font-medium text-gray-700">{email}</span> is registered, we've sent a reset link.
+        </p>
+        <p className="text-gray-400 text-xs mb-6">The link expires in 1 hour. Check your spam folder if you don't see it.</p>
+        <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700 text-left mb-6 flex items-start gap-2">
+          <ShieldCheck className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>For your security, passwords can only be changed via the link sent to your email — not directly on this page.</span>
+        </div>
+        <button
+          onClick={() => setStep('email')}
+          className="text-sm text-brand-600 hover:text-brand-700"
+        >
+          Use a different email
+        </button>
+      </div>
+    )
+  }
+
+  // New password form (reached via email link with token)
   if (step === 'newpassword') {
     return (
       <div className="bg-white rounded-2xl shadow-2xl p-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Set new password</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Resetting password for <span className="font-medium text-gray-700">{email}</span>
-          </p>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
+            <ShieldCheck className="h-5 w-5 text-brand-700" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Set new password</h1>
+            <p className="text-gray-500 text-xs mt-0.5">Identity verified via email link</p>
+          </div>
         </div>
 
         <form onSubmit={handleReset} className="space-y-4">
@@ -95,7 +160,7 @@ function ForgotPasswordContent() {
                 placeholder="Min. 6 characters"
                 className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs">
+              <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
@@ -125,13 +190,6 @@ function ForgotPasswordContent() {
           >
             {loading ? 'Updating...' : 'Update Password'}
           </button>
-          <button
-            type="button"
-            onClick={() => setStep('email')}
-            className="w-full text-sm text-gray-500 hover:text-gray-700"
-          >
-            Use a different email
-          </button>
         </form>
       </div>
     )
@@ -142,7 +200,7 @@ function ForgotPasswordContent() {
     <div className="bg-white rounded-2xl shadow-2xl p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Reset password</h1>
-        <p className="text-gray-500 text-sm mt-1">Enter the email you used to sign up</p>
+        <p className="text-gray-500 text-sm mt-1">Enter your email — we'll send a secure reset link</p>
       </div>
 
       <form onSubmit={handleEmailStep} className="space-y-4">
@@ -162,10 +220,10 @@ function ForgotPasswordContent() {
         </div>
         <button
           type="submit"
-          disabled={!email}
+          disabled={loading || !email}
           className="w-full bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
         >
-          Continue <ArrowRight className="h-4 w-4" />
+          {loading ? 'Sending...' : <><span>Send Reset Link</span> <ArrowRight className="h-4 w-4" /></>}
         </button>
       </form>
 

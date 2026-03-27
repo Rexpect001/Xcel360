@@ -38,9 +38,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Upload to Vercel Blob
+    const token = process.env.BLOB_READ_WRITE_TOKEN
+    if (!token) {
+      return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not configured.' }, { status: 500 })
+    }
     const blob = await put(`resources/${Date.now()}-${file.name}`, file, {
       access: 'public',
       contentType: file.type,
+      token,
     })
 
     return NextResponse.json({
@@ -54,6 +59,6 @@ export async function POST(req: NextRequest) {
     if (err?.message?.includes('Forbidden') || err?.message?.includes('Unauthorized')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    return NextResponse.json({ error: 'Upload failed. Please check BLOB_READ_WRITE_TOKEN is set.' }, { status: 500 })
+    return NextResponse.json({ error: `Upload failed: ${err?.message ?? 'Unknown error'}` }, { status: 500 })
   }
 }
