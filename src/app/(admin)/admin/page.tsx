@@ -7,7 +7,9 @@ import Link from 'next/link'
 
 export default async function AdminPage() {
   const session = await getAuth()
-  if (!session || session.user.role !== 'ADMIN') redirect('/')
+  if (!session) redirect('/')
+  const { isAdminRole } = await import('@/lib/permissions')
+  if (!isAdminRole(session.user.role)) redirect('/')
 
   const db = prisma as any
   const [users, scholarships, jobs, internships, saved, applications, events, blogPosts, mentors] = await Promise.all([
