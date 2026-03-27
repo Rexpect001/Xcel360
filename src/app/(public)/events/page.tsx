@@ -24,7 +24,7 @@ async function getData() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = prisma as any
     const [events, programs, beneficiaries] = await Promise.all([
-      prisma.event.findMany({ where: { published: true }, orderBy: { date: 'asc' } }),
+      db.event.findMany({ where: { published: true }, orderBy: { date: 'asc' } }),
       db.program.findMany({
         where: { published: true },
         orderBy: { cohortNumber: 'asc' },

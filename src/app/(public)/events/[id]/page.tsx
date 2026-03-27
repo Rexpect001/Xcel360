@@ -34,7 +34,8 @@ export default async function EventDetailPage({ params }: { params: { id: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = prisma as any
 
-  const event = await prisma.event.findUnique({ where: { id: params.id, published: true } })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const event = await (prisma as any).event.findUnique({ where: { id: params.id, published: true } })
   if (!event) notFound()
 
   const questions = await db.eventQuestion.findMany({

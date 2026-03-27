@@ -7,7 +7,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   try {
     await requireAdmin()
     const body = await req.json()
-    const event = await prisma.event.update({ where: { id: params.id }, data: body })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = prisma as any
+    const event = await db.event.update({ where: { id: params.id }, data: body })
     return NextResponse.json(event)
   } catch {
     return NextResponse.json({ error: 'Error' }, { status: 400 })
