@@ -182,6 +182,13 @@ export const requireAdmin = async () => {
   return session
 }
 
+// Require one of the specified roles
+export const requireRole = async (...roles: string[]) => {
+  const session = await requireAuth()
+  if (!roles.includes(session.user.role)) throw new Error('Forbidden')
+  return session
+}
+
 // Extend next-auth types
 declare module 'next-auth' {
   interface Session {

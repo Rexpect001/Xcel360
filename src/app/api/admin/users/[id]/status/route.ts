@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,7 +10,7 @@ const VALID = ['ACTIVE', 'SUSPENDED', 'DISABLED']
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await requireAdmin()
+    await requireRole("ADMIN")
     const { status } = await req.json()
 
     if (!VALID.includes(status)) {

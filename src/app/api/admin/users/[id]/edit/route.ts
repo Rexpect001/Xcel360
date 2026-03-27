@@ -1,11 +1,11 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await requireAdmin()
+    await requireRole("ADMIN")
     const { name, email, school, department, level, whatsappNumber, targetCountries, bio } = await req.json()
 
     // Check email uniqueness if changing

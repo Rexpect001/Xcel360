@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,7 +10,7 @@ const VALID_ACTIONS = ['delete', 'suspend', 'disable', 'activate']
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireAdmin()
+    const session = await requireRole("ADMIN")
     const { ids, action } = await req.json()
 
     if (!Array.isArray(ids) || ids.length === 0) return NextResponse.json({ error: 'No users selected' }, { status: 400 })

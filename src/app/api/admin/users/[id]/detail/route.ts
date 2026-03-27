@@ -1,11 +1,11 @@
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   try {
-    await requireAdmin()
+    await requireRole("ADMIN")
 
     const user = await prisma.user.findUnique({
       where: { id: params.id },

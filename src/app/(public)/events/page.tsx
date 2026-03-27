@@ -67,8 +67,10 @@ function typeBadge(type: string) {
 
 export default async function EventsPage() {
   const { events, programs, beneficiaries } = await getData()
-  const upcoming = events.filter((e) => new Date(e.date) > new Date())
-  const past = events.filter((e) => new Date(e.date) <= new Date())
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const upcoming = events.filter((e: any) => new Date(e.date) > new Date())
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const past = events.filter((e: any) => new Date(e.date) <= new Date())
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -116,7 +118,8 @@ export default async function EventsPage() {
               <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">{upcoming.length} open</span>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcoming.map((event) => (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {upcoming.map((event: any) => (
                 <div key={event.id} className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
                   {/* Flyer image or gradient bar */}
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -182,7 +185,8 @@ export default async function EventsPage() {
           <div>
             <h2 className="text-xl font-bold text-gray-700 mb-6">Past Events</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {past.map((event) => (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {past.map((event: any) => (
                 <div key={event.id} className="bg-white/60 rounded-2xl border border-gray-100 p-5 flex gap-4">
                   <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
                     <Calendar className="h-5 w-5 text-gray-400" />

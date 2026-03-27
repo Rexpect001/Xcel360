@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -8,7 +8,7 @@ const db = prisma as any
 
 export async function POST() {
   try {
-    await requireAdmin()
+    await requireRole("ADMIN")
 
     const cutoff = new Date()
     cutoff.setFullYear(cutoff.getFullYear() - 2)
@@ -36,7 +36,7 @@ export async function POST() {
 // GET — preview how many would be deleted (dry run)
 export async function GET() {
   try {
-    await requireAdmin()
+    await requireRole("ADMIN")
 
     const cutoff = new Date()
     cutoff.setFullYear(cutoff.getFullYear() - 2)

@@ -28,7 +28,7 @@ export default async function ActivityLogPage() {
   const session = await getAuth()
   if (!session) redirect('/signin')
   const role = session.user.role
-  if (role !== 'ADMIN' && role !== 'MANAGER') redirect('/admin')
+  if (role !== 'ADMIN') redirect('/admin')
 
   const logs = await prisma.activityLog.findMany({
     orderBy: { createdAt: 'desc' },
