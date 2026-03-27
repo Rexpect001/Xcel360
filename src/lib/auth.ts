@@ -112,16 +112,15 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       // Allow OAuth sign-ins without email verification
       if (account?.provider !== 'credentials') {
-        // Update emailVerified for OAuth users on first login
-        if (!user.emailVerified) {
-          await prisma.user.update({
+        // Mark email verified for OAuth users (non-blocking — never reject sign-in)
+        if (!user.emailVerified && user.id) {
+          prisma.user.update({
             where: { id: user.id },
             data: { emailVerified: new Date() },
-          })
+          }).catch(() => {})
         }
         return true
       }
-      
       return true
     },
   },
