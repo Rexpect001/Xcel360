@@ -9,9 +9,18 @@ import { trackFailedLogin, resetLoginAttempts } from './security/rate-limiter'
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
   session: { strategy: 'jwt' },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/signin',
     error: '/auth/error',
+  },
+  logger: {
+    error(code, metadata) {
+      console.error('[NEXTAUTH ERROR]', code, metadata)
+    },
+    warn(code) {
+      console.warn('[NEXTAUTH WARN]', code)
+    },
   },
   providers: [
     GoogleProvider({
