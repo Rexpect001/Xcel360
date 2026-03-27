@@ -180,6 +180,7 @@ model Event {
   date          DateTime
   link          String?
   host          String?
+  coverImage    String?
   published     Boolean             @default(false)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
@@ -188,14 +189,15 @@ model Event {
 }
 
 model EventRegistration {
-  id        String        @id @default(cuid())
-  eventId   String
-  event     Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  fullName  String
-  email     String
-  phone     String?
-  createdAt DateTime      @default(now())
-  answers   EventAnswer[]
+  id            String        @id @default(cuid())
+  eventId       String
+  event         Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fullName      String
+  email         String
+  phone         String?
+  whatsappPhone String?
+  createdAt     DateTime      @default(now())
+  answers       EventAnswer[]
 
   @@index([eventId])
 }

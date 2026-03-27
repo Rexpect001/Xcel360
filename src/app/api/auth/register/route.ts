@@ -33,6 +33,19 @@ export async function POST(req: NextRequest) {
       select: { id: true, email: true, name: true },
     })
 
+    // Log new registration to ActivityLog (non-blocking)
+    prisma.activityLog.create({
+      data: {
+        userId: user.id,
+        userEmail: user.email,
+        action: 'SIGNUP',
+        resource: 'user',
+        resourceId: user.id,
+        resourceName: user.email,
+        details: 'New account created via credentials',
+      },
+    }).catch(() => {})
+
     return NextResponse.json({ ...user, message: 'Account created successfully.' }, { status: 201 })
   } catch (error) {
     console.error('[REGISTER ERROR]', error)

@@ -140,6 +140,19 @@ export default async function EventDetailPage({ params }: { params: { id: string
         {/* Body */}
         <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
 
+          {/* Flyer image */}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {(event as any).coverImage && (
+            <div className="rounded-2xl overflow-hidden shadow-lg -mt-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={(event as any).coverImage}
+                alt={`${event.title} flyer`}
+                className="w-full object-cover max-h-96"
+              />
+            </div>
+          )}
+
           {/* About card */}
           {event.description && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">

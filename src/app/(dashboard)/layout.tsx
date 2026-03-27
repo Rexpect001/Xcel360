@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Bookmark, FileText, Calendar, Bell,
-  GraduationCap, LogOut, Menu, X, UserCircle, BookOpen, Users2
+  GraduationCap, LogOut, Menu, X, UserCircle, BookOpen, Users2,
+  CalendarDays, Settings2
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { useState } from 'react'
@@ -22,9 +23,13 @@ const navItems = [
 ]
 
 const quickLinks = [
-  { href: '/resources', label: 'Resources & Templates', icon: BookOpen },
+  { href: '/opportunities', label: 'Scholarships', icon: GraduationCap },
+  { href: '/events', label: 'Events', icon: CalendarDays },
+  { href: '/resources', label: 'Resources', icon: BookOpen },
   { href: '/mentorship', label: 'Find a Mentor', icon: Users2 },
 ]
+
+const PRIVILEGED_ROLES = ['ADMIN', 'MANAGER', 'EDITOR', 'MODERATOR', 'MENTOR'] as const
 
 function DashboardSidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () => void }) {
   const pathname = usePathname()
@@ -96,10 +101,20 @@ function DashboardSidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () 
             </Link>
           )
         })}
-        <Link href="/opportunities" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-          <GraduationCap className="h-4 w-4" /> All Scholarships
-        </Link>
       </div>
+
+      {/* Admin Panel link for privileged roles */}
+      {PRIVILEGED_ROLES.includes(session?.user?.role as any) && (
+        <div className="px-3 pb-2 border-t border-gray-100 pt-3">
+          <Link
+            href="/admin"
+            onClick={onClose}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
+          >
+            <Settings2 className="h-4 w-4 flex-shrink-0" /> Admin Panel
+          </Link>
+        </div>
+      )}
 
       {/* Bottom actions */}
       <div className="px-3 py-3 border-t border-gray-100">

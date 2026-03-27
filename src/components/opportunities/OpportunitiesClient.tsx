@@ -279,15 +279,17 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
                     >
                       <Bookmark className="h-4 w-4" />
                     </button>
-                    <a
-                      href={opp.applicationLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                      title="Apply"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
+                    {opp.applicationLink && (
+                      <a
+                        href={opp.applicationLink.startsWith('http') ? opp.applicationLink : `https://${opp.applicationLink}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                        title="Apply"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

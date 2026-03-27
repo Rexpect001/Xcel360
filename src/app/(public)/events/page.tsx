@@ -118,8 +118,17 @@ export default async function EventsPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcoming.map((event) => (
                 <div key={event.id} className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
-                  {/* Top gradient bar */}
-                  <div className={`h-1.5 bg-gradient-to-r ${typeGrad(event.type)}`} />
+                  {/* Flyer image or gradient bar */}
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(event as any).coverImage ? (
+                    <div className="relative h-40 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={(event as any).coverImage} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                    </div>
+                  ) : (
+                    <div className={`h-1.5 bg-gradient-to-r ${typeGrad(event.type)}`} />
+                  )}
 
                   <div className="p-6 flex flex-col flex-1">
                     {/* Header row */}

@@ -13,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     const body = await req.json()
-    const { fullName, email, phone, answers } = body
+    const { fullName, email, phone, whatsappPhone, answers } = body
 
     if (!fullName?.trim() || !email?.trim()) {
       return NextResponse.json({ error: 'Full name and email are required' }, { status: 400 })
@@ -36,12 +36,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       }
     }
 
+    if (!phone?.trim()) {
+      return NextResponse.json({ error: 'Phone number is required' }, { status: 400 })
+    }
+
     const registration = await db.eventRegistration.create({
       data: {
         eventId: params.id,
         fullName: fullName.trim(),
         email: email.trim().toLowerCase(),
-        phone: phone?.trim() || null,
+        phone: phone.trim(),
+        whatsappPhone: whatsappPhone?.trim() || null,
       },
     })
 

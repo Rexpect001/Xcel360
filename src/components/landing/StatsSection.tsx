@@ -1,11 +1,10 @@
 'use client'
 import { motion } from 'framer-motion'
-import { Award, Users, Globe, TrendingUp } from 'lucide-react'
+import { Award, Users, Globe } from 'lucide-react'
 
 const stats = [
-  { icon: Award, value: '500+', label: 'Scholarships Listed', sublabel: 'across 50+ countries', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-  { icon: Users, value: '10,000+', label: 'Students Supported', sublabel: 'from 80+ nations', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { icon: TrendingUp, value: '$2M+', label: 'Funding Secured', sublabel: 'by our community', color: 'text-amber-600', bg: 'bg-amber-50' },
+  { icon: Award, value: '800+', label: 'Scholarships Listed', sublabel: 'across 50+ countries', color: 'text-indigo-600', bg: 'bg-indigo-50' },
+  { icon: Users, value: '1,000+', label: 'Students Supported', sublabel: 'through mentorship & guidance', color: 'text-emerald-600', bg: 'bg-emerald-50' },
   { icon: Globe, value: '95%', label: 'Success Rate', sublabel: 'for active users', color: 'text-violet-600', bg: 'bg-violet-50' },
 ]
 
@@ -40,7 +39,7 @@ export default function StatsSection() {
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-sky-50/50 to-transparent" />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-3xl mx-auto">
           {stats.map((stat, i) => {
             const Icon = stat.icon
             return (

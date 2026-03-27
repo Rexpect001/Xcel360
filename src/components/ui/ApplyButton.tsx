@@ -4,46 +4,45 @@ import { useSession } from 'next-auth/react'
 import { ExternalLink, X, LogIn, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 
+function sanitizeUrl(href: string | null): string | null {
+  if (!href) return null
+  const url = href.trim()
+  if (!url) return null
+  // Reject dangerous schemes
+  if (/^(javascript|data|vbscript):/i.test(url)) return null
+  // Ensure https:// — upgrade http:// to https://
+  if (url.startsWith('https://')) return url
+  if (url.startsWith('http://')) return url.replace('http://', 'https://')
+  return `https://${url}`
+}
+
 export default function ApplyButton({ href, title }: { href: string | null; title: string }) {
   const { data: session } = useSession()
   const [showModal, setShowModal] = useState(false)
 
-  const safeHref = href
-    ? href.startsWith('http://') || href.startsWith('https://')
-      ? href
-      : `https://${href}`
-    : null
-
-  const handleClick = () => {
-    if (!safeHref) return
-    if (session) {
-      window.open(safeHref, '_blank', 'noopener,noreferrer')
-    } else {
-      setShowModal(true)
-    }
-  }
+  const safeHref = sanitizeUrl(href)
 
   if (!safeHref) return null
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!session) {
+      e.preventDefault()
+      setShowModal(true)
+    }
+    // For signed-in users: let the browser open the link normally in a new tab
+  }
+
   return (
     <>
-      {session ? (
-        <a
-          href={safeHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
-        >
-          Apply Now <ExternalLink className="h-4 w-4" />
-        </a>
-      ) : (
-        <button
-          onClick={handleClick}
-          className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
-        >
-          Apply Now <ExternalLink className="h-4 w-4" />
-        </button>
-      )}
+      <a
+        href={safeHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={handleClick}
+        className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
+      >
+        Apply Now <ExternalLink className="h-4 w-4" />
+      </a>
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">

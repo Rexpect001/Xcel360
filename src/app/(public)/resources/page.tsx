@@ -70,6 +70,7 @@ const defaultPosts = [
 export default async function ResourcesPage() {
   const [dbPosts, dbResources] = await Promise.all([getPosts(), getResources()])
   const posts = dbPosts.length > 0 ? dbPosts : defaultPosts
+  const postsAreReal = dbPosts.length > 0
 
   // Group resources by category
   const categories = Array.from(new Set(dbResources.map((r: any) => r.category))) as string[]
@@ -193,30 +194,47 @@ export default async function ResourcesPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/resources/${post.slug}`}
-                className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
-              >
-                <div className="h-1.5 bg-gradient-to-r from-brand-600 to-brand-400" />
-                <div className="p-6">
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {post.tags.slice(0, 2).map((tag) => (
-                      <span key={tag} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full">
-                        <Tag className="h-2.5 w-2.5" />{tag}
-                      </span>
-                    ))}
+            {posts.map((post) => {
+              const cardContent = (
+                <>
+                  <div className="h-1.5 bg-gradient-to-r from-brand-600 to-brand-400" />
+                  <div className="p-6">
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {post.tags.slice(0, 2).map((tag) => (
+                        <span key={tag} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full">
+                          <Tag className="h-2.5 w-2.5" />{tag}
+                        </span>
+                      ))}
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-brand-700 transition-colors line-clamp-2">{post.title}</h3>
+                    {post.excerpt && <p className="text-sm text-gray-500 line-clamp-2 mb-4">{post.excerpt}</p>}
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" />{post.author}</span>
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDate(post.createdAt)}</span>
+                    </div>
+                    {!postsAreReal && (
+                      <p className="text-xs text-brand-600 font-medium mt-3">Coming soon</p>
+                    )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-brand-700 transition-colors line-clamp-2">{post.title}</h3>
-                  {post.excerpt && <p className="text-sm text-gray-500 line-clamp-2 mb-4">{post.excerpt}</p>}
-                  <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" />{post.author}</span>
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDate(post.createdAt)}</span>
-                  </div>
+                </>
+              )
+              return postsAreReal ? (
+                <Link
+                  key={post.id}
+                  href={`/resources/${post.slug}`}
+                  className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
+                >
+                  {cardContent}
+                </Link>
+              ) : (
+                <div
+                  key={post.id}
+                  className="group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden opacity-75"
+                >
+                  {cardContent}
                 </div>
-              </Link>
-            ))}
+              )
+            })}
           </div>
         </div>
 

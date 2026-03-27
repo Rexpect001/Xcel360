@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Calendar, Users, FileText, X, GripVertical, Clock, User, ChevronRight, Loader2, CheckSquare2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Calendar, Users, FileText, X, GripVertical, Clock, User, ChevronRight, Loader2, CheckSquare2, ImageIcon, Upload } from 'lucide-react'
 import { Event } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
 import Link from 'next/link'
+import { useRef } from 'react'
 
 const emptyForm = {
   title: '',
@@ -13,6 +14,7 @@ const emptyForm = {
   type: 'Zoom',
   date: '',
   host: '',
+  coverImage: '',
   published: false,
 }
 
@@ -49,6 +51,30 @@ export default function AdminEventsPage() {
   const [qEventTitle, setQEventTitle] = useState('')
   const [questions, setQuestions] = useState<Question[]>([])
   const [qSaving, setQSaving] = useState(false)
+
+  // Flyer upload
+  const [uploading, setUploading] = useState(false)
+  const flyerInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFlyerUpload = async (file: File) => {
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return }
+    if (!file.type.startsWith('image/')) { toast.error('Only image files allowed'); return }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/admin/events/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error ?? 'Upload failed'); return }
+      setForm((f) => ({ ...f, coverImage: data.url }))
+      toast.success('Flyer uploaded!')
+    } catch {
+      toast.error('Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   // Bulk select
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -93,6 +119,7 @@ export default function AdminEventsPage() {
       type: e.type,
       date: new Date(e.date).toISOString().slice(0, 16),
       host: e.host ?? '',
+      coverImage: (e as any).coverImage ?? '',
       published: e.published,
     })
     setModalOpen(true)
@@ -486,6 +513,46 @@ export default function AdminEventsPage() {
               placeholder="What is this event about?"
             />
           </div>
+
+          {/* Flyer upload */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Event Flyer / Cover Image</label>
+            <input
+              ref={flyerInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFlyerUpload(f) }}
+            />
+            {form.coverImage ? (
+              <div className="relative rounded-xl overflow-hidden border border-gray-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={form.coverImage} alt="Event flyer preview" className="w-full max-h-48 object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, coverImage: '' }))}
+                  className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 transition-colors"
+                  title="Remove flyer"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => flyerInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full py-8 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-brand-400 hover:text-brand-600 transition-colors flex flex-col items-center gap-2 disabled:opacity-60"
+              >
+                {uploading ? (
+                  <><Loader2 className="h-6 w-6 animate-spin text-brand-500" /><span>Uploading…</span></>
+                ) : (
+                  <><ImageIcon className="h-6 w-6 text-gray-300" /><span>Click to upload flyer <span className="text-gray-400 text-xs">(JPG, PNG, WebP — max 5 MB)</span></span></>
+                )}
+              </button>
+            )}
+          </div>
+
           <div className="flex items-center gap-3">
             <input
               type="checkbox"

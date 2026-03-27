@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { CheckCircle2, Loader2, User, Mail, Phone, ChevronRight, CalendarCheck } from 'lucide-react'
+import { CheckCircle2, Loader2, User, Mail, Phone, MessageCircle, ChevronRight, CalendarCheck, Copy, Share2, Check } from 'lucide-react'
 import Link from 'next/link'
 
 interface Question {
@@ -25,12 +25,51 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [whatsappPhone, setWhatsappPhone] = useState('')
+  const [sameAsPhone, setSameAsPhone] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const setAnswer = (qId: string, value: string) =>
     setAnswers((prev) => ({ ...prev, [qId]: value }))
+
+  const handleSameAsPhone = (checked: boolean) => {
+    setSameAsPhone(checked)
+    if (checked) setWhatsappPhone(phone)
+  }
+
+  const handlePhoneChange = (val: string) => {
+    setPhone(val)
+    if (sameAsPhone) setWhatsappPhone(val)
+  }
+
+  const eventUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/events/${eventId}`
+    : `/events/${eventId}`
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(eventUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      toast.error('Could not copy link')
+    }
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: eventTitle,
+        text: `Join me at "${eventTitle}" — register here:`,
+        url: eventUrl,
+      }).catch(() => {})
+    } else {
+      handleCopyLink()
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,12 +77,20 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
       toast.error('Please fill in your name and email')
       return
     }
+    if (!phone.trim()) {
+      toast.error('Phone number is required')
+      return
+    }
+    if (!whatsappPhone.trim()) {
+      toast.error('WhatsApp number is required')
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch(`/api/events/${eventId}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email, phone, answers }),
+        body: JSON.stringify({ fullName, email, phone, whatsappPhone, answers }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -75,6 +122,32 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
         </p>
         <p className="text-sm text-gray-400 mb-8">Check your inbox — we&apos;ll send all the details you need.</p>
 
+        {/* Share invite section */}
+        <div className="bg-brand-50 border border-brand-100 rounded-2xl p-5 mb-6 text-left">
+          <div className="flex items-center gap-2 mb-2">
+            <Share2 className="h-4 w-4 text-brand-700" />
+            <p className="text-sm font-bold text-brand-800">Invite your friends!</p>
+          </div>
+          <p className="text-xs text-brand-600 mb-4 leading-relaxed">
+            Know someone who&apos;d benefit? Share this event and help 5 more people register.
+          </p>
+          <div className="flex items-center gap-2 bg-white border border-brand-200 rounded-xl px-3 py-2 mb-3">
+            <span className="text-xs text-gray-500 flex-1 truncate">{eventUrl}</span>
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-900 transition-colors shrink-0"
+            >
+              {copied ? <><Check className="h-3.5 w-3.5 text-green-600" /> Copied!</> : <><Copy className="h-3.5 w-3.5" /> Copy</>}
+            </button>
+          </div>
+          <button
+            onClick={handleShare}
+            className="w-full py-2.5 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors flex items-center justify-center gap-2"
+          >
+            <Share2 className="h-4 w-4" /> Share with friends
+          </button>
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <a
             href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30"
@@ -95,28 +168,26 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
     )
   }
 
-  const totalFields = 3 + questions.length
-  const filled = [fullName, email, phone].filter(Boolean).length +
+  const totalFields = 4 + questions.length
+  const filled = [fullName, email, phone, whatsappPhone].filter(Boolean).length +
     Object.values(answers).filter(Boolean).length
   const progress = Math.round((filled / totalFields) * 100)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Progress bar */}
-      {totalFields > 3 && (
-        <div className="mb-2">
-          <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-            <span>Form completion</span>
-            <span>{progress}%</span>
-          </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-brand-600 to-sky-400 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+      <div className="mb-2">
+        <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+          <span>Form completion</span>
+          <span>{progress}%</span>
         </div>
-      )}
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-brand-600 to-sky-400 rounded-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
 
       {/* Fixed fields */}
       <div className="relative">
@@ -154,15 +225,43 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
 
       <div>
         <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-          Phone Number{' '}
-          <span className="text-gray-400 font-normal normal-case">(optional)</span>
+          Active Phone Number <span className="text-red-400">*</span>
         </label>
         <div className="relative">
           <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300 pointer-events-none" />
           <input
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => handlePhoneChange(e.target.value)}
+            required
+            placeholder="+234 800 000 0000"
+            className={`${inputCls} pl-10`}
+          />
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide">
+            WhatsApp Number <span className="text-red-400">*</span>
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={sameAsPhone}
+              onChange={(e) => handleSameAsPhone(e.target.checked)}
+              className="w-3.5 h-3.5 rounded text-brand-600 border-gray-300"
+            />
+            <span className="text-xs text-gray-500">Same as phone</span>
+          </label>
+        </div>
+        <div className="relative">
+          <MessageCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300 pointer-events-none" />
+          <input
+            type="tel"
+            value={whatsappPhone}
+            onChange={(e) => { setSameAsPhone(false); setWhatsappPhone(e.target.value) }}
+            required
             placeholder="+234 800 000 0000"
             className={`${inputCls} pl-10`}
           />

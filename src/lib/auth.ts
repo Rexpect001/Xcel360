@@ -135,8 +135,33 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signIn({ user, account }) {
-      // Log successful sign-ins (optional)
       console.log(`[SIGNIN] ${user.email} via ${account?.provider}`)
+      // Write to ActivityLog (non-blocking)
+      prisma.activityLog.create({
+        data: {
+          userId: user.id,
+          userEmail: user.email ?? undefined,
+          action: 'LOGIN',
+          resource: 'user',
+          resourceId: user.id,
+          resourceName: user.email ?? undefined,
+          details: `Signed in via ${account?.provider ?? 'credentials'}`,
+        },
+      }).catch(() => {})
+    },
+    async createUser({ user }) {
+      // Log new user registrations (OAuth-created accounts)
+      prisma.activityLog.create({
+        data: {
+          userId: user.id,
+          userEmail: user.email ?? undefined,
+          action: 'SIGNUP',
+          resource: 'user',
+          resourceId: user.id,
+          resourceName: user.email ?? undefined,
+          details: 'New account created via OAuth',
+        },
+      }).catch(() => {})
     },
   },
 }
