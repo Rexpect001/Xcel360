@@ -6,39 +6,61 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Bookmark, FileText, Calendar, Bell,
   GraduationCap, LogOut, Menu, X, UserCircle, BookOpen, Users2,
-  CalendarDays, Settings2
+  CalendarDays, BookMarked, Briefcase, Award, UserCheck,
+  Users, BarChart3, Activity, FolderOpen
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import SessionProvider from '@/components/providers/SessionProvider'
+import { ROLE_ACCESS, ROLE_LABELS, type UserRole } from '@/lib/permissions'
 
-const navItems = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/saved', label: 'Saved', icon: Bookmark },
-  { href: '/dashboard/applications', label: 'Applications', icon: FileText },
-  { href: '/dashboard/deadlines', label: 'Deadlines', icon: Calendar },
-  { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
-  { href: '/dashboard/profile', label: 'My Profile', icon: UserCircle },
+const personalNav = [
+  { href: '/dashboard',               label: 'Overview',       icon: LayoutDashboard, exact: true },
+  { href: '/dashboard/saved',         label: 'Saved',          icon: Bookmark },
+  { href: '/dashboard/applications',  label: 'Applications',   icon: FileText },
+  { href: '/dashboard/deadlines',     label: 'Deadlines',      icon: Calendar },
+  { href: '/dashboard/notifications', label: 'Notifications',  icon: Bell },
+  { href: '/dashboard/profile',       label: 'My Profile',     icon: UserCircle },
 ]
 
 const quickLinks = [
-  { href: '/opportunities', label: 'Scholarships', icon: GraduationCap },
-  { href: '/events', label: 'Events', icon: CalendarDays },
-  { href: '/resources', label: 'Resources', icon: BookOpen },
-  { href: '/mentorship', label: 'Find a Mentor', icon: Users2 },
+  { href: '/opportunities', label: 'Scholarships',  icon: GraduationCap },
+  { href: '/events',        label: 'Events',         icon: CalendarDays },
+  { href: '/resources',     label: 'Resources',      icon: BookOpen },
+  { href: '/mentorship',    label: 'Find a Mentor',  icon: Users2 },
 ]
 
-const PRIVILEGED_ROLES = ['ADMIN', 'MANAGER', 'EDITOR', 'MODERATOR', 'MENTOR'] as const
+// All admin sections — matched to ROLE_ACCESS sections
+const adminSections = [
+  { section: '/opportunities', href: '/admin/opportunities', label: 'Scholarships',     icon: BookMarked },
+  { section: '/jobs',          href: '/admin/jobs',          label: 'Jobs & Internships', icon: Briefcase },
+  { section: '/programs',      href: '/admin/programs',      label: 'Programs',          icon: Award },
+  { section: '/resources',     href: '/admin/resources',     label: 'Resources',         icon: FolderOpen },
+  { section: '/blog',          href: '/admin/blog',          label: 'Blog & Guides',     icon: BookOpen },
+  { section: '/mentorship',    href: '/admin/mentorship',    label: 'Mentorship',        icon: UserCheck },
+  { section: '/events',        href: '/admin/events',        label: 'Events',            icon: CalendarDays },
+  { section: '/users',         href: '/admin/users',         label: 'Users',             icon: Users },
+  { section: '/analytics',     href: '/admin/analytics',     label: 'Analytics',         icon: BarChart3 },
+  { section: '/activity',      href: '/admin/activity',      label: 'Activity Log',      icon: Activity },
+]
 
 function DashboardSidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () => void }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const role = session?.user?.role ?? 'USER'
+  const roleInfo = ROLE_LABELS[role as UserRole]
+
+  // Filter admin sections this role can access
+  const myAdminSections = adminSections.filter((s) =>
+    ROLE_ACCESS[role]?.includes(s.section)
+  )
+  const isPrivileged = myAdminSections.length > 0
 
   return (
-    <div className={cn('flex flex-col h-full', mobile ? 'p-4' : '')}>
+    <div className={cn('flex flex-col h-full overflow-y-auto', mobile ? 'p-4' : '')}>
       {/* Logo */}
-      <div className="flex items-center gap-2 px-4 py-5">
+      <div className="flex items-center gap-2 px-4 py-5 shrink-0">
         <div className="w-8 h-8 bg-brand-700 rounded-lg flex items-center justify-center">
           <GraduationCap className="h-5 w-5 text-white" />
         </div>
@@ -48,76 +70,108 @@ function DashboardSidebar({ mobile, onClose }: { mobile?: boolean; onClose?: () 
       </div>
 
       {/* User info */}
-      <div className="mx-3 mb-4 p-3 bg-brand-50 rounded-xl">
+      <div className="mx-3 mb-4 p-3 bg-brand-50 rounded-xl shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-brand-700 rounded-full flex items-center justify-center text-white font-bold text-sm">
-            {session?.user?.name?.charAt(0) ?? 'U'}
+          <div className="w-9 h-9 bg-brand-700 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+            {session?.user?.name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-gray-900 truncate">{session?.user?.name}</div>
-            <div className="text-xs text-gray-500 truncate">{session?.user?.email}</div>
+            {isPrivileged ? (
+              <span className={`inline-block text-xs font-semibold px-1.5 py-0.5 rounded-md mt-0.5 ${roleInfo?.color ?? 'bg-gray-100 text-gray-600'}`}>
+                {roleInfo?.label ?? role}
+              </span>
+            ) : (
+              <div className="text-xs text-gray-500 truncate">{session?.user?.email}</div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Nav links */}
-      <nav className="flex-1 px-3 space-y-1">
-        {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
-                isActive
-                  ? 'bg-brand-700 text-white shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              )}
-            >
-              <Icon className="h-4 w-4 flex-shrink-0" />
-              {item.label}
-            </Link>
-          )
-        })}
-      </nav>
-
-      {/* Quick links */}
-      <div className="px-3 pb-2 border-t border-gray-100 mt-2 pt-3">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1.5">Quick Access</p>
-        {quickLinks.map((item) => {
-          const Icon = item.icon
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-brand-50 hover:text-brand-700 transition-colors"
-            >
-              <Icon className="h-4 w-4 flex-shrink-0" />
-              {item.label}
-            </Link>
-          )
-        })}
+      {/* ── Personal nav ── */}
+      <div className="px-3 shrink-0">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1">My Dashboard</p>
+        <nav className="space-y-0.5">
+          {personalNav.map((item) => {
+            const Icon = item.icon
+            const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+                  isActive
+                    ? 'bg-brand-700 text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                )}
+              >
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
       </div>
 
-      {/* Admin Panel link for privileged roles */}
-      {PRIVILEGED_ROLES.includes(session?.user?.role as any) && (
-        <div className="px-3 pb-2 border-t border-gray-100 pt-3">
-          <Link
-            href="/admin"
-            onClick={onClose}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
-          >
-            <Settings2 className="h-4 w-4 flex-shrink-0" /> Admin Panel
-          </Link>
+      {/* ── Manage section (privileged roles only) ── */}
+      {isPrivileged && (
+        <div className="px-3 mt-4 shrink-0">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1">Manage</p>
+          <nav className="space-y-0.5">
+            {myAdminSections.map((item) => {
+              const Icon = item.icon
+              const isActive = pathname.startsWith(item.href)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+                    isActive
+                      ? 'bg-brand-700 text-white shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  )}
+                >
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
         </div>
       )}
 
-      {/* Bottom actions */}
-      <div className="px-3 py-3 border-t border-gray-100">
+      {/* ── Quick links (regular users only) ── */}
+      {!isPrivileged && (
+        <div className="px-3 mt-4 shrink-0">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1">Quick Access</p>
+          <nav className="space-y-0.5">
+            {quickLinks.map((item) => {
+              const Icon = item.icon
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+                >
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
+      )}
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Sign out */}
+      <div className="px-3 py-3 border-t border-gray-100 shrink-0">
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors"
