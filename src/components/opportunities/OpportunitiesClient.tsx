@@ -70,7 +70,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
 
   const clearFilters = () => {
     setSearch('')
-    setFilters({ programLevel: '', field: '', country: '', fundingType: '', sortBy: 'deadline' })
+    setFilters((f) => ({ programLevel: '', field: '', country: '', fundingType: '', sortBy: f.sortBy }))
   }
 
   const hasFilters = search || filters.programLevel || filters.field || filters.country || filters.fundingType

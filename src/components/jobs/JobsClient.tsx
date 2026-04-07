@@ -69,7 +69,7 @@ export default function JobsClient({ initialJobs, mode }: Props) {
 
   const clearFilters = () => {
     setSearch('')
-    setFilters({ jobType: '', field: '', country: '', experienceLevel: '', remote: false, sortBy: 'deadline' })
+    setFilters((f) => ({ jobType: '', field: '', country: '', experienceLevel: '', remote: false, sortBy: f.sortBy }))
   }
 
   const hasFilters = search || filters.jobType || filters.field || filters.country || filters.experienceLevel || filters.remote
