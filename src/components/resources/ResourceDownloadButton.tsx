@@ -17,13 +17,11 @@ export default function ResourceDownloadButton({ resource }: Props) {
 
   const handleDownload = async () => {
     setDownloading(true)
-    // Increment download counter (non-blocking)
-    fetch(`/api/resources/${resource.id}/download`, { method: 'POST' }).catch(() => {})
-
     try {
       if (resource.isUploaded) {
-        // Fetch the file and trigger browser download
-        const res = await fetch(resource.fileUrl)
+        // Stream through our API — blob URL is never exposed to the browser
+        const res = await fetch(`/api/resources/${resource.id}/download`)
+        if (!res.ok) throw new Error('Download failed')
         const blob = await res.blob()
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
