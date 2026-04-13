@@ -15,31 +15,22 @@ interface Props {
 export default function ResourceDownloadButton({ resource }: Props) {
   const [downloading, setDownloading] = useState(false)
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     setDownloading(true)
-    try {
-      if (resource.isUploaded) {
-        // Stream through our API — blob URL is never exposed to the browser
-        const res = await fetch(`/api/resources/${resource.id}/download`)
-        if (!res.ok) throw new Error('Download failed')
-        const blob = await res.blob()
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = resource.filename ?? resource.title
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
-      } else {
-        // External link — open in new tab
-        window.open(resource.fileUrl, '_blank', 'noopener,noreferrer')
-      }
-    } catch {
+    if (resource.isUploaded) {
+      // Navigate directly to the proxy endpoint.
+      // The server returns Content-Disposition: attachment so the browser
+      // downloads the file natively — no JS binary handling, no corruption.
+      const a = document.createElement('a')
+      a.href = `/api/resources/${resource.id}/download`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+    } else {
       window.open(resource.fileUrl, '_blank', 'noopener,noreferrer')
-    } finally {
-      setDownloading(false)
     }
+    // Re-enable button after browser starts the download
+    setTimeout(() => setDownloading(false), 2000)
   }
 
   return (
