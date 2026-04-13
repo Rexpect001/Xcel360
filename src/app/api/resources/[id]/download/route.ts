@@ -16,19 +16,26 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       data: { downloads: { increment: 1 } },
     })
 
-    // Proxy the file so the blob URL is never exposed to the browser
+    // Proxy the file so the blob URL is never exposed to the browser.
+    // Must buffer as ArrayBuffer — streaming upstream.body through a serverless
+    // function can corrupt binary files (docx, pdf, etc.)
     const upstream = await fetch(resource.fileUrl)
     if (!upstream.ok) {
       return NextResponse.json({ error: 'File fetch failed' }, { status: 502 })
     }
 
+    const buffer = await upstream.arrayBuffer()
     const filename = resource.filename ?? resource.title ?? 'download'
     const contentType = upstream.headers.get('content-type') ?? 'application/octet-stream'
 
-    return new NextResponse(upstream.body, {
+    // Use RFC 5987 encoding for the filename so special chars and spaces are safe
+    const encodedFilename = encodeURIComponent(filename).replace(/'/g, '%27')
+
+    return new NextResponse(buffer, {
       headers: {
         'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
+        'Content-Length': String(buffer.byteLength),
+        'Content-Disposition': `attachment; filename="${filename.replace(/"/g, '\\"')}"; filename*=UTF-8''${encodedFilename}`,
         'Cache-Control': 'no-store',
       },
     })
