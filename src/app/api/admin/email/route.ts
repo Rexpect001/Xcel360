@@ -6,6 +6,19 @@ import { Resend } from 'resend'
 
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <onboarding@resend.dev>'
 
+type AttachmentMeta = { filename: string; url: string; contentType: string; size: number }
+
+async function buildResendAttachments(attachments: AttachmentMeta[]) {
+  if (!attachments.length) return undefined
+  return Promise.all(
+    attachments.map(async (a) => {
+      const res = await fetch(a.url)
+      const buf = await res.arrayBuffer()
+      return { filename: a.filename, content: Buffer.from(buf).toString('base64') }
+    })
+  )
+}
+
 // GET — list all campaigns
 export async function GET() {
   try {
@@ -20,39 +33,83 @@ export async function GET() {
   }
 }
 
-// POST — create and start sending a campaign
+// POST — create and optionally start sending a campaign
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin()
 
-    const { subject, htmlBody, audience, dailyLimit = 100, sendAll = false } = await req.json()
+    const {
+      subject,
+      htmlBody,
+      audience,
+      dailyLimit = 100,
+      sendAll = false,
+      manualRecipients = [],
+      ccRecipients = [],
+      bccRecipients = [],
+      attachments = [],
+      isDraft = false,
+    } = await req.json()
 
     if (!subject?.trim()) return NextResponse.json({ error: 'Subject is required' }, { status: 400 })
     if (!htmlBody?.trim()) return NextResponse.json({ error: 'Email body is required' }, { status: 400 })
     if (!audience) return NextResponse.json({ error: 'Audience is required' }, { status: 400 })
-
-    const apiKey = process.env.RESEND_API_KEY
-    if (!apiKey) return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
 
     // Build recipient list
     const emails = new Set<string>()
 
     if (audience === 'users' || audience === 'both') {
       const users = await prisma.user.findMany({ select: { email: true } })
-      users.forEach((u) => emails.add(u.email))
+      users.forEach((u) => emails.add(u.email.toLowerCase().trim()))
     }
 
     if (audience === 'subscribers' || audience === 'both') {
       const subs = await (prisma as any).emailSubscriber.findMany({ select: { email: true } })
-      subs.forEach((s: any) => emails.add(s.email))
+      subs.forEach((s: any) => emails.add(s.email.toLowerCase().trim()))
     }
 
+    // Merge manual recipients
+    manualRecipients.forEach((e: string) => {
+      const trimmed = e.toLowerCase().trim()
+      if (trimmed) emails.add(trimmed)
+    })
+
     const allRecipients = Array.from(emails)
+
+    if (allRecipients.length === 0) {
+      return NextResponse.json({ error: 'No recipients found' }, { status: 400 })
+    }
+
+    const db = prisma as any
+
+    // Save as draft — no sending
+    if (isDraft) {
+      const campaign = await db.emailCampaign.create({
+        data: {
+          subject,
+          htmlBody,
+          audience,
+          dailyLimit: Math.min(dailyLimit, 100),
+          recipients: JSON.stringify(allRecipients),
+          manualRecipients: JSON.stringify(manualRecipients),
+          ccRecipients: JSON.stringify(ccRecipients),
+          bccRecipients: JSON.stringify(bccRecipients),
+          attachments: JSON.stringify(attachments),
+          totalCount: allRecipients.length,
+          sentCount: 0,
+          status: 'DRAFT',
+        },
+      })
+      return NextResponse.json({ ok: true, campaignId: campaign.id, status: 'DRAFT', total: allRecipients.length })
+    }
+
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
+
     const limit = sendAll ? allRecipients.length : Math.min(dailyLimit, 100)
     const firstBatch = allRecipients.slice(0, limit)
 
     // Create campaign record
-    const db = prisma as any
     const campaign = await db.emailCampaign.create({
       data: {
         subject,
@@ -60,29 +117,40 @@ export async function POST(req: NextRequest) {
         audience,
         dailyLimit: Math.min(dailyLimit, 100),
         recipients: JSON.stringify(allRecipients),
+        manualRecipients: JSON.stringify(manualRecipients),
+        ccRecipients: JSON.stringify(ccRecipients),
+        bccRecipients: JSON.stringify(bccRecipients),
+        attachments: JSON.stringify(attachments),
         totalCount: allRecipients.length,
         sentCount: 0,
         status: 'SENDING',
       },
     })
 
-    // Send first batch
+    // Fetch attachment content once for the entire campaign
+    const resendAttachments = await buildResendAttachments(attachments)
+    const cc = ccRecipients.length ? ccRecipients : undefined
+    const bcc = bccRecipients.length ? bccRecipients : undefined
+
+    // Send first batch (max 100 per Resend call)
     const resend = new Resend(apiKey)
     let sent = 0
-    const errors: string[] = []
+    const CHUNK = 100
 
-    // Resend batch: up to 100 per call
-    const BATCH_SIZE = 100
-    for (let i = 0; i < firstBatch.length; i += BATCH_SIZE) {
-      const chunk = firstBatch.slice(i, i + BATCH_SIZE)
+    for (let i = 0; i < firstBatch.length; i += CHUNK) {
+      const chunk = firstBatch.slice(i, i + CHUNK)
       const { error } = await resend.batch.send(
-        chunk.map((to) => ({ from: FROM, to, subject, html: htmlBody }))
+        chunk.map((to) => ({
+          from: FROM,
+          to,
+          subject,
+          html: htmlBody,
+          ...(cc ? { cc } : {}),
+          ...(bcc ? { bcc } : {}),
+          ...(resendAttachments ? { attachments: resendAttachments } : {}),
+        }))
       )
-      if (error) {
-        errors.push(error.message)
-      } else {
-        sent += chunk.length
-      }
+      if (!error) sent += chunk.length
     }
 
     const newSentCount = sent
@@ -92,7 +160,7 @@ export async function POST(req: NextRequest) {
       where: { id: campaign.id },
       data: {
         sentCount: newSentCount,
-        status: completed ? 'COMPLETED' : errors.length > 0 && sent === 0 ? 'FAILED' : 'SENDING',
+        status: completed ? 'COMPLETED' : sent === 0 ? 'FAILED' : 'SENDING',
       },
     })
 

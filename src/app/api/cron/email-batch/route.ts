@@ -7,7 +7,7 @@ const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <onboarding@resend.dev>'
 
 /**
  * Daily cron — continues any campaigns that still have unsent recipients.
- * Called by Vercel Cron. Protected by CRON_SECRET.
+ * Called by Vercel Cron at 7am UTC. Protected by CRON_SECRET.
  */
 export async function GET(req: Request) {
   const authHeader = req.headers.get('Authorization')
@@ -45,6 +45,32 @@ export async function GET(req: Request) {
       continue
     }
 
+    // Parse CC, BCC, and attachment metadata stored on the campaign
+    let ccRecipients: string[] = []
+    let bccRecipients: string[] = []
+    let attachmentMeta: Array<{ filename: string; url: string }> = []
+    try { ccRecipients = JSON.parse(campaign.ccRecipients ?? '[]') } catch { /* ignore */ }
+    try { bccRecipients = JSON.parse(campaign.bccRecipients ?? '[]') } catch { /* ignore */ }
+    try { attachmentMeta = JSON.parse(campaign.attachments ?? '[]') } catch { /* ignore */ }
+
+    // Fetch attachment content fresh (Resend requires base64 inline)
+    let resendAttachments: Array<{ filename: string; content: string }> | undefined
+    if (attachmentMeta.length > 0) {
+      try {
+        resendAttachments = await Promise.all(
+          attachmentMeta.map(async (a) => {
+            const res = await fetch(a.url)
+            const buf = await res.arrayBuffer()
+            return { filename: a.filename, content: Buffer.from(buf).toString('base64') }
+          })
+        )
+      } catch {
+        resendAttachments = undefined
+      }
+    }
+
+    const cc = ccRecipients.length ? ccRecipients : undefined
+    const bcc = bccRecipients.length ? bccRecipients : undefined
     const batch = remaining.slice(0, campaign.dailyLimit)
     let sent = 0
 
@@ -57,6 +83,9 @@ export async function GET(req: Request) {
           to,
           subject: campaign.subject,
           html: campaign.htmlBody,
+          ...(cc ? { cc } : {}),
+          ...(bcc ? { bcc } : {}),
+          ...(resendAttachments ? { attachments: resendAttachments } : {}),
         }))
       )
       if (!error) sent += chunk.length
@@ -73,7 +102,12 @@ export async function GET(req: Request) {
       },
     })
 
-    results.push({ id: campaign.id, subject: campaign.subject, sent, remaining: recipients.length - newSentCount })
+    results.push({
+      id: campaign.id,
+      subject: campaign.subject,
+      sent,
+      remaining: recipients.length - newSentCount,
+    })
   }
 
   return NextResponse.json({ ok: true, processed: results.length, results })
