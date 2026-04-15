@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 import { getAuth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowRight, Activity, Briefcase } from 'lucide-react'
+import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowUpRight, Activity, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminPage() {
@@ -25,12 +25,48 @@ export default async function AdminPage() {
   ])
 
   const stats = [
-    { label: 'Total Users', value: users, icon: Users, color: 'bg-blue-50 text-blue-700', href: '/admin/users' },
-    { label: 'Scholarships', value: scholarships, icon: BookOpen, color: 'bg-indigo-50 text-indigo-700', href: '/admin/opportunities' },
-    { label: 'Jobs', value: jobs, icon: Briefcase, color: 'bg-emerald-50 text-emerald-700', href: '/admin/jobs' },
-    { label: 'Internships', value: internships, icon: Briefcase, color: 'bg-purple-50 text-purple-700', href: '/admin/jobs' },
-    { label: 'Total Saves', value: saved, icon: Bookmark, color: 'bg-green-50 text-green-700', href: '/admin/analytics' },
-    { label: 'Applications', value: applications, icon: FileText, color: 'bg-orange-50 text-orange-700', href: '/admin/analytics' },
+    {
+      label: 'Total Users',
+      value: users,
+      icon: Users,
+      gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+      href: '/admin/users',
+    },
+    {
+      label: 'Scholarships',
+      value: scholarships,
+      icon: BookOpen,
+      gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+      href: '/admin/opportunities',
+    },
+    {
+      label: 'Jobs',
+      value: jobs,
+      icon: Briefcase,
+      gradient: 'linear-gradient(135deg, #10b981, #059669)',
+      href: '/admin/jobs',
+    },
+    {
+      label: 'Internships',
+      value: internships,
+      icon: Briefcase,
+      gradient: 'linear-gradient(135deg, #06b6d4, #0284c7)',
+      href: '/admin/jobs',
+    },
+    {
+      label: 'Total Saves',
+      value: saved,
+      icon: Bookmark,
+      gradient: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+      href: '/admin/analytics',
+    },
+    {
+      label: 'Applications',
+      value: applications,
+      icon: FileText,
+      gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+      href: '/admin/analytics',
+    },
   ]
 
   const sections = [
@@ -40,8 +76,8 @@ export default async function AdminPage() {
       label: 'Scholarships',
       desc: 'Add, edit, delete scholarships and mark them as featured.',
       count: `${scholarships} total`,
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
+      accent: '#8b5cf6',
+      bg: 'rgba(139,92,246,0.08)',
     },
     {
       href: '/admin/jobs',
@@ -49,8 +85,8 @@ export default async function AdminPage() {
       label: 'Jobs & Internships',
       desc: 'Post full-time jobs, internships, and remote opportunities.',
       count: `${jobs} jobs · ${internships} internships`,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
+      accent: '#10b981',
+      bg: 'rgba(16,185,129,0.08)',
     },
     {
       href: '/admin/blog',
@@ -58,8 +94,8 @@ export default async function AdminPage() {
       label: 'Blog & Guides',
       desc: 'Publish articles, scholarship guides, and tips for applicants.',
       count: `${blogPosts} posts`,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
+      accent: '#a855f7',
+      bg: 'rgba(168,85,247,0.08)',
     },
     {
       href: '/admin/mentorship',
@@ -67,8 +103,8 @@ export default async function AdminPage() {
       label: 'Mentorship',
       desc: 'Manage mentor profiles, expertise, and booking links.',
       count: `${mentors} mentors`,
-      color: 'text-teal-600',
-      bg: 'bg-teal-50',
+      accent: '#14b8a6',
+      bg: 'rgba(20,184,166,0.08)',
     },
     {
       href: '/admin/events',
@@ -76,8 +112,8 @@ export default async function AdminPage() {
       label: 'Events',
       desc: 'Post Zoom sessions, info sessions, and upcoming workshops.',
       count: `${events} events`,
-      color: 'text-amber-600',
-      bg: 'bg-amber-50',
+      accent: '#f59e0b',
+      bg: 'rgba(245,158,11,0.08)',
     },
     {
       href: '/admin/users',
@@ -85,8 +121,8 @@ export default async function AdminPage() {
       label: 'Users',
       desc: 'View registered users and manage admin permissions.',
       count: `${users} users`,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      accent: '#3b82f6',
+      bg: 'rgba(59,130,246,0.08)',
     },
     {
       href: '/admin/analytics',
@@ -94,28 +130,32 @@ export default async function AdminPage() {
       label: 'Analytics',
       desc: 'See most-viewed scholarships, user activity, and platform stats.',
       count: `${saved} saves`,
-      color: 'text-rose-600',
-      bg: 'bg-rose-50',
+      accent: '#f43f5e',
+      bg: 'rgba(244,63,94,0.08)',
     },
     {
       href: '/admin/activity',
       icon: Activity,
       label: 'Activity Log',
-      desc: 'Audit trail of all admin and user actions — logins, role changes, content edits.',
+      desc: 'Audit trail of all admin and user actions — logins, roles, content edits.',
       count: 'Live feed',
-      color: 'text-gray-600',
-      bg: 'bg-gray-100',
+      accent: '#64748b',
+      bg: 'rgba(100,116,139,0.08)',
     },
   ]
 
   return (
     <div>
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Overview</h1>
-        <p className="text-gray-500 mt-1">Manage all content and users from one place.</p>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: '#94a3b8' }}>
+          Welcome back
+        </p>
+        <h1 className="text-3xl font-bold" style={{ color: '#0f172a' }}>Admin Overview</h1>
+        <p className="mt-1" style={{ color: '#64748b' }}>Manage all content and users from one place.</p>
       </div>
 
-      {/* Stats */}
+      {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-10">
         {stats.map((s) => {
           const Icon = s.icon
@@ -123,20 +163,32 @@ export default async function AdminPage() {
             <Link
               key={s.label}
               href={s.href}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+              className="relative rounded-2xl p-5 overflow-hidden group hover:-translate-y-1 transition-all duration-200"
+              style={{ background: s.gradient, boxShadow: '0 4px 20px rgba(0,0,0,0.12)' }}
             >
-              <div className={`w-10 h-10 rounded-xl ${s.color} flex items-center justify-center mb-3`}>
-                <Icon className="h-5 w-5" />
+              {/* Subtle gloss overlay */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: 'rgba(255,255,255,0.08)' }} />
+
+              <div className="relative">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
+                  style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <Icon className="h-4.5 w-4.5 text-white" style={{ width: 18, height: 18 }} />
+                </div>
+                <div className="text-3xl font-bold text-white leading-none">{s.value}</div>
+                <div className="text-xs font-medium mt-1.5" style={{ color: 'rgba(255,255,255,0.75)' }}>{s.label}</div>
               </div>
-              <div className="text-3xl font-bold text-gray-900">{s.value}</div>
-              <div className="text-sm text-gray-500 mt-0.5 group-hover:text-brand-600 transition-colors">{s.label}</div>
             </Link>
           )
         })}
       </div>
 
-      {/* Action sections */}
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Manage Content</h2>
+      {/* Section cards */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(180deg,#3b82f6,#8b5cf6)' }} />
+        <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#64748b' }}>Manage Content</h2>
+      </div>
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sections.map((sec) => {
           const Icon = sec.icon
@@ -144,17 +196,44 @@ export default async function AdminPage() {
             <Link
               key={sec.href}
               href={sec.href}
-              className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+              className="bg-white rounded-2xl p-6 group transition-all duration-200 hover:-translate-y-0.5"
+              style={{
+                border: '1px solid rgba(0,0,0,0.06)',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              }}
             >
-              <div className={`w-10 h-10 rounded-xl ${sec.bg} ${sec.color} flex items-center justify-center mb-4`}>
-                <Icon className="h-5 w-5" />
+              {/* Icon + arrow row */}
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: sec.bg }}
+                >
+                  <Icon className="h-5 w-5" style={{ color: sec.accent }} />
+                </div>
+                <div
+                  className="w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
+                  style={{ background: sec.bg }}
+                >
+                  <ArrowUpRight className="h-3.5 w-3.5" style={{ color: sec.accent }} />
+                </div>
               </div>
-              <div className="flex items-start justify-between mb-1">
-                <h3 className="font-semibold text-gray-900 group-hover:text-brand-700 transition-colors">{sec.label}</h3>
-                <ArrowRight className="h-4 w-4 text-gray-300 group-hover:text-brand-500 transition-colors flex-shrink-0 mt-0.5" />
-              </div>
-              <p className="text-sm text-gray-500 mb-3 leading-relaxed">{sec.desc}</p>
-              <span className="text-xs font-medium text-gray-400">{sec.count}</span>
+
+              <h3 className="font-semibold mb-1 group-hover:transition-colors"
+                style={{ color: '#0f172a' }}
+                onMouseEnter={e => (e.currentTarget.style.color = sec.accent)}
+                onMouseLeave={e => (e.currentTarget.style.color = '#0f172a')}
+              >
+                {sec.label}
+              </h3>
+              <p className="text-sm leading-relaxed mb-3" style={{ color: '#64748b' }}>{sec.desc}</p>
+
+              {/* Count pill */}
+              <span
+                className="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg"
+                style={{ background: sec.bg, color: sec.accent }}
+              >
+                {sec.count}
+              </span>
             </Link>
           )
         })}
