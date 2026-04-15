@@ -273,6 +273,21 @@ model EmailSubscriber {
   createdAt DateTime @default(now())
 }
 
+// Admin email campaigns — supports batched sending across multiple days
+model EmailCampaign {
+  id          String   @id @default(cuid())
+  subject     String
+  htmlBody    String   @db.Text
+  audience    String   // 'users' | 'subscribers' | 'both'
+  status      String   @default("DRAFT") // DRAFT | SENDING | COMPLETED | FAILED
+  recipients  String   @db.Text          // JSON array of email addresses (set at send time)
+  totalCount  Int      @default(0)
+  sentCount   Int      @default(0)
+  dailyLimit  Int      @default(100)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // Downloadable resources & templates managed from admin
 model Resource {
   id          String   @id @default(cuid())

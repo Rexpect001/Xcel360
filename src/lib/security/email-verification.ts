@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import prisma from '@/lib/prisma'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
 // Email verification token expiration: 24 hours
 const VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000 // 24 hours in ms
@@ -16,18 +16,13 @@ function hashToken(token: string): string {
   return crypto.createHash('sha256').update(token).digest('hex')
 }
 
-// Create email transporter
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_SERVER_USER,
-      pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
-  })
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key) return null
+  return new Resend(key)
 }
+
+const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <onboarding@resend.dev>'
 
 // Generate and store verification token
 export async function generateVerificationToken(userId: string): Promise<string> {
@@ -142,91 +137,66 @@ export async function clearPasswordResetToken(userId: string): Promise<void> {
 
 // Send verification email
 export async function sendVerificationEmail(email: string, name: string, token: string): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const resend = getResend()
+  if (!resend) { console.warn('[email] RESEND_API_KEY not set — skipping verification email'); return }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thexcel360.com'
   const verificationUrl = `${appUrl}/verify-email?token=${token}`
 
-  const transporter = createTransporter()
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM || 'Xcel360 <noreply@xcel360.com>',
+  const { error } = await resend.emails.send({
+    from: FROM,
     to: email,
     subject: 'Verify your Xcel360 account',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #0369a1;">Welcome to Xcel360!</h2>
-        <p>Hi ${name},</p>
-        <p>Thank you for signing up. Please verify your email address to activate your account.</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${verificationUrl}" 
-             style="background: #0369a1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">
-            Verify Email
-          </a>
-        </div>
-        <p>Or copy and paste this link in your browser:</p>
-        <p style="word-break: break-all; color: #666;">${verificationUrl}</p>
-        <p style="color: #666; font-size: 14px;">This link will expire in 24 hours.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="color: #999; font-size: 12px;">
-          If you didn't create an account on Xcel360, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-    text: `
-Welcome to Xcel360!
-
-Hi ${name},
-
-Thank you for signing up. Please verify your email address by clicking this link:
-${verificationUrl}
-
-This link will expire in 24 hours.
-
-If you didn't create an account on Xcel360, you can safely ignore this email.
-    `,
+    html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+    <div style="background:linear-gradient(135deg,#1e3a8a,#1d4ed8);padding:32px 40px;">
+      <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">Xcel360</h1>
+    </div>
+    <div style="padding:40px;">
+      <h2 style="color:#111827;margin:0 0 16px 0;">Welcome, ${name}!</h2>
+      <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">Please verify your email address to activate your account.</p>
+      <a href="${verificationUrl}" style="display:inline-block;background:#1d4ed8;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">Verify Email</a>
+      <p style="color:#9ca3af;font-size:12px;margin:28px 0 0 0;">Link expires in 24 hours. If you didn't sign up, ignore this email.</p>
+    </div>
+  </div>
+</body></html>`,
   })
+
+  if (error) console.error('[email] Verification email failed:', error)
 }
 
 // Send password reset email
 export async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const resend = getResend()
+  if (!resend) { console.warn('[email] RESEND_API_KEY not set — skipping password reset email'); return }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thexcel360.com'
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
-  const transporter = createTransporter()
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM || 'Xcel360 <noreply@xcel360.com>',
+  const { error } = await resend.emails.send({
+    from: FROM,
     to: email,
     subject: 'Reset your Xcel360 password',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #0369a1;">Password Reset Request</h2>
-        <p>We received a request to reset your password.</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${resetUrl}" 
-             style="background: #0369a1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">
-            Reset Password
-          </a>
-        </div>
-        <p>Or copy and paste this link in your browser:</p>
-        <p style="word-break: break-all; color: #666;">${resetUrl}</p>
-        <p style="color: #666; font-size: 14px;">This link will expire in 1 hour.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="color: #999; font-size: 12px;">
-          If you didn't request a password reset, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-    text: `
-Password Reset Request
-
-We received a request to reset your password. Click this link to reset it:
-${resetUrl}
-
-This link will expire in 1 hour.
-
-If you didn't request a password reset, you can safely ignore this email.
-    `,
+    html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+    <div style="background:linear-gradient(135deg,#1e3a8a,#1d4ed8);padding:32px 40px;">
+      <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">Xcel360</h1>
+    </div>
+    <div style="padding:40px;">
+      <h2 style="color:#111827;margin:0 0 16px 0;">Password Reset</h2>
+      <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">We received a request to reset your password. Click below to set a new one.</p>
+      <a href="${resetUrl}" style="display:inline-block;background:#1d4ed8;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">Reset Password</a>
+      <p style="color:#9ca3af;font-size:12px;margin:28px 0 0 0;">Link expires in 1 hour. If you didn't request this, ignore this email.</p>
+    </div>
+  </div>
+</body></html>`,
   })
+
+  if (error) console.error('[email] Password reset email failed:', error)
 }
 
 // Check if email is verified

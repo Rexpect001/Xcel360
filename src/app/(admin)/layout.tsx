@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 import {
   GraduationCap, LayoutDashboard, BookOpen, Calendar,
   BarChart3, ArrowLeft, FileText, Users, UserCheck, Award,
-  FolderOpen, Briefcase, Activity, ShieldCheck
+  FolderOpen, Briefcase, Activity, ShieldCheck, Mail
 } from 'lucide-react'
 import { canAccess, isAdminRole, ROLE_LABELS } from '@/lib/permissions'
 import type { UserRole } from '@/lib/permissions'
@@ -22,6 +22,7 @@ const ALL_NAV = [
   { href: '/admin/users',         section: '/users',         label: 'Users',             icon: Users },
   { href: '/admin/analytics',     section: '/analytics',     label: 'Analytics',         icon: BarChart3 },
   { href: '/admin/activity',      section: '/activity',      label: 'Activity Log',      icon: Activity },
+  { href: '/admin/email',         section: '/email',         label: 'Email',             icon: Mail },
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,7 @@
 import prisma from './prisma'
 import { NotificationType } from '@prisma/client'
 import { daysUntilDeadline } from './utils'
+import { sendDeadlineReminderEmail, sendNewOpportunityEmail } from './email'
 
 export async function createNotification({
   userId,
@@ -77,6 +78,17 @@ export async function sendDeadlineReminders() {
         message: `The deadline for "${app.opportunity.title}" is in ${daysLeft} days.`,
         link: `/opportunities/${app.opportunityId}`,
       })
+
+      // Also send email if user has email notifications enabled
+      if (app.user.profile?.notifyEmail !== false && app.user.email) {
+        sendDeadlineReminderEmail({
+          to: app.user.email,
+          name: app.user.name ?? 'there',
+          opportunityTitle: app.opportunity.title,
+          opportunityId: app.opportunityId,
+          daysLeft,
+        }).catch(console.error)
+      }
     }
   }
 }
@@ -96,7 +108,7 @@ export async function notifyMatchingUsers(opportunityId: string) {
         ],
       },
     },
-    select: { id: true },
+    select: { id: true, email: true, name: true, profile: { select: { notifyEmail: true } } },
   })
 
   for (const user of matchingUsers) {
@@ -107,5 +119,16 @@ export async function notifyMatchingUsers(opportunityId: string) {
       message: `"${opportunity.title}" just posted — matches your interests.`,
       link: `/opportunities/${opportunityId}`,
     })
+
+    if (user.profile?.notifyEmail !== false && user.email) {
+      sendNewOpportunityEmail({
+        to: user.email,
+        name: user.name ?? 'there',
+        opportunityTitle: opportunity.title,
+        opportunityId,
+        hostOrg: opportunity.hostOrg,
+        country: opportunity.country,
+      }).catch(console.error)
+    }
   }
 }
