@@ -187,8 +187,9 @@ export default function AdminJobsPage() {
         body: JSON.stringify({ text: aiText, image: aiImage ? { data: aiImage.data, mediaType: aiImage.mediaType } : undefined }),
       })
       const data = await res.json()
-      if (data.opportunity) {
-        const ext = data.opportunity
+      if (!res.ok) { toast.error(data.error ?? 'Extraction failed'); return }
+      if (data.title) {
+        const ext = data
         setForm((f) => ({
           ...f,
           title: ext.title ?? f.title,
