@@ -4,28 +4,40 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   GraduationCap, ArrowLeft, ShieldCheck, Menu, X,
+  LayoutDashboard, BookOpen, Calendar, BarChart3, FileText,
+  Users, UserCheck, Award, FolderOpen, Briefcase, Activity, Mail,
 } from 'lucide-react'
 
-type NavItem = {
-  href: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-}
+// Full nav definition lives here (client component) so icons stay serializable
+const ALL_NAV = [
+  { href: '/admin',               section: '/',              label: 'Overview',           icon: LayoutDashboard },
+  { href: '/admin/opportunities', section: '/opportunities', label: 'Scholarships',        icon: BookOpen },
+  { href: '/admin/jobs',          section: '/jobs',          label: 'Jobs & Internships',  icon: Briefcase },
+  { href: '/admin/programs',      section: '/programs',      label: 'Programs',            icon: Award },
+  { href: '/admin/resources',     section: '/resources',     label: 'Resources',           icon: FolderOpen },
+  { href: '/admin/blog',          section: '/blog',          label: 'Blog & Guides',       icon: FileText },
+  { href: '/admin/mentorship',    section: '/mentorship',    label: 'Mentorship',          icon: UserCheck },
+  { href: '/admin/events',        section: '/events',        label: 'Events',              icon: Calendar },
+  { href: '/admin/users',         section: '/users',         label: 'Users',               icon: Users },
+  { href: '/admin/analytics',     section: '/analytics',     label: 'Analytics',           icon: BarChart3 },
+  { href: '/admin/activity',      section: '/activity',      label: 'Activity Log',        icon: Activity },
+  { href: '/admin/email',         section: '/email',         label: 'Email',               icon: Mail },
+]
 
 type Props = {
-  nav: NavItem[]
+  allowedSections: string[]  // serializable strings passed from server
   email: string
   roleLabel: string
 }
 
-export default function AdminSidebar({ nav, email, roleLabel }: Props) {
+export default function AdminSidebar({ allowedSections, email, roleLabel }: Props) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
-  // Close sidebar on navigation
+  const nav = ALL_NAV.filter(item => allowedSections.includes(item.section))
+
   useEffect(() => { setOpen(false) }, [pathname])
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
@@ -47,7 +59,6 @@ export default function AdminSidebar({ nav, email, roleLabel }: Props) {
           <div className="text-sm font-bold text-white tracking-tight">Xcel360</div>
           <div className="text-xs font-medium text-blue-400">Admin Panel</div>
         </div>
-        {/* Close button — mobile only */}
         <button
           onClick={() => setOpen(false)}
           className="lg:hidden p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
@@ -79,10 +90,7 @@ export default function AdminSidebar({ nav, email, roleLabel }: Props) {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
-                ${active
-                  ? 'bg-white/[0.12] text-white'
-                  : 'text-slate-400 hover:bg-white/[0.07] hover:text-white'
-                }`}
+                ${active ? 'bg-white/[0.12] text-white' : 'text-slate-400 hover:bg-white/[0.07] hover:text-white'}`}
             >
               <Icon className="h-4 w-4 shrink-0" />
               {item.label}
@@ -127,11 +135,10 @@ export default function AdminSidebar({ nav, email, roleLabel }: Props) {
         <div className="lg:hidden fixed inset-0 z-30 bg-black/50" onClick={() => setOpen(false)} />
       )}
 
-      {/* Sidebar — desktop: fixed; mobile: slide-in drawer */}
+      {/* Sidebar */}
       <aside
         id="admin-sidebar"
         className={`fixed inset-y-0 left-0 flex flex-col z-40 w-64 bg-[#0f172a] transition-transform duration-300
-          lg:translate-x-0
           ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <SidebarContent />
