@@ -139,7 +139,7 @@ async function fetchPageContent(url: string): Promise<string> {
   }
 }
 
-// ─── Phase 4: Extract with Claude Haiku ──────────────────────────────────────
+// ─── Phase 4: Extract with Gemini Flash ──────────────────────────────────────
 
 const EXTRACT_SYSTEM_PROMPT = `You extract scholarship, fellowship, internship, and job opportunity details from webpage text.
 Return ONLY a valid JSON object with exactly these fields — no markdown, no explanation:
@@ -171,33 +171,35 @@ async function extractOpportunity(
   content: string,
   fallbackUrl: string
 ): Promise<ExtractedOpp | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey || !content.trim()) return null
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: EXTRACT_SYSTEM_PROMPT,
-        messages: [
-          {
-            role: 'user',
-            content: `Extract opportunity details from this webpage content:\n\n${content.slice(0, 4500)}`,
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: EXTRACT_SYSTEM_PROMPT }] },
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: `Extract opportunity details from this webpage content:\n\n${content.slice(0, 4500)}` }],
+            },
+          ],
+          generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.1,
+            responseMimeType: 'application/json',
           },
-        ],
-      }),
-    })
+        }),
+      }
+    )
 
     if (!res.ok) return null
     const data = await res.json()
-    const text = data.content?.[0]?.text?.trim()
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
     if (!text) return null
 
     const extracted: ExtractedOpp = JSON.parse(text)
@@ -304,7 +306,7 @@ export async function runDiscovery(): Promise<DiscoveryReport> {
   }
 
   if (!process.env.SERPER_API_KEY) report.missingKeys.push('SERPER_API_KEY')
-  if (!process.env.ANTHROPIC_API_KEY) report.missingKeys.push('ANTHROPIC_API_KEY')
+  if (!process.env.GEMINI_API_KEY) report.missingKeys.push('GEMINI_API_KEY')
   if (report.missingKeys.length) return report
 
   // ── Phase 1: Search ──

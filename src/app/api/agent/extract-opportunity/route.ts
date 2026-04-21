@@ -36,53 +36,55 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Provide text or an image' }, { status: 400 })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
-    return NextResponse.json({ error: 'AI service not configured. Add ANTHROPIC_API_KEY to .env.local' }, { status: 503 })
+    return NextResponse.json(
+      { error: 'AI service not configured. Add GEMINI_API_KEY to .env.local' },
+      { status: 503 }
+    )
   }
 
-  // Build content array — image first (if provided), then text prompt
-  const content: object[] = []
+  // Build Gemini content parts — image first (if provided), then text
+  const parts: object[] = []
 
   if (image?.data) {
-    content.push({
-      type: 'image',
-      source: {
-        type: 'base64',
-        media_type: image.mediaType || 'image/jpeg',
+    parts.push({
+      inlineData: {
+        mimeType: image.mediaType || 'image/jpeg',
         data: image.data,
       },
     })
   }
 
-  content.push({
-    type: 'text',
+  parts.push({
     text: text?.trim() || 'Extract all scholarship details from this image.',
   })
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content }],
-      }),
-    })
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts }],
+          generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.1,
+            responseMimeType: 'application/json',
+          },
+        }),
+      }
+    )
 
     if (!response.ok) {
       const err = await response.text()
-      throw new Error(`Claude API error ${response.status}: ${err}`)
+      throw new Error(`Gemini API error ${response.status}: ${err}`)
     }
 
     const data = await response.json()
-    const responseText = data.content?.[0]?.text
+    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text
     if (!responseText) throw new Error('Empty response from AI')
 
     const extracted = JSON.parse(responseText.trim())
