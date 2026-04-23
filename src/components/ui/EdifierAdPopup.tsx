@@ -27,14 +27,19 @@ export default function EdifierAdPopup() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    // Small delay so it feels like a flash-in, not an instant block
-    const t = setTimeout(() => {
-      if (shouldShow()) {
-        setVisible(true)
-        markShown()
-      }
-    }, 1800)
-    return () => clearTimeout(t)
+    if (!shouldShow()) return
+    // Check server toggle before showing
+    fetch('/api/settings/edifier-ad')
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.enabled) return
+        const t = setTimeout(() => {
+          setVisible(true)
+          markShown()
+        }, 1800)
+        return () => clearTimeout(t)
+      })
+      .catch(() => {})
   }, [])
 
   if (!visible) return null

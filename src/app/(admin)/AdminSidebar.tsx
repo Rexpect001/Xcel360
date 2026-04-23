@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   GraduationCap, ArrowLeft, ShieldCheck, Menu, X,
   LayoutDashboard, BookOpen, Calendar, BarChart3, FileText,
-  Users, UserCheck, Award, FolderOpen, Briefcase, Activity, Mail,
+  Users, UserCheck, Award, FolderOpen, Briefcase, Activity, Mail, Settings,
 } from 'lucide-react'
 
 // Full nav definition lives here (client component) so icons stay serializable
@@ -22,6 +22,7 @@ const ALL_NAV = [
   { href: '/admin/analytics',     section: '/analytics',     label: 'Analytics',           icon: BarChart3 },
   { href: '/admin/activity',      section: '/activity',      label: 'Activity Log',        icon: Activity },
   { href: '/admin/email',         section: '/email',         label: 'Email',               icon: Mail },
+  { href: '/admin/settings',      section: '/settings',      label: 'Site Settings',       icon: Settings },
 ]
 
 type Props = {
