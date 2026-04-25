@@ -494,18 +494,30 @@ export default function AdminOpportunitiesPage() {
       toast.error('Please upload an image file (JPG, PNG, WebP)')
       return
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be under 5MB')
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image must be under 10MB')
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = reader.result as string
-      const [prefix, base64] = result.split(',')
-      const mediaType = prefix.replace('data:', '').replace(';base64', '')
-      setAiImage({ data: base64, mediaType, preview: result })
+    // Resize + compress via canvas before base64 encoding — prevents browser freeze
+    const img = new Image()
+    const objectUrl = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl)
+      const MAX = 1024
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        if (width > height) { height = Math.round((height * MAX) / width); width = MAX }
+        else { width = Math.round((width * MAX) / height); height = MAX }
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+      const compressed = canvas.toDataURL('image/jpeg', 0.82)
+      const base64 = compressed.split(',')[1]
+      setAiImage({ data: base64, mediaType: 'image/jpeg', preview: compressed })
     }
-    reader.readAsDataURL(file)
+    img.src = objectUrl
   }
 
   const clearImage = () => {
