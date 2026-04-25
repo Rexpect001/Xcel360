@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@/lib/auth'
-import Anthropic from '@anthropic-ai/sdk'
 
 const SYSTEM_PROMPT = `You are an assistant that extracts scholarship information from text or images (e.g. flyers, screenshots, social media posts).
 Extract all relevant details and return ONLY a valid JSON object with exactly these fields:
@@ -37,50 +36,56 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Provide text or an image' }, { status: 400 })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'AI service not configured. Add ANTHROPIC_API_KEY to environment variables.' },
+      { error: 'AI service not configured. Add GEMINI_API_KEY to environment variables.' },
       { status: 503 }
     )
   }
 
-  const client = new Anthropic({ apiKey })
-
-  const content: Anthropic.MessageParam['content'] = []
+  const parts: object[] = []
 
   if (image?.data) {
-    content.push({
-      type: 'image',
-      source: {
-        type: 'base64',
-        media_type: image.mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+    parts.push({
+      inlineData: {
+        mimeType: image.mediaType || 'image/jpeg',
         data: image.data,
       },
     })
   }
 
-  content.push({
-    type: 'text',
+  parts.push({
     text: text?.trim() || 'Extract all scholarship details from this image.',
   })
 
   try {
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content }],
-    })
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts }],
+          generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.1,
+            responseMimeType: 'application/json',
+          },
+        }),
+      }
+    )
 
-    const responseText = message.content
-      .filter((b) => b.type === 'text')
-      .map((b) => (b as Anthropic.TextBlock).text)
-      .join('')
+    if (!response.ok) {
+      const err = await response.text()
+      throw new Error(`Gemini API error ${response.status}: ${err}`)
+    }
 
+    const data = await response.json()
+    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text
     if (!responseText) throw new Error('Empty response from AI')
 
-    // Strip any accidental markdown fences
     const clean = responseText.trim().replace(/^```json?\s*/i, '').replace(/```\s*$/i, '').trim()
     const extracted = JSON.parse(clean)
     return NextResponse.json(extracted)
