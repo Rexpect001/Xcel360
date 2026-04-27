@@ -89,13 +89,14 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data
 
-    // Check for duplicate: same title + same deadline
-    const deadlineDate = new Date(data.deadline)
+    const deadlineDate = data.deadline ? new Date(data.deadline) : null
+
+    // Check for duplicate: same title (skip deadline check if null)
     const db2 = prisma as any
     const existing = await db2.opportunity.findFirst({
       where: {
         title: { equals: data.title.trim(), mode: 'insensitive' },
-        deadline: deadlineDate,
+        ...(deadlineDate ? { deadline: deadlineDate } : {}),
       },
       select: { id: true },
     })

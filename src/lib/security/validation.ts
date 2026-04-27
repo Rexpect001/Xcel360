@@ -42,19 +42,24 @@ export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>
 
 // Opportunity schema
 export const opportunitySchema = z.object({
-  title: z.string().min(5).max(500),
+  title: z.string().min(2).max(500),
   category: z.enum(['SCHOLARSHIP', 'JOB', 'INTERNSHIP']).optional(),
-  programLevel: z.array(z.enum(['Undergrad', 'Masters', 'PhD', 'Postdoc'])).min(0).default([]),
-  field: z.enum(['STEM', 'Non-STEM']),
-  fieldTags: z.array(z.string()).max(20),
+  programLevel: z.array(z.string()).min(0).default([]),
+  field: z.string().max(100).default('General'),
+  fieldTags: z.array(z.string()).max(20).default([]),
   country: z.string().min(2).max(100),
   region: z.string().max(100).nullable().optional(),
   hostOrg: z.string().min(2).max(200),
-  fundingType: z.enum(['Fully funded', 'Partial', 'Stipend', 'Tuition waiver', 'Paid', 'Unpaid', 'Competitive salary']).default('Fully funded'),
-  deadline: z.string().datetime(),
-  eligibility: z.string().min(5).max(10000),
-  requiredDocs: z.array(z.string()).max(50),
-  applicationLink: z.string().url(),
+  fundingType: z.string().max(100).default('Fully funded'),
+  deadline: z.string().nullable().optional().transform((val) => {
+    if (!val) return null
+    // Accept YYYY-MM-DD or full ISO datetime
+    const d = new Date(val)
+    return isNaN(d.getTime()) ? null : d.toISOString()
+  }),
+  eligibility: z.string().min(2).max(10000).default(''),
+  requiredDocs: z.array(z.string()).max(50).default([]),
+  applicationLink: z.string().max(2000).default(''),
   description: z.string().max(10000).nullable().optional(),
   featured: z.boolean().optional(),
   // Job/Internship-specific fields
