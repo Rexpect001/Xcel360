@@ -99,7 +99,7 @@ model Opportunity {
   region          String?
   hostOrg         String
   fundingType     String
-  deadline        DateTime
+  deadline        DateTime?
   eligibility     String               @db.Text
   requiredDocs    String[]
   applicationLink String
