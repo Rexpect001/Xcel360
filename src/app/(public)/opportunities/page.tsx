@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 async function getOpportunities() {
   try {
     const all = await (prisma as any).opportunity.findMany({
-      where: { status: 'OPEN', category: 'SCHOLARSHIP' },
+      where: { status: 'OPEN' },
       orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
     })
     // Deduplicate by normalised title — keep first occurrence (featured/soonest deadline first)
@@ -55,7 +55,7 @@ export default async function OpportunitiesPage() {
       <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-            Scholarship Opportunities
+            Opportunities
           </h1>
           <p className="text-blue-200 text-lg">
             {opportunities.length} opportunities across 50+ countries

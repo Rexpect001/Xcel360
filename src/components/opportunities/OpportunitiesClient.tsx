@@ -1,7 +1,7 @@
 'use client'
 import { useState, useMemo, lazy, Suspense } from 'react'
 import { Opportunity } from '@prisma/client'
-import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map } from 'lucide-react'
+import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, GraduationCap, Briefcase, Building2 } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
@@ -19,6 +19,7 @@ interface Props {
 export default function OpportunitiesClient({ initialOpportunities }: Props) {
   const { data: session } = useSession()
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState<'ALL' | 'SCHOLARSHIP' | 'JOB' | 'INTERNSHIP'>('ALL')
   const [filters, setFilters] = useState({
     programLevel: '',
     field: '',
@@ -32,6 +33,10 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
 
   const filtered = useMemo(() => {
     let result = initialOpportunities
+
+    if (category !== 'ALL') {
+      result = result.filter((o) => (o as any).category === category)
+    }
 
     if (search) {
       const q = search.toLowerCase()
@@ -70,10 +75,11 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
 
   const clearFilters = () => {
     setSearch('')
+    setCategory('ALL')
     setFilters((f) => ({ programLevel: '', field: '', country: '', fundingType: '', sortBy: f.sortBy }))
   }
 
-  const hasFilters = search || filters.programLevel || filters.field || filters.country || filters.fundingType
+  const hasFilters = search || category !== 'ALL' || filters.programLevel || filters.field || filters.country || filters.fundingType
 
   const handleSave = async (opportunityId: string) => {
     if (!session) {
@@ -96,8 +102,30 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     }
   }
 
+  const CATEGORY_TABS = [
+    { key: 'ALL' as const, label: 'All', icon: null },
+    { key: 'SCHOLARSHIP' as const, label: 'Scholarships', icon: <GraduationCap className="h-4 w-4" /> },
+    { key: 'JOB' as const, label: 'Jobs', icon: <Briefcase className="h-4 w-4" /> },
+    { key: 'INTERNSHIP' as const, label: 'Internships', icon: <Building2 className="h-4 w-4" /> },
+  ]
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Category tabs */}
+      <div className="flex gap-2 mb-5 flex-wrap">
+        {CATEGORY_TABS.map(({ key, label, icon }) => (
+          <button key={key} onClick={() => setCategory(key)}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors border',
+              category === key
+                ? 'bg-brand-700 text-white border-brand-700'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300 hover:text-brand-700'
+            )}>
+            {icon}{label}
+          </button>
+        ))}
+      </div>
+
       {/* Search + Filter bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
@@ -234,9 +262,21 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
                 <div className="h-1.5 bg-gradient-to-r from-brand-600 to-brand-400" />
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-2 mb-3">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getFundingBadgeColor(opp.fundingType)}`}>
-                      {opp.fundingType}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {(opp as any).category === 'JOB' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+                          <Briefcase className="h-3 w-3" />Job
+                        </span>
+                      )}
+                      {(opp as any).category === 'INTERNSHIP' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700">
+                          <Building2 className="h-3 w-3" />Internship
+                        </span>
+                      )}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getFundingBadgeColor(opp.fundingType)}`}>
+                        {opp.fundingType}
+                      </span>
+                    </div>
                     {opp.status === 'OPEN' ? (
                       <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Open</span>
                     ) : (
