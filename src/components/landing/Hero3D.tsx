@@ -23,77 +23,6 @@ const scholarshipRows = [
   { name: 'DAAD Scholarship', org: 'German Academic Exchange', flag: '🇩🇪', funding: 'Fully Funded', days: 23, color: 'bg-amber-50 text-amber-700' },
 ]
 
-// Geometric X pattern matching the logo style
-function GeometricXPattern({ className = '' }: { className?: string }) {
-  return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
-      <svg className="absolute w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="x-pattern" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
-            <path d="M30 30 L50 60 L30 90" stroke="rgba(3,105,161,0.05)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M90 30 L70 60 L90 90" stroke="rgba(3,105,161,0.05)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M50 60 L70 60" stroke="rgba(3,105,161,0.05)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M35 25 L45 15" stroke="rgba(3,105,161,0.07)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M85 25 L75 15" stroke="rgba(3,105,161,0.07)" strokeWidth="2" fill="none" strokeLinecap="round" />
-          </pattern>
-          <pattern id="dot-matrix" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-            <circle cx="20" cy="20" r="1" fill="rgba(3,105,161,0.08)" />
-            <circle cx="0" cy="0" r="0.5" fill="rgba(3,105,161,0.05)" />
-            <circle cx="40" cy="0" r="0.5" fill="rgba(3,105,161,0.05)" />
-            <circle cx="0" cy="40" r="0.5" fill="rgba(3,105,161,0.05)" />
-            <circle cx="40" cy="40" r="0.5" fill="rgba(3,105,161,0.05)" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#x-pattern)" />
-        <rect width="100%" height="100%" fill="url(#dot-matrix)" />
-      </svg>
-    </div>
-  )
-}
-
-// Animated floating geometric shapes
-function FloatingShapes() {
-  return (
-    <>
-      <motion.div className="absolute top-[15%] left-[10%] opacity-20"
-        animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-        <svg width="60" height="60" viewBox="0 0 60 60">
-          <polygon points="30,5 55,50 5,50" fill="none" stroke="rgba(3,105,161,0.4)" strokeWidth="1.5" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute top-[25%] right-[15%] opacity-15"
-        animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
-        <svg width="80" height="80" viewBox="0 0 80 80">
-          <path d="M20 20 L60 60 M60 20 L20 60" stroke="rgba(3,105,161,0.3)" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute bottom-[20%] left-[20%] opacity-15"
-        animate={{ y: [0, -15, 0], scale: [1, 1.05, 1] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
-        <svg width="50" height="50" viewBox="0 0 50 50">
-          <polygon points="25,5 42.5,15 42.5,35 25,45 7.5,35 7.5,15" fill="none" stroke="rgba(3,105,161,0.3)" strokeWidth="1.5" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute bottom-[30%] right-[10%] opacity-10"
-        animate={{ y: [0, 20, 0], x: [0, 10, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
-        <svg width="100" height="100" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(3,105,161,0.2)" strokeWidth="1" strokeDasharray="5,5" />
-          <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(3,105,161,0.15)" strokeWidth="1" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute top-[60%] left-[5%] w-2 h-2 rounded-full bg-brand-200"
-        animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.5, 0.2] }}
-        transition={{ duration: 3, repeat: Infinity }} />
-      <motion.div className="absolute bottom-[40%] right-[30%] w-2 h-2 rounded-full bg-amber-400/30"
-        animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.5, 0.2] }}
-        transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }} />
-    </>
-  )
-}
-
 export default function Hero3D() {
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -110,62 +39,104 @@ export default function Hero3D() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center overflow-hidden bg-white"
+      className="relative min-h-screen flex items-center overflow-hidden"
+      style={{ background: 'linear-gradient(150deg, #eef4ff 0%, #f8faff 40%, #fffbf5 100%)' }}
     >
-      {/* Geometric Pattern Background */}
-      <GeometricXPattern />
-      
-      {/* Subtle grid */}
-      <div className="absolute inset-0 opacity-[0.4]" style={{
-        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(3,105,161,0.07) 1px, transparent 0)',
-        backgroundSize: '32px 32px',
+      {/* Dot grid */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.08) 1px, transparent 1px)',
+        backgroundSize: '28px 28px',
       }} />
 
-      {/* Soft blue glows */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky-100 rounded-full opacity-60 blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full opacity-80 blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+      {/* Soft colour blobs */}
+      <div className="absolute -top-32 -right-32 w-[560px] h-[560px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)' }} />
+      <div className="absolute -bottom-32 -left-32 w-[480px] h-[480px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%)' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.05) 0%, transparent 70%)' }} />
 
-      {/* Floating geometric shapes */}
-      <FloatingShapes />
+      {/* Floating shapes */}
+      <motion.div className="absolute top-[12%] left-[8%] opacity-25 pointer-events-none"
+        animate={{ y: [0, -18, 0], rotate: [0, 8, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}>
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <polygon points="28,4 52,48 4,48" fill="none" stroke="#6366f1" strokeWidth="1.5" />
+        </svg>
+      </motion.div>
+      <motion.div className="absolute top-[22%] right-[12%] opacity-20 pointer-events-none"
+        animate={{ y: [0, 14, 0], rotate: [0, -6, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <path d="M18 18 L54 54 M54 18 L18 54" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </motion.div>
+      <motion.div className="absolute bottom-[18%] left-[18%] opacity-20 pointer-events-none"
+        animate={{ y: [0, -14, 0], scale: [1, 1.06, 1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}>
+        <svg width="48" height="48" viewBox="0 0 48 48">
+          <polygon points="24,4 40,14 40,34 24,44 8,34 8,14" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
+        </svg>
+      </motion.div>
+      <motion.div className="absolute bottom-[28%] right-[8%] opacity-15 pointer-events-none"
+        animate={{ y: [0, 18, 0], x: [0, 8, 0] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 2 }}>
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="40" fill="none" stroke="#6366f1" strokeWidth="1" strokeDasharray="6,4" />
+          <circle cx="45" cy="45" r="25" fill="none" stroke="#6366f1" strokeWidth="0.8" />
+        </svg>
+      </motion.div>
 
-      <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 w-full"
-      >
+      <motion.div style={{ y, opacity }}
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 w-full">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+          {/* ── Left: copy ── */}
           <div>
+            {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-full px-4 py-1.5 text-sm text-brand-700 mb-7"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium mb-7"
+              style={{ background: 'linear-gradient(90deg, #eef2ff, #fef3c7)', color: '#4338ca', border: '1px solid #c7d2fe' }}
             >
-              <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
-              <span>Trusted by 10,000+ scholarship seekers</span>
+              <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 flex-shrink-0" />
+              Trusted by 10,000+ scholarship seekers
             </motion.div>
 
+            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-5xl sm:text-6xl lg:text-[3.6rem] xl:text-7xl font-bold text-gray-900 leading-[1.08] tracking-tight"
+              className="text-5xl sm:text-6xl lg:text-[3.5rem] xl:text-7xl font-bold leading-[1.08] tracking-tight"
+              style={{ color: '#0f172a' }}
             >
               Find your{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400">
+              <span className="text-transparent bg-clip-text"
+                style={{ backgroundImage: 'linear-gradient(90deg, #f59e0b, #f97316, #fbbf24)' }}>
                 dream
               </span>{' '}
-              scholarship — for free.
+              scholarship —{' '}
+              <span className="text-transparent bg-clip-text"
+                style={{ backgroundImage: 'linear-gradient(90deg, #0369a1, #6366f1)' }}>
+                for free.
+              </span>
             </motion.h1>
 
+            {/* Body */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-5 text-lg text-gray-600 leading-relaxed max-w-xl"
+              className="mt-5 text-lg leading-relaxed max-w-xl"
+              style={{ color: '#475569' }}
             >
               We believe every student deserves access to world-class education. Discover 500+ scholarships, track deadlines, and connect with mentors — all free.
             </motion.p>
 
+            {/* Search */}
             <motion.form
               onSubmit={handleSearch}
               initial={{ opacity: 0, y: 20 }}
@@ -173,8 +144,9 @@ export default function Hero3D() {
               transition={{ duration: 0.6, delay: 0.45 }}
               className="mt-8"
             >
-              <div className="flex bg-white rounded-2xl shadow-[0_4px_24px_rgba(3,105,161,0.12)] border border-brand-100 overflow-hidden">
-                <div className="flex items-center pl-5 text-gray-400 flex-shrink-0">
+              <div className="flex bg-white rounded-2xl overflow-hidden"
+                style={{ boxShadow: '0 4px 32px rgba(99,102,241,0.12), 0 1px 4px rgba(0,0,0,0.06)', border: '1.5px solid #e0e7ff' }}>
+                <div className="flex items-center pl-5 flex-shrink-0" style={{ color: '#94a3b8' }}>
                   <Search className="h-5 w-5" />
                 </div>
                 <input
@@ -182,30 +154,32 @@ export default function Hero3D() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search scholarship, country, or field..."
-                  className="flex-1 px-4 py-4 text-gray-900 text-sm focus:outline-none placeholder:text-gray-400 min-w-0"
+                  className="flex-1 px-4 py-4 text-sm focus:outline-none placeholder:text-gray-400 min-w-0"
+                  style={{ color: '#0f172a' }}
                 />
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-brand-600 to-brand-700 text-white px-6 py-4 font-semibold text-sm hover:from-brand-700 hover:to-brand-800 transition-all flex items-center gap-2 whitespace-nowrap flex-shrink-0"
-                >
+                <button type="submit"
+                  className="px-6 py-4 font-semibold text-sm text-white flex items-center gap-2 whitespace-nowrap flex-shrink-0 transition-opacity hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)' }}>
                   Search <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
+
               <div className="flex items-center flex-wrap gap-2 mt-3">
-                <span className="text-gray-400 text-xs">Popular:</span>
+                <span className="text-xs" style={{ color: '#94a3b8' }}>Popular:</span>
                 {popularSearches.map((term) => (
-                  <button
-                    key={term}
-                    type="button"
+                  <button key={term} type="button"
                     onClick={() => router.push(`/opportunities?search=${encodeURIComponent(term)}`)}
-                    className="text-xs text-brand-600 hover:text-brand-800 border border-brand-200 hover:border-brand-400 px-2.5 py-1 rounded-full transition-all hover:bg-brand-50"
-                  >
+                    className="text-xs px-3 py-1 rounded-full transition-all"
+                    style={{ color: '#4338ca', border: '1px solid #c7d2fe', background: 'transparent' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#eef2ff' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
                     {term}
                   </button>
                 ))}
               </div>
             </motion.form>
 
+            {/* Perks */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -213,25 +187,26 @@ export default function Hero3D() {
               className="flex flex-wrap items-center gap-5 mt-7"
             >
               {perks.map((perk) => (
-                <span key={perk} className="flex items-center gap-1.5 text-sm text-gray-600">
-                  <CheckCircle className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                <span key={perk} className="flex items-center gap-1.5 text-sm" style={{ color: '#475569' }}>
+                  <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                   {perk}
                 </span>
               ))}
             </motion.div>
 
+            {/* Social proof */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.85 }}
-              className="flex items-center gap-4 mt-8 pt-8 border-t border-gray-100"
+              className="flex items-center gap-4 mt-8 pt-8"
+              style={{ borderTop: '1px solid #e2e8f0' }}
             >
               <div className="flex -space-x-2.5">
                 {communityAvatars.map((av) => (
-                  <div
-                    key={av.initials}
-                    className={`w-9 h-9 rounded-full ${av.bg} border-2 border-white flex items-center justify-center text-white text-xs font-bold shadow-sm`}
-                  >
+                  <div key={av.initials}
+                    className={`w-9 h-9 rounded-full ${av.bg} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}
+                    style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
                     {av.initials}
                   </div>
                 ))}
@@ -242,124 +217,124 @@ export default function Hero3D() {
                     <Star key={i} className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
                   ))}
                 </div>
-                <p className="text-gray-500 text-xs">
-                  Join <strong className="text-gray-800">10,000+</strong> students already on Xcel360
+                <p className="text-xs" style={{ color: '#64748b' }}>
+                  Join <strong style={{ color: '#0f172a' }}>10,000+</strong> students already on Xcel360
                 </p>
               </div>
             </motion.div>
           </div>
 
+          {/* ── Right: card ── */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="hidden lg:block relative"
           >
-            {/* Background pattern on card */}
-            <div className="absolute inset-0 bg-indigo-500/20 rounded-3xl blur-2xl scale-105 pointer-events-none" />
-            
-            <div className="relative bg-white rounded-3xl p-6 shadow-[0_32px_80px_rgba(0,0,0,0.45)] overflow-hidden">
-              {/* Subtle geometric watermark on card */}
-              <svg className="absolute inset-0 w-full h-full opacity-40" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="card-geo" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                    <path d="M10 30 L30 10 L50 30 L30 50 Z" fill="none" stroke="rgba(3,105,161,0.05)" strokeWidth="1" />
-                    <circle cx="30" cy="30" r="2" fill="rgba(3,105,161,0.05)" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#card-geo)" />
-              </svg>
-              
-              <div className="relative">
+            {/* Card glow */}
+            <div className="absolute inset-0 rounded-3xl blur-2xl scale-105 pointer-events-none"
+              style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(14,165,233,0.1))' }} />
+
+            <div className="relative bg-white rounded-3xl p-6 overflow-hidden"
+              style={{ boxShadow: '0 24px 64px rgba(99,102,241,0.15), 0 4px 16px rgba(0,0,0,0.06)', border: '1px solid #e0e7ff' }}>
+
+              {/* Coloured top stripe */}
+              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl"
+                style={{ background: 'linear-gradient(90deg, #0369a1, #6366f1, #f59e0b)' }} />
+
+              <div className="relative pt-2">
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h3 className="font-bold text-gray-900 text-base">Top Scholarships</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Updated daily</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Updated daily</p>
                   </div>
-                  <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5"
+                    style={{ background: '#dcfce7', color: '#15803d' }}>
                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                     Live
                   </span>
                 </div>
+
                 <div className="space-y-1 mb-5">
                   {scholarshipRows.map((item) => (
-                    <div key={item.name} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors group cursor-pointer">
-                      <div className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-lg flex-shrink-0">{item.flag}</div>
+                    <div key={item.name}
+                      className="flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-colors hover:bg-slate-50 group">
+                      <div className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0 border border-gray-100">
+                        {item.flag}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-gray-900 text-sm truncate group-hover:text-brand-700 transition-colors">{item.name}</div>
+                        <div className="font-semibold text-gray-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
+                          {item.name}
+                        </div>
                         <div className="text-xs text-gray-400 truncate">{item.org}</div>
                       </div>
                       <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${item.color}`}>{item.funding}</span>
-                        <span className={`text-xs font-medium ${item.days <= 30 ? 'text-red-500' : 'text-gray-400'}`}>{item.days}d left</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${item.color}`}>
+                          {item.funding}
+                        </span>
+                        <span className={`text-xs font-medium ${item.days <= 30 ? 'text-red-500' : 'text-gray-400'}`}>
+                          {item.days}d left
+                        </span>
                       </div>
                     </div>
                   ))}
                 </div>
-                <Link
-                  href="/opportunities"
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-600 to-brand-700 text-white py-3 rounded-xl text-sm font-semibold hover:from-brand-700 hover:to-brand-800 transition-all"
-                >
+
+                <Link href="/opportunities"
+                  className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)' }}>
                   Browse all scholarships <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
 
+            {/* Floating deadline badge */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-4 -right-6 bg-white rounded-2xl p-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] border border-gray-100 w-48 overflow-hidden"
-            >
-              {/* Mini geometric pattern */}
-              <svg className="absolute top-0 right-0 w-16 h-16 opacity-20" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 5 L35 20 L20 35 L5 20 Z" fill="none" stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
-              </svg>
-              
-              <div className="relative flex items-center gap-2 mb-1">
-                <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center">
+              className="absolute -top-5 -right-6 bg-white rounded-2xl p-3.5 w-48"
+              style={{ boxShadow: '0 12px 32px rgba(239,68,68,0.15), 0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #fee2e2' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-7 h-7 bg-red-50 rounded-lg flex items-center justify-center border border-red-100">
                   <Clock className="h-3.5 w-3.5 text-red-500" />
                 </div>
                 <span className="text-xs font-bold text-gray-900">Deadline Alert</span>
               </div>
-              <p className="relative text-xs text-gray-500">Chevening closes in <strong className="text-red-600">14 days</strong></p>
+              <p className="text-xs text-gray-500">Chevening closes in <strong className="text-red-600">14 days</strong></p>
             </motion.div>
 
+            {/* Floating match badge */}
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute -bottom-4 -left-6 bg-white rounded-2xl p-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.2)] border border-gray-100 w-52 overflow-hidden"
-            >
-              {/* Mini geometric pattern */}
-              <svg className="absolute bottom-0 left-0 w-16 h-16 opacity-20" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="40" cy="40" r="15" fill="none" stroke="rgba(16,185,129,0.3)" strokeWidth="1" />
-                <circle cx="40" cy="40" r="8" fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="1" />
-              </svg>
-              
-              <div className="relative flex items-center gap-2 mb-1">
-                <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center">
+              className="absolute -bottom-5 -left-6 bg-white rounded-2xl p-3.5 w-52"
+              style={{ boxShadow: '0 12px 32px rgba(16,185,129,0.12), 0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #d1fae5' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-7 h-7 bg-emerald-50 rounded-lg flex items-center justify-center border border-emerald-100">
                   <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
                 </div>
                 <span className="text-xs font-bold text-gray-900">New Match!</span>
               </div>
-              <p className="relative text-xs text-gray-500">3 scholarships match your profile</p>
+              <p className="text-xs text-gray-500">3 scholarships match your profile</p>
             </motion.div>
           </motion.div>
         </div>
       </motion.div>
 
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-brand-300"
-      >
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        style={{ color: '#94a3b8' }}>
         <span className="text-xs tracking-widest uppercase">Scroll</span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-5 h-8 border-2 border-brand-200 rounded-full flex items-start justify-center pt-1.5"
-        >
-          <div className="w-1 h-2 bg-brand-300 rounded-full" />
+          className="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
+          style={{ border: '2px solid #cbd5e1' }}>
+          <div className="w-1 h-2 rounded-full" style={{ background: '#94a3b8' }} />
         </motion.div>
       </motion.div>
     </section>
