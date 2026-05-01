@@ -17,7 +17,7 @@ export default function DeadlinesPage() {
 
   const upcoming = apps
     .filter((a) => daysUntilDeadline(a.opportunity.deadline) > 0)
-    .sort((a, b) => new Date(a.opportunity.deadline).getTime() - new Date(b.opportunity.deadline).getTime())
+    .sort((a, b) => new Date(a.opportunity.deadline ?? 0).getTime() - new Date(b.opportunity.deadline ?? 0).getTime())
 
   const past = apps.filter((a) => daysUntilDeadline(a.opportunity.deadline) <= 0)
 
