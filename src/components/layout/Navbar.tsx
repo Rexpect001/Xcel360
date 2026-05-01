@@ -58,7 +58,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
             <div className="relative h-8 w-28">
               <Image
-                src={transparent ? '/logo-white.jpg' : '/logo.jpg'}
+                src="/logo.jpg"
                 alt="Xcel360"
                 fill
                 className="object-contain object-left"
@@ -76,8 +76,8 @@ export default function Navbar() {
                 className={cn(
                   'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   ['/opportunities', '/jobs', '/internships'].some(p => pathname.startsWith(p))
-                    ? transparent ? 'text-white bg-white/10' : 'text-brand-700 bg-brand-50'
-                    : transparent ? 'text-white/85 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-brand-700 hover:bg-brand-50'
+                    ? transparent ? 'text-brand-700 bg-brand-50' : 'text-brand-700 bg-brand-50'
+                    : transparent ? 'text-[#0c4a6e] hover:text-brand-700 hover:bg-sky-100/60' : 'text-gray-600 hover:text-brand-700 hover:bg-brand-50'
                 )}
               >
                 Opportunities <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', oppsOpen && 'rotate-180')} />
@@ -111,10 +111,10 @@ export default function Navbar() {
                   'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   pathname === link.href
                     ? transparent
-                      ? 'text-white bg-white/10'
+                      ? 'text-brand-700 bg-brand-50'
                       : 'text-brand-700 bg-brand-50'
                     : transparent
-                      ? 'text-white/85 hover:text-white hover:bg-white/10'
+                      ? 'text-[#0c4a6e] hover:text-brand-700 hover:bg-sky-100/60'
                       : 'text-gray-600 hover:text-brand-700 hover:bg-brand-50'
                 )}
               >
@@ -132,7 +132,7 @@ export default function Navbar() {
                   className={cn(
                     'flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-all',
                     transparent
-                      ? 'text-white hover:bg-white/10'
+                      ? 'text-[#0c4a6e] hover:bg-sky-100/60'
                       : 'text-gray-700 hover:bg-gray-100'
                   )}
                 >
@@ -181,7 +181,7 @@ export default function Navbar() {
                   href="/signin"
                   className={cn(
                     'text-sm font-medium px-3 py-2 rounded-lg transition-colors',
-                    transparent ? 'text-white/90 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-brand-700'
+                    transparent ? 'text-[#0c4a6e] hover:text-brand-700 hover:bg-sky-100/60' : 'text-gray-700 hover:text-brand-700'
                   )}
                 >
                   Sign In
@@ -199,7 +199,7 @@ export default function Navbar() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setOpen(!open)}
-            className={cn('md:hidden p-2 rounded-xl transition-colors', transparent ? 'text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100')}
+            className={cn('md:hidden p-2 rounded-xl transition-colors', transparent ? 'text-[#0c4a6e] hover:bg-sky-100/60' : 'text-gray-700 hover:bg-gray-100')}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

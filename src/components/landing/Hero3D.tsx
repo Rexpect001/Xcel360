@@ -57,33 +57,33 @@ export default function Hero3D() {
         style={{ background: 'radial-gradient(circle, rgba(3,105,161,0.06) 0%, transparent 70%)' }} />
 
       {/* Floating shapes */}
-      <motion.div className="absolute top-[12%] left-[8%] opacity-25 pointer-events-none"
+      <motion.div className="absolute top-[12%] left-[8%] opacity-50 pointer-events-none"
         animate={{ y: [0, -18, 0], rotate: [0, 8, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}>
         <svg width="56" height="56" viewBox="0 0 56 56">
-          <polygon points="28,4 52,48 4,48" fill="none" stroke="#6366f1" strokeWidth="1.5" />
+          <polygon points="28,4 52,48 4,48" fill="none" stroke="#0369a1" strokeWidth="2" />
         </svg>
       </motion.div>
-      <motion.div className="absolute top-[22%] right-[12%] opacity-20 pointer-events-none"
+      <motion.div className="absolute top-[22%] right-[12%] opacity-40 pointer-events-none"
         animate={{ y: [0, 14, 0], rotate: [0, -6, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
         <svg width="72" height="72" viewBox="0 0 72 72">
-          <path d="M18 18 L54 54 M54 18 L18 54" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" />
+          <path d="M18 18 L54 54 M54 18 L18 54" stroke="#0369a1" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       </motion.div>
-      <motion.div className="absolute bottom-[18%] left-[18%] opacity-20 pointer-events-none"
+      <motion.div className="absolute bottom-[18%] left-[18%] opacity-45 pointer-events-none"
         animate={{ y: [0, -14, 0], scale: [1, 1.06, 1] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}>
         <svg width="48" height="48" viewBox="0 0 48 48">
-          <polygon points="24,4 40,14 40,34 24,44 8,34 8,14" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
+          <polygon points="24,4 40,14 40,34 24,44 8,34 8,14" fill="none" stroke="#f59e0b" strokeWidth="2" />
         </svg>
       </motion.div>
-      <motion.div className="absolute bottom-[28%] right-[8%] opacity-15 pointer-events-none"
+      <motion.div className="absolute bottom-[28%] right-[8%] opacity-35 pointer-events-none"
         animate={{ y: [0, 18, 0], x: [0, 8, 0] }}
         transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 2 }}>
         <svg width="90" height="90" viewBox="0 0 90 90">
-          <circle cx="45" cy="45" r="40" fill="none" stroke="#6366f1" strokeWidth="1" strokeDasharray="6,4" />
-          <circle cx="45" cy="45" r="25" fill="none" stroke="#6366f1" strokeWidth="0.8" />
+          <circle cx="45" cy="45" r="40" fill="none" stroke="#0284c7" strokeWidth="1.5" strokeDasharray="6,4" />
+          <circle cx="45" cy="45" r="25" fill="none" stroke="#0284c7" strokeWidth="1" />
         </svg>
       </motion.div>
 
