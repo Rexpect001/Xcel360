@@ -4,7 +4,7 @@ import {
   Send, Users, Mail, Clock, CheckCircle, XCircle, Loader2,
   RefreshCw, Bold, Italic, Underline, Link, List, ListOrdered,
   Quote, Minus, Undo, Redo, Paperclip, X, Upload, ChevronDown,
-  FileText, Image, File, Save,
+  FileText, Image, File, Save, Code,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -180,6 +180,7 @@ function RichTextEditor({
 }) {
   const editorRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
+  const [sourceMode, setSourceMode] = useState(false)
 
   useEffect(() => {
     if (editorRef.current && !initialized.current) {
@@ -210,12 +211,29 @@ function RichTextEditor({
     if (url) exec('createLink', url)
   }
 
-  const TB = ({ onClick, icon, title }: { onClick: () => void; icon: React.ReactNode; title: string }) => (
+  const toggleSource = () => {
+    if (!sourceMode) {
+      // switching TO source: show raw HTML in textarea
+      setSourceMode(true)
+    } else {
+      // switching FROM source: apply textarea value as rendered HTML
+      if (editorRef.current) {
+        const ta = document.getElementById('html-source-textarea') as HTMLTextAreaElement | null
+        if (ta) {
+          editorRef.current.innerHTML = ta.value
+          onChange(ta.value)
+        }
+      }
+      setSourceMode(false)
+    }
+  }
+
+  const TB = ({ onClick, icon, title, active }: { onClick: () => void; icon: React.ReactNode; title: string; active?: boolean }) => (
     <button
       type="button"
       onMouseDown={e => { e.preventDefault(); onClick() }}
       title={title}
-      className="p-1.5 rounded hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+      className={`p-1.5 rounded transition-colors ${active ? 'bg-brand-100 text-brand-700' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
     >
       {icon}
     </button>
@@ -224,29 +242,47 @@ function RichTextEditor({
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-brand-500">
       <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-gray-100 bg-gray-50 flex-wrap">
-        <TB onClick={() => exec('bold')}                          icon={<Bold className="h-3.5 w-3.5" />}        title="Bold" />
-        <TB onClick={() => exec('italic')}                        icon={<Italic className="h-3.5 w-3.5" />}      title="Italic" />
-        <TB onClick={() => exec('underline')}                     icon={<Underline className="h-3.5 w-3.5" />}   title="Underline" />
-        <div className="w-px h-4 bg-gray-200 mx-1" />
-        <TB onClick={insertLink}                                  icon={<Link className="h-3.5 w-3.5" />}        title="Insert link" />
-        <div className="w-px h-4 bg-gray-200 mx-1" />
-        <TB onClick={() => exec('insertUnorderedList')}           icon={<List className="h-3.5 w-3.5" />}        title="Bullet list" />
-        <TB onClick={() => exec('insertOrderedList')}             icon={<ListOrdered className="h-3.5 w-3.5" />} title="Numbered list" />
-        <TB onClick={() => exec('formatBlock', 'blockquote')}     icon={<Quote className="h-3.5 w-3.5" />}       title="Blockquote" />
-        <TB onClick={() => exec('insertHorizontalRule')}          icon={<Minus className="h-3.5 w-3.5" />}       title="Horizontal rule" />
-        <div className="w-px h-4 bg-gray-200 mx-1" />
-        <TB onClick={() => exec('undo')}                          icon={<Undo className="h-3.5 w-3.5" />}        title="Undo" />
-        <TB onClick={() => exec('redo')}                          icon={<Redo className="h-3.5 w-3.5" />}        title="Redo" />
-        <TB onClick={() => exec('removeFormat')}                  icon={<X className="h-3.5 w-3.5" />}           title="Clear formatting" />
+        {!sourceMode && <>
+          <TB onClick={() => exec('bold')}                          icon={<Bold className="h-3.5 w-3.5" />}        title="Bold" />
+          <TB onClick={() => exec('italic')}                        icon={<Italic className="h-3.5 w-3.5" />}      title="Italic" />
+          <TB onClick={() => exec('underline')}                     icon={<Underline className="h-3.5 w-3.5" />}   title="Underline" />
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <TB onClick={insertLink}                                  icon={<Link className="h-3.5 w-3.5" />}        title="Insert link" />
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <TB onClick={() => exec('insertUnorderedList')}           icon={<List className="h-3.5 w-3.5" />}        title="Bullet list" />
+          <TB onClick={() => exec('insertOrderedList')}             icon={<ListOrdered className="h-3.5 w-3.5" />} title="Numbered list" />
+          <TB onClick={() => exec('formatBlock', 'blockquote')}     icon={<Quote className="h-3.5 w-3.5" />}       title="Blockquote" />
+          <TB onClick={() => exec('insertHorizontalRule')}          icon={<Minus className="h-3.5 w-3.5" />}       title="Horizontal rule" />
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <TB onClick={() => exec('undo')}                          icon={<Undo className="h-3.5 w-3.5" />}        title="Undo" />
+          <TB onClick={() => exec('redo')}                          icon={<Redo className="h-3.5 w-3.5" />}        title="Redo" />
+          <TB onClick={() => exec('removeFormat')}                  icon={<X className="h-3.5 w-3.5" />}           title="Clear formatting" />
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+        </>}
+        <TB onClick={toggleSource} icon={<Code className="h-3.5 w-3.5" />} title={sourceMode ? 'Apply HTML & switch to visual' : 'Edit raw HTML'} active={sourceMode} />
+        {sourceMode && <span className="text-xs text-brand-600 font-medium ml-1">HTML source — paste your code, then click <Code className="inline h-3 w-3" /> to apply</span>}
       </div>
+
+      {/* Visual editor */}
       <div
         ref={editorRef}
-        contentEditable
+        contentEditable={!sourceMode}
         suppressContentEditableWarning
         onInput={handleInput}
-        className="min-h-[280px] px-4 py-3 text-sm text-gray-800 outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+        className={`min-h-[280px] px-4 py-3 text-sm text-gray-800 outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 ${sourceMode ? 'hidden' : ''}`}
         style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
       />
+
+      {/* Source textarea */}
+      {sourceMode && (
+        <textarea
+          id="html-source-textarea"
+          defaultValue={value}
+          className="w-full min-h-[280px] px-4 py-3 text-xs font-mono text-gray-800 outline-none bg-gray-950 text-green-400 resize-y"
+          placeholder="Paste your HTML here, then click the </> button above to apply it..."
+          spellCheck={false}
+        />
+      )}
     </div>
   )
 }
