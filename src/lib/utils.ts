@@ -19,6 +19,15 @@ export function daysUntilDeadline(deadline: Date | string | null | undefined): n
   return differenceInDays(new Date(deadline), new Date())
 }
 
+export function deadlineLabel(days: number): { text: string; color: string } {
+  if (days >= 999) return { text: 'Open', color: 'text-emerald-600 bg-emerald-50' }
+  if (days <= 0)   return { text: 'Closed', color: 'text-gray-400 bg-gray-100' }
+  if (days === 1)  return { text: '1 day left', color: 'text-red-600 bg-red-50' }
+  if (days <= 7)   return { text: `${days} days left`, color: 'text-red-600 bg-red-50' }
+  if (days <= 30)  return { text: `${days} days left`, color: 'text-orange-600 bg-orange-50' }
+  return { text: `${days} days left`, color: 'text-emerald-600 bg-emerald-50' }
+}
+
 export function getDeadlineUrgency(daysLeft: number): 'critical' | 'urgent' | 'moderate' | 'safe' {
   if (daysLeft <= 2) return 'critical'
   if (daysLeft <= 7) return 'urgent'

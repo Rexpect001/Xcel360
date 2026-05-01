@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { MessageCircle, Users, Zap, Globe } from 'lucide-react'
+import { MessageCircle, Users, Zap, Globe, Youtube } from 'lucide-react'
 
 const benefits = [
   { icon: Users, text: 'Connect with 10,000+ scholars' },
@@ -8,104 +8,97 @@ const benefits = [
   { icon: Globe, text: 'Network across 80+ countries' },
 ]
 
-// Inverse watermark pattern
-function InverseWatermarkPattern() {
-  return (
-    <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="community-watermark" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-          <circle cx="50" cy="50" r="2" fill="rgba(3,105,161,0.06)" />
-          <circle cx="25" cy="25" r="1" fill="rgba(3,105,161,0.05)" />
-          <circle cx="75" cy="75" r="1" fill="rgba(3,105,161,0.05)" />
-          <circle cx="25" cy="75" r="0.7" fill="rgba(3,105,161,0.04)" />
-          <circle cx="75" cy="25" r="0.7" fill="rgba(3,105,161,0.04)" />
-          {/* Community symbol hints */}
-          <circle cx="50" cy="20" r="0.8" fill="rgba(3,105,161,0.03)" />
-          <circle cx="35" cy="35" r="0.8" fill="rgba(3,105,161,0.03)" />
-          <circle cx="65" cy="35" r="0.8" fill="rgba(3,105,161,0.03)" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#community-watermark)" />
-    </svg>
-  )
-}
-
 export default function CommunityJoin() {
   return (
-    <section className="relative py-20 bg-white overflow-hidden">
-      {/* Inverse watermark pattern */}
-      <InverseWatermarkPattern />
-      
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-brand-50/50 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-sky-50/50 to-transparent rounded-full blur-3xl" />
-      
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-24 overflow-hidden" style={{ background: '#0f172a' }}>
+      {/* Dot grid */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.12) 1px, transparent 1px)',
+        backgroundSize: '28px 28px',
+      }} />
+      {/* Glows */}
+      <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)' }} />
+      <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)' }} />
+
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Icon */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: 'spring', delay: 0.1 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mb-6 shadow-lg"
-          >
-            <MessageCircle className="h-8 w-8 text-white" />
-          </motion.div>
-          
-          <span className="inline-flex items-center gap-1.5 text-brand-600 text-sm font-medium mb-3">
-            <span className="w-1.5 h-1.5 bg-brand-500 rounded-full" />
-            Join the Community
-          </span>
-          
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-4">
-            Join our WhatsApp Channel
-          </h2>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto mb-8">
-            Get instant updates on new scholarships, deadline reminders, and connect with fellow applicants. 
-            Be part of a supportive community that helps each other succeed.
-          </p>
+          initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
+          transition={{ type: 'spring', delay: 0.1 }}
+          className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 shadow-xl"
+          style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
+          <MessageCircle className="h-8 w-8 text-white" />
+        </motion.div>
 
-          {/* Benefits */}
-          <div className="flex flex-wrap justify-center gap-6 mb-10">
-            {benefits.map((benefit, i) => {
-              const Icon = benefit.icon
-              return (
-                <motion.div
-                  key={benefit.text}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 + i * 0.1 }}
-                  className="flex items-center gap-2 text-sm text-gray-600"
-                >
-                  <Icon className="h-4 w-4 text-brand-500" />
-                  <span>{benefit.text}</span>
-                </motion.div>
-              )
-            })}
-          </div>
+        <motion.span
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full mb-5"
+          style={{ background: 'rgba(99,102,241,0.15)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.2)' }}>
+          Join the Community
+        </motion.span>
 
+        <motion.h2
+          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="text-3xl md:text-4xl font-bold mb-4 text-white tracking-tight">
+          Stay connected, stay ahead
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ delay: 0.15 }}
+          className="text-lg max-w-2xl mx-auto mb-10"
+          style={{ color: '#94a3b8' }}>
+          Get instant updates on new scholarships, deadline reminders, and connect with fellow applicants who are on the same journey.
+        </motion.p>
+
+        {/* Benefits */}
+        <div className="flex flex-wrap justify-center gap-6 mb-12">
+          {benefits.map((benefit, i) => {
+            const Icon = benefit.icon
+            return (
+              <motion.div
+                key={benefit.text}
+                initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.2 + i * 0.08 }}
+                className="flex items-center gap-2 text-sm"
+                style={{ color: '#cbd5e1' }}>
+                <Icon className="h-4 w-4" style={{ color: '#6366f1' }} />
+                {benefit.text}
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <motion.a
             href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl"
-          >
+            target="_blank" rel="noopener noreferrer"
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white shadow-lg transition-opacity hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', boxShadow: '0 8px 32px rgba(34,197,94,0.3)' }}>
             <MessageCircle className="h-5 w-5" />
             Join WhatsApp Channel
           </motion.a>
-          
-          <p className="text-gray-400 text-xs mt-4">
-            Free to join · No spam · Instant notifications
-          </p>
-        </motion.div>
+          <motion.a
+            href="https://www.youtube.com/@Xcel_360"
+            target="_blank" rel="noopener noreferrer"
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold transition-all"
+            style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', border: '1.5px solid rgba(255,255,255,0.1)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}>
+            <Youtube className="h-5 w-5 text-red-400" />
+            Watch on YouTube
+          </motion.a>
+        </div>
+
+        <p className="mt-6 text-xs" style={{ color: '#475569' }}>
+          Free to join · No spam · Instant notifications
+        </p>
       </div>
     </section>
   )

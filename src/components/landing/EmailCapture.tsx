@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Bell, CheckCircle } from 'lucide-react'
+import { Bell, CheckCircle, ArrowRight } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 export default function EmailCapture() {
@@ -18,56 +18,70 @@ export default function EmailCapture() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-      if (res.ok) {
-        setSubmitted(true)
-        toast.success("You're on the list!")
-      } else {
-        toast.error('Something went wrong. Try again.')
-      }
-    } catch {
-      toast.error('Something went wrong.')
-    } finally {
-      setLoading(false)
-    }
+      if (res.ok) { setSubmitted(true); toast.success("You're on the list!") }
+      else toast.error('Something went wrong. Try again.')
+    } catch { toast.error('Something went wrong.') }
+    finally { setLoading(false) }
   }
 
   return (
-    <section className="py-20" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%)' }}>
-      <div className="max-w-2xl mx-auto px-4 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-brand-100 rounded-xl mb-6">
-          <Bell className="h-6 w-6 text-brand-700" />
+    <section className="relative py-24 overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #eef4ff 0%, #f8faff 50%, #fffbf5 100%)' }}>
+      {/* Dot grid */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.07) 1px, transparent 1px)',
+        backgroundSize: '28px 28px',
+      }} />
+      {/* Glows */}
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
+      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)' }} />
+
+      <div className="relative max-w-xl mx-auto px-4 text-center">
+        {/* Icon */}
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6 shadow-md text-white"
+          style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)' }}>
+          <Bell className="h-7 w-7" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">
-          Get alerts for new scholarships
+
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3" style={{ color: '#0f172a' }}>
+          Never miss a scholarship
         </h2>
-        <p className="text-gray-600 mb-8">
+        <p className="text-lg mb-10" style={{ color: '#64748b' }}>
           Be the first to know when opportunities matching your profile are posted.
         </p>
 
         {submitted ? (
-          <div className="flex items-center justify-center gap-2 text-gray-900">
-            <CheckCircle className="h-5 w-5 text-emerald-500" />
-            <span className="font-medium">You&apos;re subscribed! We&apos;ll be in touch.</span>
+          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl"
+            style={{ background: '#ecfdf5', border: '1.5px solid #bbf7d0' }}>
+            <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+            <span className="font-medium" style={{ color: '#065f46' }}>You&apos;re subscribed! We&apos;ll be in touch.</span>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
               required
-              className="flex-1 px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 bg-white border border-blue-200 text-gray-900 placeholder:text-gray-400 shadow-sm"
+              className="flex-1 px-5 py-4 rounded-2xl text-sm focus:outline-none bg-white placeholder:text-gray-400"
+              style={{
+                border: '1.5px solid #e0e7ff',
+                boxShadow: '0 2px 12px rgba(99,102,241,0.08)',
+                color: '#0f172a',
+              }}
             />
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors disabled:opacity-60 shadow-sm"
-            >
-              {loading ? 'Subscribing...' : 'Get Alerts'}
+            <button type="submit" disabled={loading}
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50 whitespace-nowrap"
+              style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)', boxShadow: '0 4px 16px rgba(99,102,241,0.25)' }}>
+              {loading ? 'Subscribing...' : <><ArrowRight className="h-4 w-4" />Get Alerts</>}
             </button>
           </form>
         )}
+
+        <p className="mt-5 text-xs" style={{ color: '#94a3b8' }}>
+          No spam · Unsubscribe anytime · 100% free
+        </p>
       </div>
     </section>
   )

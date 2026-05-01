@@ -5,7 +5,7 @@ import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, 
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
-import { formatDate, daysUntilDeadline, getFundingBadgeColor, cn } from '@/lib/utils'
+import { formatDate, daysUntilDeadline, deadlineLabel, getFundingBadgeColor, cn } from '@/lib/utils'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
@@ -297,9 +297,9 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
 
                     <div className="flex items-center gap-3 text-xs text-gray-500 mb-4">
                       <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{opp.country}</span>
-                      <span className={`flex items-center gap-1 font-medium ${days <= 30 ? 'text-orange-500' : 'text-gray-500'}`}>
+                      <span className={`flex items-center gap-1 font-medium ${deadlineLabel(days).color.split(' ')[0]}`}>
                         <Calendar className="h-3.5 w-3.5" />
-                        {days > 0 ? `${days}d left` : 'Closed'}
+                        {deadlineLabel(days).text}
                       </span>
                     </div>
                   </Link>
