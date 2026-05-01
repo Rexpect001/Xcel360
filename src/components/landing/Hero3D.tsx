@@ -40,21 +40,21 @@ export default function Hero3D() {
     <section
       ref={ref}
       className="relative min-h-screen flex items-center overflow-hidden"
-      style={{ background: 'linear-gradient(150deg, #eef4ff 0%, #f8faff 40%, #fffbf5 100%)' }}
+      style={{ background: 'linear-gradient(150deg, #0f172a 0%, #1e1b4b 50%, #0c1a35 100%)' }}
     >
       {/* Dot grid */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.08) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle, rgba(165,180,252,0.08) 1px, transparent 1px)',
         backgroundSize: '28px 28px',
       }} />
 
-      {/* Soft colour blobs */}
+      {/* Colour blobs */}
       <div className="absolute -top-32 -right-32 w-[560px] h-[560px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)' }} />
       <div className="absolute -bottom-32 -left-32 w-[480px] h-[480px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%)' }} />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.05) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.08) 0%, transparent 70%)' }} />
 
       {/* Floating shapes */}
       <motion.div className="absolute top-[12%] left-[8%] opacity-25 pointer-events-none"
@@ -99,7 +99,7 @@ export default function Hero3D() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium mb-7"
-              style={{ background: 'linear-gradient(90deg, #eef2ff, #fef3c7)', color: '#4338ca', border: '1px solid #c7d2fe' }}
+              style={{ background: 'rgba(99,102,241,0.15)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)' }}
             >
               <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 flex-shrink-0" />
               Trusted by 10,000+ scholarship seekers
@@ -110,8 +110,7 @@ export default function Hero3D() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-5xl sm:text-6xl lg:text-[3.5rem] xl:text-7xl font-bold leading-[1.08] tracking-tight"
-              style={{ color: '#0f172a' }}
+              className="text-5xl sm:text-6xl lg:text-[3.5rem] xl:text-7xl font-bold leading-[1.08] tracking-tight text-white"
             >
               Find your{' '}
               <span className="text-transparent bg-clip-text"
@@ -131,7 +130,7 @@ export default function Hero3D() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.35 }}
               className="mt-5 text-lg leading-relaxed max-w-xl"
-              style={{ color: '#475569' }}
+              style={{ color: '#94a3b8' }}
             >
               We believe every student deserves access to world-class education. Discover 500+ scholarships, track deadlines, and connect with mentors — all free.
             </motion.p>
@@ -145,7 +144,7 @@ export default function Hero3D() {
               className="mt-8"
             >
               <div className="flex bg-white rounded-2xl overflow-hidden"
-                style={{ boxShadow: '0 4px 32px rgba(99,102,241,0.12), 0 1px 4px rgba(0,0,0,0.06)', border: '1.5px solid #e0e7ff' }}>
+                style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.2)', border: '1.5px solid rgba(255,255,255,0.08)' }}>
                 <div className="flex items-center pl-5 flex-shrink-0" style={{ color: '#94a3b8' }}>
                   <Search className="h-5 w-5" />
                 </div>
@@ -165,13 +164,13 @@ export default function Hero3D() {
               </div>
 
               <div className="flex items-center flex-wrap gap-2 mt-3">
-                <span className="text-xs" style={{ color: '#94a3b8' }}>Popular:</span>
+                <span className="text-xs" style={{ color: '#64748b' }}>Popular:</span>
                 {popularSearches.map((term) => (
                   <button key={term} type="button"
                     onClick={() => router.push(`/opportunities?search=${encodeURIComponent(term)}`)}
                     className="text-xs px-3 py-1 rounded-full transition-all"
-                    style={{ color: '#4338ca', border: '1px solid #c7d2fe', background: 'transparent' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#eef2ff' }}
+                    style={{ color: '#a5b4fc', border: '1px solid rgba(165,180,252,0.25)', background: 'transparent' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(165,180,252,0.1)' }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
                     {term}
                   </button>
@@ -187,7 +186,7 @@ export default function Hero3D() {
               className="flex flex-wrap items-center gap-5 mt-7"
             >
               {perks.map((perk) => (
-                <span key={perk} className="flex items-center gap-1.5 text-sm" style={{ color: '#475569' }}>
+                <span key={perk} className="flex items-center gap-1.5 text-sm" style={{ color: '#94a3b8' }}>
                   <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                   {perk}
                 </span>
@@ -200,7 +199,7 @@ export default function Hero3D() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.85 }}
               className="flex items-center gap-4 mt-8 pt-8"
-              style={{ borderTop: '1px solid #e2e8f0' }}
+              style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
             >
               <div className="flex -space-x-2.5">
                 {communityAvatars.map((av) => (
@@ -218,7 +217,7 @@ export default function Hero3D() {
                   ))}
                 </div>
                 <p className="text-xs" style={{ color: '#64748b' }}>
-                  Join <strong style={{ color: '#0f172a' }}>10,000+</strong> students already on Xcel360
+                  Join <strong style={{ color: '#e2e8f0' }}>10,000+</strong> students already on Xcel360
                 </p>
               </div>
             </motion.div>
