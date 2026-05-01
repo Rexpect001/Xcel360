@@ -155,7 +155,7 @@ export default function ApplicationsPage() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-50 text-xs text-gray-400">
-                  Deadline: {formatDate(selected.opportunity.deadline)}
+                  Deadline: {selected.opportunity.deadline ? formatDate(selected.opportunity.deadline) : 'No deadline'}
                 </div>
               </div>
             ) : (
