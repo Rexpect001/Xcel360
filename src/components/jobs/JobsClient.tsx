@@ -57,7 +57,7 @@ export default function JobsClient({ initialJobs, mode }: Props) {
     if (filters.remote) result = result.filter((o) => o.remote)
 
     if (filters.sortBy === 'deadline') {
-      result = [...result].sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
     } else if (filters.sortBy === 'newest') {
       result = [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     } else if (filters.sortBy === 'featured') {

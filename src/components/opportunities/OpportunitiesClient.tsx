@@ -63,7 +63,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     }
 
     if (filters.sortBy === 'deadline') {
-      result = [...result].sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
     } else if (filters.sortBy === 'newest') {
       result = [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     } else if (filters.sortBy === 'featured') {
