@@ -32,11 +32,13 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       description,
       url: `${BASE}/opportunities/${opp.id}`,
       type: 'article',
+      images: [{ url: `${BASE}/api/og?id=${opp.id}`, width: 1200, height: 630, alt: opp.title }],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: opp.title,
       description,
+      images: [`${BASE}/api/og?id=${opp.id}`],
     },
   }
 }
