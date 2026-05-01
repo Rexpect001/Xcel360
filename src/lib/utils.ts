@@ -14,7 +14,8 @@ export function formatRelativeDate(date: Date | string): string {
   return formatDistanceToNow(new Date(date), { addSuffix: true })
 }
 
-export function daysUntilDeadline(deadline: Date | string): number {
+export function daysUntilDeadline(deadline: Date | string | null | undefined): number {
+  if (!deadline) return 999
   return differenceInDays(new Date(deadline), new Date())
 }
 
