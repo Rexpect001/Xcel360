@@ -620,6 +620,7 @@ export default function AdminEmailPage() {
   const [tab, setTab] = useState<'compose' | 'campaigns' | 'templates' | 'log'>('compose')
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loadingCampaigns, setLoadingCampaigns] = useState(false)
+  const [resendConfigured, setResendConfigured] = useState<boolean | null>(null)
 
   const [showGallery, setShowGallery] = useState(false)
   const [editorKey, setEditorKey] = useState(0)
@@ -680,7 +681,10 @@ export default function AdminEmailPage() {
     } finally { setLoadingLog(false) }
   }, [])
 
-  useEffect(() => { loadCampaigns(); loadTemplates() }, [loadCampaigns, loadTemplates])
+  useEffect(() => {
+    loadCampaigns(); loadTemplates()
+    fetch('/api/admin/email/status').then(r => r.json()).then(d => setResendConfigured(d.resendConfigured ?? false)).catch(() => setResendConfigured(false))
+  }, [loadCampaigns, loadTemplates])
   useEffect(() => { if (tab === 'log') loadLog(1) }, [tab, loadLog])
 
   const resetForm = () => {
@@ -795,6 +799,20 @@ export default function AdminEmailPage() {
           ))}
         </div>
       </div>
+
+      {/* Resend not configured warning */}
+      {resendConfigured === false && (
+        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4 mb-6">
+          <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="font-semibold text-red-700">Email sending is not configured</p>
+            <p className="text-red-600 mt-0.5">
+              <code className="bg-red-100 px-1 rounded">RESEND_API_KEY</code> is missing from your environment.
+              Get a free key at <strong>resend.com</strong>, add it to your <code className="bg-red-100 px-1 rounded">.env.local</code> and Vercel settings, then restart the server.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Compose ── */}
       {tab === 'compose' && (
