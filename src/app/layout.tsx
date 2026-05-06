@@ -69,6 +69,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: BASE,
   },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-icon.svg',
+  },
   verification: {
     google: 'HqtM8s2pElCiihxma2gV07HWCRTF8hM4J6AZ9gPGaW0',
   },

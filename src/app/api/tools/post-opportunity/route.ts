@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const {
-    postType,
+    postType, postedBy,
     title, hostOrg, country, fundingType, field, programLevel,
     deadline, eligibility, description, applicationLink,
     requiredDocs, fieldTags, featured, status,
@@ -75,6 +75,16 @@ export async function POST(req: NextRequest) {
         remote:          remote === true,
         experienceLevel: experienceLevel ?? null,
         skills:          Array.isArray(skills) ? skills : [],
+        postedBy:        postedBy ?? null,
+      },
+    })
+
+    await db.toolPostActivity.create({
+      data: {
+        poster:        postedBy ?? 'anonymous',
+        opportunityId: opportunity.id,
+        title:         opportunity.title,
+        category:      opportunity.category,
       },
     })
   } catch (err: unknown) {

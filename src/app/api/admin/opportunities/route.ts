@@ -34,16 +34,39 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url)
     const category = searchParams.get('category')
-    const db = prisma as any
-    const opportunities = await db.opportunity.findMany({
-      where: category ? { category } : undefined,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        _count: { select: { savedBy: true, applications: true } },
-      },
-    })
+    const search = searchParams.get('search')?.trim() || ''
+    const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50')))
+    const skip = (page - 1) * limit
 
-    return createSecureResponse(opportunities, 200, req)
+    const where: any = {}
+    if (category) where.category = category
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { hostOrg: { contains: search, mode: 'insensitive' } },
+      ]
+    }
+
+    const db = prisma as any
+    const [opportunities, total] = await Promise.all([
+      db.opportunity.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: {
+          _count: { select: { savedBy: true, applications: true } },
+        },
+      }),
+      db.opportunity.count({ where }),
+    ])
+
+    return createSecureResponse(
+      { data: opportunities, total, page, pages: Math.ceil(total / limit) },
+      200,
+      req
+    )
   } catch {
     return createSecureResponse({ error: 'Forbidden' }, 403, req)
   }

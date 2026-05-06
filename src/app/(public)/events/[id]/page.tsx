@@ -18,7 +18,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     title: event.title,
     description,
     alternates: { canonical: `/events/${event.id}` },
-    openGraph: { title: event.title, description, url: `${BASE}/events/${event.id}`, type: 'article' },
+    openGraph: {
+      title: event.title, description, url: `${BASE}/events/${event.id}`, type: 'article',
+      images: [{ url: `${BASE}/api/og?id=${event.id}&type=event`, width: 1200, height: 630, alt: event.title }],
+    },
+    twitter: { card: 'summary_large_image', title: event.title, description, images: [`${BASE}/api/og?id=${event.id}&type=event`] },
   }
 }
 

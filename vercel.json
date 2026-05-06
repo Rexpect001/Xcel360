@@ -9,7 +9,7 @@
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/email-batch",
+      "path": "/api/cron/email-campaigns",
       "schedule": "0 7 * * *"
     }
   ]

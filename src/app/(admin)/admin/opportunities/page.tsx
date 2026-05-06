@@ -1,11 +1,13 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { Plus, Pencil, Trash2, Star, StarOff, Search, Bot, Loader2, ChevronDown, ChevronUp, Sparkles, ImagePlus, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, ChevronLeft, ChevronRight, Users } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
-import * as XLSX from 'xlsx'
+// xlsx is lazy-loaded only when export/import is triggered — avoids 500KB upfront parse
+
+const PAGE_SIZE = 50
 
 const emptyForm = {
   title: '',
@@ -26,19 +28,18 @@ const emptyForm = {
 
 export default function AdminOpportunitiesPage() {
   const [opps, setOpps] = useState<any[]>([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const [pages, setPages] = useState(1)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editOpp, setEditOpp] = useState<any | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
-  const [aiPanel, setAiPanel] = useState(false)
-  const [aiText, setAiText] = useState('')
-  const [aiImage, setAiImage] = useState<{ data: string; mediaType: string; preview: string } | null>(null)
-  const [extracting, setExtracting] = useState(false)
-  const [aiError, setAiError] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const xlsxInputRef = useRef<HTMLInputElement>(null)
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Detail view modal
   const [detailOpp, setDetailOpp] = useState<any | null>(null)
@@ -55,11 +56,41 @@ export default function AdminOpportunitiesPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkLoading, setBulkLoading] = useState(false)
 
-  useEffect(() => {
-    fetch('/api/admin/opportunities')
-      .then((r) => r.json())
-      .then((d) => { setOpps(Array.isArray(d) ? d : []); setLoading(false) })
+  // Poster activity
+  const [posterStats, setPosterStats] = useState<{ poster: string; _count: { _all: number } }[]>([])
+  const [posterLog, setPosterLog] = useState<any[]>([])
+  const [showPosterPanel, setShowPosterPanel] = useState(false)
+
+  const loadPosterActivity = useCallback(async () => {
+    const res = await fetch('/api/admin/poster-activity')
+    const d = await res.json()
+    setPosterStats(d.totals ?? [])
+    setPosterLog(d.activity ?? [])
   }, [])
+
+  const fetchOpps = useCallback(async (p: number, q: string) => {
+    setLoading(true)
+    const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) })
+    if (q) params.set('search', q)
+    const res = await fetch(`/api/admin/opportunities?${params}`)
+    const d = await res.json()
+    setOpps(Array.isArray(d.data) ? d.data : [])
+    setTotal(d.total ?? 0)
+    setPages(d.pages ?? 1)
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { fetchOpps(page, search) }, [page, search, fetchOpps])
+
+  const handleSearchChange = (val: string) => {
+    setSearchInput(val)
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => {
+      setSearch(val)
+      setPage(1)
+      setSelected(new Set())
+    }, 350)
+  }
 
   const openAdd = () => {
     setEditOpp(null)
@@ -103,11 +134,9 @@ export default function AdminOpportunitiesPage() {
       body: JSON.stringify(body),
     })
     if (res.ok) {
-      const updated = await res.json()
-      if (editOpp) setOpps((p) => p.map((o) => (o.id === updated.id ? updated : o)))
-      else setOpps((p) => [updated, ...p])
       toast.success(editOpp ? 'Updated!' : 'Created!')
       setModalOpen(false)
+      fetchOpps(page, search)
     } else {
       toast.error('Error saving opportunity')
     }
@@ -118,8 +147,8 @@ export default function AdminOpportunitiesPage() {
     if (!confirm('Delete this opportunity? This cannot be undone.')) return
     const res = await fetch(`/api/admin/opportunities/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      setOpps((p) => p.filter((o) => o.id !== id))
       toast.success('Deleted')
+      fetchOpps(page, search)
     }
   }
 
@@ -135,10 +164,16 @@ export default function AdminOpportunitiesPage() {
     }
   }
 
-  // ── Excel export ──
-  const exportExcel = () => {
-    if (opps.length === 0) { toast.error('No opportunities to export'); return }
-    const rows = opps.map((o) => ({
+  // ── Excel export — fetches all records, not just current page ──
+  const exportExcel = async () => {
+    if (total === 0) { toast.error('No opportunities to export'); return }
+    toast('Preparing export…', { icon: '⏳' })
+    const res = await fetch(`/api/admin/opportunities?limit=10000`)
+    const d = await res.json()
+    const all: any[] = Array.isArray(d.data) ? d.data : []
+    if (all.length === 0) { toast.error('No data returned'); return }
+    const XLSX = await import('xlsx')
+    const rows = all.map((o) => ({
       Title: o.title,
       'Host Organization': o.hostOrg,
       Country: o.country,
@@ -157,11 +192,12 @@ export default function AdminOpportunitiesPage() {
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Opportunities')
     XLSX.writeFile(wb, `xcel360-opportunities-${new Date().toISOString().split('T')[0]}.xlsx`)
-    toast.success(`Exported ${opps.length} opportunities`)
+    toast.success(`Exported ${all.length} opportunities`)
   }
 
   // ── Excel template download ──
-  const downloadTemplate = () => {
+  const downloadTemplate = async () => {
+    const XLSX = await import('xlsx')
     const sample = [{
       Title: 'Fulbright Foreign Student Program',
       'Host Organization': 'U.S. Department of State',
@@ -346,6 +382,7 @@ export default function AdminOpportunitiesPage() {
     setImportProgress('Reading file...')
 
     try {
+      const XLSX = await import('xlsx')
       const buf = await file.arrayBuffer()
       const wb = XLSX.read(buf, { type: 'array', cellDates: true, dateNF: 'yyyy-mm-dd' })
       const ws = wb.Sheets[wb.SheetNames[0]]
@@ -419,10 +456,8 @@ export default function AdminOpportunitiesPage() {
       (importPreview?.skipped > 0 ? ` · ${importPreview.skipped} rows had no title` : '')
     )
 
-    // Refresh list
-    const fresh = await fetch('/api/admin/opportunities').then(r => r.json())
-    if (Array.isArray(fresh)) setOpps(fresh)
-
+    setPage(1)
+    fetchOpps(1, search)
     setImporting(false)
     setImportProgress('')
   }
@@ -457,19 +492,9 @@ export default function AdminOpportunitiesPage() {
         body: JSON.stringify({ action, ids }),
       })
       if (res.ok) {
-        if (action === 'delete') {
-          setOpps(p => p.filter(o => !selected.has(o.id)))
-        } else {
-          // Refresh affected rows
-          const updateMap: Record<string, any> = {}
-          if (action === 'feature') ids.forEach(id => updateMap[id] = { featured: true })
-          if (action === 'unfeature') ids.forEach(id => updateMap[id] = { featured: false })
-          if (action === 'open') ids.forEach(id => updateMap[id] = { status: 'OPEN' })
-          if (action === 'close') ids.forEach(id => updateMap[id] = { status: 'CLOSED' })
-          setOpps(p => p.map(o => updateMap[o.id] ? { ...o, ...updateMap[o.id] } : o))
-        }
         setSelected(new Set())
         toast.success(`Done — ${ids.length} updated`)
+        fetchOpps(page, search)
       } else {
         toast.error('Bulk action failed')
       }
@@ -487,118 +512,36 @@ export default function AdminOpportunitiesPage() {
     }))
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file (JPG, PNG, WebP)')
-      return
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('Image must be under 10MB')
-      return
-    }
-    // Resize + compress via canvas before base64 encoding — prevents browser freeze
-    const img = new Image()
-    const objectUrl = URL.createObjectURL(file)
-    img.onload = () => {
-      URL.revokeObjectURL(objectUrl)
-      const MAX = 1024
-      let { width, height } = img
-      if (width > MAX || height > MAX) {
-        if (width > height) { height = Math.round((height * MAX) / width); width = MAX }
-        else { width = Math.round((width * MAX) / height); height = MAX }
-      }
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = height
-      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
-      const compressed = canvas.toDataURL('image/jpeg', 0.82)
-      const base64 = compressed.split(',')[1]
-      setAiImage({ data: base64, mediaType: 'image/jpeg', preview: compressed })
-    }
-    img.src = objectUrl
-  }
 
-  const clearImage = () => {
-    setAiImage(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }
-
-  const handleAiExtract = async () => {
-    if (!aiText.trim() && !aiImage) return
-    setExtracting(true)
-    setAiError('')
-    try {
-      const res = await fetch('/api/agent/extract-opportunity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: aiText || undefined,
-          image: aiImage ? { data: aiImage.data, mediaType: aiImage.mediaType } : undefined,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setAiError(data.error ?? 'Extraction failed')
-        return
-      }
-      // Populate form with extracted data
-      setForm({
-        title: data.title ?? '',
-        hostOrg: data.hostOrg ?? '',
-        country: data.country ?? '',
-        fundingType: data.fundingType ?? 'Fully funded',
-        field: data.field ?? 'STEM',
-        deadline: data.deadline ?? '',
-        eligibility: data.eligibility ?? '',
-        applicationLink: data.applicationLink ?? '',
-        description: data.description ?? '',
-        programLevel: Array.isArray(data.programLevel) ? data.programLevel : [],
-        fieldTags: Array.isArray(data.fieldTags) ? data.fieldTags : [],
-        requiredDocs: Array.isArray(data.requiredDocs) ? data.requiredDocs : ['CV', 'SOP', 'Transcripts'],
-        status: 'OPEN',
-        featured: false,
-      })
-      setEditOpp(null)
-      setAiPanel(false)
-      setAiText('')
-      setAiImage(null)
-      setModalOpen(true)
-      toast.success('Scholarship extracted — review and publish!')
-    } catch {
-      setAiError('Something went wrong. Try again.')
-    } finally {
-      setExtracting(false)
-    }
-  }
-
-  const filtered = opps.filter(
-    (o) =>
-      o.title?.toLowerCase().includes(search.toLowerCase()) ||
-      o.hostOrg?.toLowerCase().includes(search.toLowerCase())
-  )
+  // opps is already the current page from the server — no client-side filter needed
+  const filtered = opps
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Opportunities</h1>
-          <p className="text-gray-500 mt-1">{opps.length} total</p>
+          <p className="text-gray-500 mt-1">{total} total</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={() => { setAiPanel((v) => !v); setAiError('') }}
+            onClick={() => { setShowPosterPanel(v => !v); if (!showPosterPanel) loadPosterActivity() }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-colors ${
-              aiPanel
-                ? 'bg-violet-700 text-white border-violet-700'
-                : 'bg-white text-violet-700 border-violet-200 hover:bg-violet-50'
+              showPosterPanel ? 'bg-brand-700 text-white border-brand-700' : 'bg-white text-brand-700 border-brand-200 hover:bg-brand-50'
             }`}
           >
-            <Bot className="h-4 w-4" />
-            AI Auto-Post
-            {aiPanel ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            <Users className="h-4 w-4" />
+            Poster Activity
           </button>
+          <a
+            href="https://tool.thexcel360.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-violet-200 bg-white text-violet-700 hover:bg-violet-50 transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            AI Auto-Post
+          </a>
           <button
             onClick={() => xlsxInputRef.current?.click()}
             disabled={importing}
@@ -638,92 +581,55 @@ export default function AdminOpportunitiesPage() {
         </div>
       </div>
 
-      {/* AI Auto-Post panel */}
-      {aiPanel && (
-        <div className="mb-6 bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-2xl p-5">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">AI Scholarship Extractor</h3>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Upload a flyer/image, paste text, or both. Claude reads the content and fills the form automatically.
-              </p>
-            </div>
-          </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 mb-3">
-            {/* Image upload */}
+      {/* ── Poster Activity Panel ── */}
+      {showPosterPanel && (
+        <div className="mb-6 bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Users className="h-4 w-4 text-brand-700" /> Poster Activity
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-6">
+            {/* Totals */}
             <div>
-              <p className="text-xs font-medium text-gray-600 mb-2">Upload Image (flyer, screenshot, poster)</p>
-              {aiImage ? (
-                <div className="relative rounded-xl overflow-hidden border border-violet-200 bg-white">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={aiImage.preview} alt="Uploaded flyer" className="w-full h-40 object-contain" />
-                  <button
-                    onClick={clearImage}
-                    className="absolute top-2 right-2 bg-white border border-gray-200 rounded-full p-1 shadow hover:bg-red-50 hover:border-red-200 transition-colors"
-                  >
-                    <X className="h-3.5 w-3.5 text-gray-500" />
-                  </button>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Posts by user</p>
+              {posterStats.length === 0 ? (
+                <p className="text-sm text-gray-400">No activity recorded yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {posterStats.map((s) => (
+                    <div key={s.poster} className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center uppercase">
+                        {s.poster[0]}
+                      </span>
+                      <span className="text-sm font-medium text-gray-700 flex-1 capitalize">{s.poster}</span>
+                      <span className="text-sm font-bold text-brand-700">{s._count._all}</span>
+                      <span className="text-xs text-gray-400">{s._count._all === 1 ? 'post' : 'posts'}</span>
+                    </div>
+                  ))}
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-40 border-2 border-dashed border-violet-200 rounded-xl flex flex-col items-center justify-center gap-2 text-violet-500 hover:border-violet-400 hover:bg-violet-50 transition-colors bg-white"
-                >
-                  <ImagePlus className="h-8 w-8" />
-                  <span className="text-sm font-medium">Click to upload</span>
-                  <span className="text-xs text-gray-400">JPG, PNG, WebP · max 5MB</span>
-                </button>
               )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
             </div>
-
-            {/* Text paste */}
+            {/* Recent log */}
             <div>
-              <p className="text-xs font-medium text-gray-600 mb-2">Paste Text (optional — adds context to image)</p>
-              <textarea
-                value={aiText}
-                onChange={(e) => setAiText(e.target.value)}
-                rows={6}
-                placeholder="Paste scholarship info here — from an email, webpage, or social post. Works alone or alongside an image."
-                className="w-full h-40 px-4 py-3 border border-violet-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white resize-none placeholder:text-gray-400"
-              />
-            </div>
-          </div>
-
-          {aiError && (
-            <p className="text-sm text-red-600 mb-3 flex items-center gap-1">
-              <span className="font-medium">Error:</span> {aiError}
-            </p>
-          )}
-          <div className="flex gap-3">
-            <button
-              onClick={handleAiExtract}
-              disabled={extracting || (!aiText.trim() && !aiImage)}
-              className="flex items-center gap-2 bg-violet-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-800 disabled:opacity-50 transition-colors"
-            >
-              {extracting ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Extracting...</>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Recent posts</p>
+              {posterLog.length === 0 ? (
+                <p className="text-sm text-gray-400">No activity recorded yet.</p>
               ) : (
-                <><Bot className="h-4 w-4" /> Extract & Fill Form</>
+                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                  {posterLog.map((a) => (
+                    <div key={a.id} className="flex items-start gap-2 text-sm">
+                      <span className="capitalize font-medium text-brand-700 shrink-0 w-20 truncate">{a.poster}</span>
+                      <span className="text-gray-600 flex-1 line-clamp-1">{a.title}</span>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-medium shrink-0 ${
+                        a.category === 'JOB' ? 'bg-blue-50 text-blue-600' :
+                        a.category === 'INTERNSHIP' ? 'bg-purple-50 text-purple-600' :
+                        'bg-green-50 text-green-600'
+                      }`}>{a.category}</span>
+                    </div>
+                  ))}
+                </div>
               )}
-            </button>
-            <button
-              onClick={() => { setAiPanel(false); setAiText(''); setAiImage(null); setAiError('') }}
-              className="px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
+            </div>
           </div>
         </div>
       )}
@@ -731,8 +637,8 @@ export default function AdminOpportunitiesPage() {
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search opportunities..."
           className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
         />
@@ -895,6 +801,31 @@ export default function AdminOpportunitiesPage() {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* ── Pagination ── */}
+      {pages > 1 && (
+        <div className="flex items-center justify-between mt-4 px-1">
+          <p className="text-sm text-gray-500">
+            Page {page} of {pages} · {total} opportunities
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setPage(p => Math.max(1, p - 1)); setSelected(new Set()) }}
+              disabled={page === 1 || loading}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" /> Prev
+            </button>
+            <button
+              onClick={() => { setPage(p => Math.min(pages, p + 1)); setSelected(new Set()) }}
+              disabled={page === pages || loading}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors"
+            >
+              Next <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       )}
 

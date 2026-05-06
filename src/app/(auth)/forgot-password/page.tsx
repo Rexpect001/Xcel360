@@ -123,12 +123,23 @@ function ForgotPasswordContent() {
           <ShieldCheck className="h-4 w-4 flex-shrink-0 mt-0.5" />
           <span>For your security, passwords can only be changed via the link sent to your email — not directly on this page.</span>
         </div>
-        <button
-          onClick={() => setStep('email')}
-          className="text-sm text-brand-600 hover:text-brand-700"
-        >
-          Use a different email
-        </button>
+        <div className="space-y-3">
+          <button
+            onClick={() => setStep('email')}
+            className="text-sm text-brand-600 hover:text-brand-700 block w-full"
+          >
+            Use a different email
+          </button>
+          <p className="text-xs text-gray-400">
+            Can&apos;t access your email?{' '}
+            <a
+              href="mailto:support@xcel360.com?subject=Account%20Recovery%20Request&body=Hi%20Xcel360%20team%2C%0A%0AI%20cannot%20access%20the%20email%20linked%20to%20my%20account%20and%20need%20help%20recovering%20it.%0A%0AName%3A%20%0AEmail%20on%20account%20(if%20known)%3A%20%0AAny%20other%20details%3A%20"
+              className="text-brand-500 hover:text-brand-700 underline"
+            >
+              Contact support
+            </a>
+          </p>
+        </div>
       </div>
     )
   }

@@ -8,35 +8,77 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const id = searchParams.get('id')
+  const type = searchParams.get('type') ?? 'scholarship' // scholarship | job | internship | event
 
-  let title = 'Scholarship Opportunity'
-  let hostOrg = 'Xcel360'
-  let country = 'Global'
-  let fundingType = 'Fully funded'
-  let deadline = ''
-  let field = 'General'
+  let title = 'Opportunity'
+  let sub = 'Xcel360'      // host org / company / host
+  let meta1Label = 'Country'
+  let meta1Value = 'Global'
+  let meta2Label = 'Field'
+  let meta2Value = 'General'
+  let meta3Label = 'Deadline'
+  let meta3Value = 'Open'
+  let badgeText = 'Fully funded'
+  let badgeColor = '#4ade80'
+  let badgeBg = 'rgba(74,222,128,0.15)'
 
   if (id) {
     try {
-      const opp = await (prisma as any).opportunity.findUnique({
-        where: { id },
-        select: { title: true, hostOrg: true, country: true, fundingType: true, deadline: true, field: true, category: true },
-      })
-      if (opp) {
-        title = opp.title
-        hostOrg = opp.hostOrg
-        country = opp.country
-        fundingType = opp.fundingType
-        field = opp.field
-        deadline = opp.deadline
-          ? new Date(opp.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-          : 'Open'
+      if (type === 'event') {
+        const ev = await (prisma as any).event.findUnique({
+          where: { id },
+          select: { title: true, type: true, date: true, host: true },
+        })
+        if (ev) {
+          title = ev.title
+          sub = ev.host ?? 'Xcel360'
+          badgeText = ev.type ?? 'Event'
+          badgeColor = '#a78bfa'
+          badgeBg = 'rgba(167,139,250,0.15)'
+          meta1Label = 'Type'
+          meta1Value = ev.type ?? 'Event'
+          meta2Label = 'Host'
+          meta2Value = ev.host ?? 'Xcel360'
+          meta3Label = 'Date'
+          meta3Value = ev.date
+            ? new Date(ev.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+            : 'TBC'
+        }
+      } else {
+        const opp = await (prisma as any).opportunity.findUnique({
+          where: { id },
+          select: { title: true, hostOrg: true, company: true, country: true, fundingType: true, deadline: true, field: true, jobType: true, category: true },
+        })
+        if (opp) {
+          title = opp.title
+          sub = opp.company ?? opp.hostOrg
+          meta1Value = opp.country
+          meta2Value = opp.field ?? 'General'
+          meta3Value = opp.deadline
+            ? new Date(opp.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+            : 'Open'
+
+          if (type === 'job' || type === 'internship') {
+            badgeText = opp.jobType ?? (type === 'internship' ? 'Internship' : 'Job')
+            badgeColor = '#60a5fa'
+            badgeBg = 'rgba(96,165,250,0.15)'
+            meta2Label = 'Type'
+            meta2Value = opp.jobType ?? (type === 'internship' ? 'Internship' : 'Full-time')
+            meta3Label = 'Deadline'
+          } else {
+            // scholarship
+            badgeText = opp.fundingType ?? 'Scholarship'
+            const isFull = opp.fundingType === 'Fully funded'
+            const isPartial = opp.fundingType === 'Partial'
+            badgeColor = isFull ? '#4ade80' : isPartial ? '#60a5fa' : '#fbbf24'
+            badgeBg = isFull ? 'rgba(74,222,128,0.15)' : isPartial ? 'rgba(96,165,250,0.15)' : 'rgba(251,191,36,0.15)'
+          }
+        }
       }
     } catch { /* fallback to defaults */ }
   }
 
-  const fundingColor = fundingType === 'Fully funded' ? '#16a34a' : fundingType === 'Partial' ? '#2563eb' : '#d97706'
-  const fundingBg   = fundingType === 'Fully funded' ? '#dcfce7' : fundingType === 'Partial' ? '#dbeafe' : '#fef3c7'
+  const titleSize = title.length > 80 ? '44px' : title.length > 55 ? '52px' : title.length > 35 ? '62px' : '72px'
 
   return new ImageResponse(
     (
@@ -46,103 +88,109 @@ export async function GET(req: NextRequest) {
           height: '630px',
           display: 'flex',
           flexDirection: 'column',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #dbeafe 100%)',
+          background: 'linear-gradient(145deg, #0a0f1e 0%, #0d1b2e 40%, #0f2744 100%)',
           fontFamily: 'sans-serif',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Top accent bar */}
-        <div style={{ height: '8px', background: 'linear-gradient(90deg, #0369a1, #0284c7, #38bdf8)', display: 'flex' }} />
-
-        {/* Background decoration */}
+        {/* Glows */}
         <div style={{
-          position: 'absolute', top: '-80px', right: '-80px',
-          width: '400px', height: '400px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)',
+          position: 'absolute', top: '-120px', right: '-120px',
+          width: '500px', height: '500px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 65%)',
           display: 'flex',
         }} />
         <div style={{
-          position: 'absolute', bottom: '-60px', left: '-60px',
-          width: '300px', height: '300px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)',
+          position: 'absolute', bottom: '-80px', left: '-80px',
+          width: '350px', height: '350px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 65%)',
           display: 'flex',
         }} />
 
-        {/* Content */}
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '52px 72px 44px' }}>
+        {/* Top accent */}
+        <div style={{ height: '4px', background: 'linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc)', display: 'flex', flexShrink: 0 }} />
 
-          {/* Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
-            <div style={{
-              width: '40px', height: '40px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, #0369a1, #0284c7)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <div style={{ color: 'white', fontSize: '18px', fontWeight: 800 }}>X</div>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '48px 72px 44px', justifyContent: 'space-between' }}>
+
+          {/* Brand + badge */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '44px', height: '44px', borderRadius: '12px',
+                background: 'linear-gradient(135deg, #0369a1, #0ea5e9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 0 20px rgba(14,165,233,0.4)',
+              }}>
+                <div style={{ color: 'white', fontSize: '20px', fontWeight: 800 }}>X</div>
+              </div>
+              <span style={{ fontSize: '22px', fontWeight: 700, color: '#e0f2fe', letterSpacing: '-0.3px' }}>Xcel360</span>
             </div>
-            <span style={{ fontSize: '22px', fontWeight: 700, color: '#0c4a6e' }}>Xcel360</span>
-            <div style={{ flex: 1 }} />
-            {/* Funding badge */}
             <div style={{
-              background: fundingBg, color: fundingColor,
-              fontSize: '16px', fontWeight: 700,
-              padding: '6px 18px', borderRadius: '999px',
-              border: `1.5px solid ${fundingColor}30`,
-              display: 'flex',
+              background: badgeBg, color: badgeColor,
+              fontSize: '17px', fontWeight: 700,
+              padding: '8px 20px', borderRadius: '999px',
+              border: `1.5px solid ${badgeColor}40`,
+              display: 'flex', alignItems: 'center', gap: '6px',
             }}>
-              {fundingType}
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: badgeColor, display: 'flex' }} />
+              {badgeText}
             </div>
           </div>
 
-          {/* Title */}
+          {/* Big title */}
           <div style={{
-            fontSize: title.length > 60 ? '36px' : title.length > 40 ? '42px' : '48px',
-            fontWeight: 800,
-            color: '#0c4a6e',
-            lineHeight: 1.15,
-            marginBottom: '20px',
-            maxWidth: '900px',
+            fontSize: titleSize,
+            fontWeight: 900,
+            color: '#ffffff',
+            lineHeight: 1.1,
+            letterSpacing: '-1px',
+            maxWidth: '1060px',
             display: 'flex',
+            flexWrap: 'wrap',
           }}>
             {title}
           </div>
 
-          {/* Host org */}
-          <div style={{ fontSize: '24px', color: '#0369a1', fontWeight: 600, marginBottom: 'auto', display: 'flex' }}>
-            {hostOrg}
-          </div>
-
-          {/* Bottom info row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginTop: '32px' }}>
-            {/* Country */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ fontSize: '20px', color: '#64748b', display: 'flex' }}>📍</div>
-              <span style={{ fontSize: '20px', color: '#334155', fontWeight: 600 }}>{country}</span>
+          {/* Bottom meta row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
+              {/* Sub (host/company) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  {type === 'job' || type === 'internship' ? 'Company' : type === 'event' ? 'Host' : 'Offered by'}
+                </span>
+                <span style={{ fontSize: '20px', color: '#7dd3fc', fontWeight: 700 }}>{sub}</span>
+              </div>
+              <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
+              {/* Meta 1 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta1Label}</span>
+                <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta1Value}</span>
+              </div>
+              <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
+              {/* Meta 2 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta2Label}</span>
+                <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta2Value}</span>
+              </div>
+              <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
+              {/* Meta 3 (deadline/date) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta3Label}</span>
+                <span style={{ fontSize: '20px', color: meta3Value === 'Open' ? '#4ade80' : '#e2e8f0', fontWeight: 600 }}>{meta3Value}</span>
+              </div>
             </div>
-            {/* Field */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ fontSize: '20px', color: '#64748b', display: 'flex' }}>📚</div>
-              <span style={{ fontSize: '20px', color: '#334155', fontWeight: 600 }}>{field}</span>
-            </div>
-            {/* Deadline */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ fontSize: '20px', color: '#64748b', display: 'flex' }}>📅</div>
-              <span style={{ fontSize: '20px', color: deadline === 'Open' ? '#16a34a' : '#334155', fontWeight: 600 }}>
-                {deadline === 'Open' ? 'Open Deadline' : `Closes ${deadline}`}
-              </span>
-            </div>
-
-            <div style={{ flex: 1 }} />
 
             {/* CTA */}
             <div style={{
               background: 'linear-gradient(135deg, #0369a1, #0284c7)',
-              color: 'white', fontSize: '18px', fontWeight: 700,
-              padding: '10px 28px', borderRadius: '12px',
-              display: 'flex',
+              color: 'white', fontSize: '17px', fontWeight: 700,
+              padding: '12px 28px', borderRadius: '12px',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              boxShadow: '0 4px 24px rgba(3,105,161,0.5)',
             }}>
-              Apply on thexcel360.com →
+              {type === 'event' ? 'Register now →' : type === 'job' || type === 'internship' ? 'Apply now →' : 'Apply now →'}
             </div>
           </div>
         </div>

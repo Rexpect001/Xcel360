@@ -22,7 +22,11 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     description,
     keywords: [job.title, job.company ?? job.hostOrg, job.country, job.field, ...job.skills, 'jobs Africa'].filter(Boolean),
     alternates: { canonical: `/jobs/${job.id}` },
-    openGraph: { title: job.title, description, url: `${BASE}/jobs/${job.id}`, type: 'article' },
+    openGraph: {
+      title: job.title, description, url: `${BASE}/jobs/${job.id}`, type: 'article',
+      images: [{ url: `${BASE}/api/og?id=${job.id}&type=job`, width: 1200, height: 630, alt: job.title }],
+    },
+    twitter: { card: 'summary_large_image', title: job.title, description, images: [`${BASE}/api/og?id=${job.id}&type=job`] },
   }
 }
 

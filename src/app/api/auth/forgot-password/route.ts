@@ -5,7 +5,7 @@ import { generatePasswordResetToken, sendPasswordResetEmail } from '@/lib/securi
 // Simple in-memory rate limiter: max 5 requests per IP per 15 minutes
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const MAX_ATTEMPTS = 5
-const WINDOW_MS = 15 * 60 * 1000 // 15 minutes
+const WINDOW_MS = 15 * 60 * 1000
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now()
@@ -20,43 +20,33 @@ function isRateLimited(ip: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const ip =
-      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-      req.headers.get('x-real-ip') ??
-      'unknown'
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    'unknown'
 
-    if (isRateLimited(ip)) {
-      return NextResponse.json(
-        { message: 'If that email exists, a reset link has been sent.' },
-        { status: 200 }
-      )
-    }
-
-    const body = await req.json()
-    const { email } = body
-
-    if (email) {
-      try {
-        const token = await generatePasswordResetToken(email)
-        if (token) {
-          await sendPasswordResetEmail(email, token)
-        }
-      } catch (innerError) {
-        console.error('[FORGOT PASSWORD ERROR]', innerError)
-      }
-    }
-
-    // Always return success to avoid email enumeration
-    return NextResponse.json(
-      { message: 'If that email exists, a reset link has been sent.' },
-      { status: 200 }
-    )
-  } catch (error) {
-    console.error('[FORGOT PASSWORD ERROR]', error)
-    return NextResponse.json(
-      { message: 'If that email exists, a reset link has been sent.' },
-      { status: 200 }
-    )
+  if (isRateLimited(ip)) {
+    // Return generic message — don't reveal rate limiting to avoid abuse
+    return NextResponse.json({ message: 'If that email is registered, a reset link has been sent.' }, { status: 200 })
   }
+
+  const { email } = await req.json().catch(() => ({ email: null }))
+
+  if (email) {
+    try {
+      const token = await generatePasswordResetToken(email)
+      if (token) {
+        await sendPasswordResetEmail(email, token)
+        console.log(`[forgot-password] Reset email sent to ${email}`)
+      } else {
+        console.log(`[forgot-password] Email not found: ${email}`)
+      }
+    } catch (err) {
+      // Log the real error on the server but never reveal it to the client
+      console.error('[forgot-password] Failed to send reset email:', err)
+    }
+  }
+
+  // Always return the same response — prevents email enumeration
+  return NextResponse.json({ message: 'If that email is registered, a reset link has been sent.' }, { status: 200 })
 }
