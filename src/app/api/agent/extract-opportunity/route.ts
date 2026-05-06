@@ -14,8 +14,8 @@ Extract all relevant details and return ONLY a valid JSON object with exactly th
   "programLevel": ["array from: Undergraduate, Masters, PhD, Postdoctoral, Professional, Any"],
   "deadline": "YYYY-MM-DD format string, or null if not found",
   "eligibility": "who can apply — nationalities, GPA, degree requirements, etc.",
-  "description": "concise overview of what the scholarship covers and its purpose",
-  "applicationLink": "direct application URL if found, else empty string",
+  "description": "IMPORTANT: Format this as bullet points. Start each point with '• '. Bold key details (funding amount, duration, benefits) using **double asterisks** around the text. Example: '• **Fully funded** — covers tuition, accommodation, and living stipend\\n• Open to students from **all African countries**\\n• Duration: **2 years**'. Keep points concise and easy to scan.",
+  "applicationLink": "CRITICAL: Extract the direct application URL (starting with http/https) OR the application email address if a URL is not available. This is the most important field — look carefully for phrases like 'apply at', 'apply here', 'applications to', 'send CV to', 'email your application'. Return empty string ONLY if absolutely no link or email is mentioned.",
   "requiredDocs": ["array of required document names, e.g. CV, SOP, Transcripts, References, Research Proposal"],
   "fieldTags": ["array of relevant subject tags, e.g. Engineering, Medicine, Law"]
 }

@@ -5,26 +5,27 @@ import { Twitter, Facebook, Linkedin, MessageCircle, Link2, Check } from 'lucide
 interface ShareButtonsProps {
   title: string
   url: string
+  applicationLink?: string
 }
 
-export default function ShareButtons({ title, url }: ShareButtonsProps) {
+export default function ShareButtons({ title, url, applicationLink }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false)
 
-  const shareText = `Check out this scholarship: ${title}`
-  const encodedUrl = encodeURIComponent(url)
-  const encodedText = encodeURIComponent(shareText)
+  const applyLine = applicationLink
+    ? applicationLink.startsWith('http')
+      ? `\n\nTo apply: ${applicationLink}`
+      : `\n\nTo apply, email: ${applicationLink}`
+    : ''
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2500)
-  }
+  const twitterText = encodeURIComponent(`Check out ${title}${applyLine}`)
+  const whatsappText = encodeURIComponent(`Check out ${title}${applyLine}\n\nMore info: ${url}`)
+  const encodedUrl = encodeURIComponent(url)
 
   const platforms = [
     {
       name: 'X / Twitter',
       icon: Twitter,
-      href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
+      href: `https://twitter.com/intent/tweet?text=${twitterText}&url=${encodedUrl}`,
       hover: 'hover:bg-gray-900 hover:text-white hover:border-gray-900',
     },
     {
@@ -42,7 +43,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
     {
       name: 'WhatsApp',
       icon: MessageCircle,
-      href: `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`,
+      href: `https://api.whatsapp.com/send?text=${whatsappText}`,
       hover: 'hover:bg-green-500 hover:text-white hover:border-green-500',
     },
   ]
@@ -66,7 +67,7 @@ export default function ShareButtons({ title, url }: ShareButtonsProps) {
         )
       })}
       <button
-        onClick={copyLink}
+        onClick={() => { navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2500) }}
         title="Copy link"
         className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-150 ${
           copied

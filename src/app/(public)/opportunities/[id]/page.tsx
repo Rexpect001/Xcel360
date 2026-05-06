@@ -51,6 +51,59 @@ import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
 import { getAuth } from '@/lib/auth'
+import type { ReactNode } from 'react'
+
+// Renders inline **bold** markers safely (no dangerouslySetInnerHTML)
+function renderInline(text: string): ReactNode {
+  const parts = text.split(/\*\*(.+?)\*\*/)
+  if (parts.length === 1) return text
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} className="font-semibold text-gray-800">{part}</strong>
+      : part
+  )
+}
+
+// Renders a description that may contain bullet lines (•/-/*) and **bold**
+function Description({ text }: { text: string }) {
+  const lines = text.split('\n')
+  const nodes: ReactNode[] = []
+  let bullets: string[] = []
+
+  const flushBullets = (key: string) => {
+    if (!bullets.length) return
+    nodes.push(
+      <ul key={key} className="space-y-2 my-2">
+        {bullets.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+            <span className="text-brand-500 mt-0.5 select-none flex-shrink-0">•</span>
+            <span>{renderInline(item)}</span>
+          </li>
+        ))}
+      </ul>
+    )
+    bullets = []
+  }
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim()
+    if (!trimmed) { flushBullets(`ul-${idx}`); return }
+    const bulletMatch = trimmed.match(/^[•\-\*]\s*(.+)/)
+    if (bulletMatch) {
+      bullets.push(bulletMatch[1])
+    } else {
+      flushBullets(`ul-${idx}`)
+      nodes.push(
+        <p key={`p-${idx}`} className="text-gray-600 text-sm leading-relaxed">
+          {renderInline(trimmed)}
+        </p>
+      )
+    }
+  })
+  flushBullets('ul-end')
+
+  return <div className="space-y-2">{nodes}</div>
+}
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
   const [opp, session] = await Promise.all([
@@ -127,7 +180,11 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
 
           {/* Share buttons */}
           <div className="mt-5 pt-5 border-t border-gray-100">
-            <ShareButtons title={opp.title} url={pageUrl} />
+            <ShareButtons
+              title={opp.title}
+              url={pageUrl}
+              applicationLink={opp.applicationLink || undefined}
+            />
           </div>
         </div>
       </div>
@@ -142,7 +199,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-brand-600" /> About this scholarship
                 </h2>
-                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">{opp.description}</p>
+                <Description text={opp.description} />
               </section>
             )}
 
