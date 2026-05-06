@@ -421,6 +421,47 @@ const BASE_TEMPLATES = [
   </div>
 </div>`,
   },
+  {
+    name: 'Platform Invitation',
+    desc: 'Invite external contacts to join Xcel360 — highlights key benefits and links to sign up.',
+    preview: 'invitation',
+    subject: "You're Invited — Join Xcel360 and Discover Scholarships",
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
+    <p style="color:#bae6fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">You're Invited</p>
+    <h1 style="color:#ffffff;font-size:26px;margin:0 0 10px;line-height:1.3;">Discover Scholarships Built for You</h1>
+    <p style="color:#e0f2fe;font-size:15px;margin:0;">Join Xcel360 — Africa's scholarship discovery platform</p>
+  </div>
+  <div style="padding:40px 32px;color:#1f2937;">
+    <p style="font-size:16px;line-height:1.7;">Hi [First Name],</p>
+    <p style="font-size:16px;line-height:1.7;">We'd love to invite you to join <strong>Xcel360</strong> — a platform built to help students and young professionals across Africa find, track, and apply for scholarships, internships, and funding opportunities.</p>
+    <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:28px 0;">
+      <p style="font-size:13px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What you get on Xcel360</p>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Curated opportunities</strong> — scholarships, fellowships, and internships updated regularly</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline tracking</strong> — save opportunities and get reminded before they close</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Personalised matches</strong> — opportunities matched to your field, level, and goals</p>
+      </div>
+    </div>
+    <p style="font-size:16px;line-height:1.7;">It's completely free to join. Create your account in under a minute and start exploring opportunities that could change your future.</p>
+    <div style="text-align:center;margin:36px 0;">
+      <a href="https://xcel360.com/signup" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Create Your Free Account</a>
+    </div>
+    <p style="font-size:14px;color:#6b7280;line-height:1.7;text-align:center;">Already curious? Browse opportunities without signing in at <a href="https://xcel360.com" style="color:#0284c7;text-decoration:none;">xcel360.com</a></p>
+    <p style="font-size:16px;line-height:1.7;margin-top:32px;">Looking forward to seeing you on the platform,<br/><strong>The Xcel360 Team</strong></p>
+  </div>
+  <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+    <p style="font-size:13px;color:#9ca3af;margin:0;">© 2025 Xcel360. Empowering scholars across Africa.</p>
+  </div>
+</div>`,
+  },
 ]
 
 // ─── TemplateThumbnail ────────────────────────────────────────────────────────
@@ -465,6 +506,18 @@ function TemplateThumbnail({ type }: { type: string }) {
         <div className={`${bar} w-4/5`} />
         <div className={`${bar} w-full`} />
         <div className="flex justify-center mt-0.5"><div className="w-14 h-3 bg-sky-500 rounded" /></div>
+      </>}
+      {type === 'invitation' && <>
+        <div className="bg-sky-50 rounded p-1.5 space-y-1.5">
+          {[0,1,2].map(i => (
+            <div key={i} className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-sky-400 shrink-0" />
+              <div className={`${bar} flex-1`} />
+            </div>
+          ))}
+        </div>
+        <div className={`${bar} w-full`} />
+        <div className="flex justify-center"><div className="w-20 h-3 bg-sky-500 rounded" /></div>
       </>}
       <div className="mt-auto h-3 bg-gray-50 rounded flex items-center justify-center shrink-0">
         <div className="w-16 h-1 bg-gray-200 rounded-full" />
