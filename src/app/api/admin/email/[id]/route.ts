@@ -83,6 +83,58 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     })
   }
 
+  // Retry (re-send a FAILED campaign from scratch)
+  if (action === 'retry') {
+    if (campaign.status !== 'FAILED') {
+      return NextResponse.json({ error: 'Only FAILED campaigns can be retried' }, { status: 400 })
+    }
+
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
+
+    await db.emailCampaign.update({ where: { id: params.id }, data: { sentCount: 0, status: 'SENDING' } })
+
+    const allRecipients: string[] = JSON.parse(campaign.recipients ?? '[]')
+    const eligible = await filterUnsubscribed(allRecipients)
+    const firstBatch = eligible.slice(0, Math.min(campaign.dailyLimit, MAX_SEND_LIMIT))
+
+    const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
+    const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
+    const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
+    const resendAttachments = await buildResendAttachments(attachmentMetas)
+
+    const resend = new Resend(apiKey)
+    let sent = 0
+
+    for (let i = 0; i < firstBatch.length; i += BATCH_SIZE) {
+      const chunk = firstBatch.slice(i, i + BATCH_SIZE)
+      const { error } = await resend.batch.send(
+        chunk.map((to: string) => ({
+          from: FROM, to,
+          subject: campaign.subject,
+          html: injectUnsubscribeFooter(campaign.htmlBody, to),
+          ...(cc ? { cc } : {}),
+          ...(bcc ? { bcc } : {}),
+          ...(resendAttachments ? { attachments: resendAttachments } : {}),
+        }))
+      )
+      if (!error) { sent += chunk.length; await logEmailBatch(campaign.id, chunk, 'SENT') }
+      else { await logEmailBatch(campaign.id, chunk, 'FAILED', String(error)) }
+    }
+
+    const completed = sent >= allRecipients.length
+    await db.emailCampaign.update({
+      where: { id: params.id },
+      data: { sentCount: sent, status: completed ? 'COMPLETED' : sent === 0 ? 'FAILED' : 'SENDING' },
+    })
+
+    return NextResponse.json({
+      ok: true, sent, total: allRecipients.length,
+      remaining: allRecipients.length - sent,
+      status: completed ? 'COMPLETED' : 'SENDING',
+    })
+  }
+
   return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
 }
 

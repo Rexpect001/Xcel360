@@ -5,14 +5,14 @@ import {
   Bold, Italic, Underline, Link, List, ListOrdered, Quote, Minus,
   Undo, Redo, Paperclip, X, Upload, ChevronDown, FileText, Image,
   File, Save, Code, FlaskConical, BookOpen, Trash2, Play, Ban,
-  ChevronLeft, ChevronRight, AlertCircle, Layers,
+  ChevronLeft, ChevronRight, AlertCircle, Layers, Eye, RotateCcw,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Campaign = {
-  id: string; subject: string; audience: string; status: string
+  id: string; subject: string; htmlBody: string; audience: string; status: string
   totalCount: number; sentCount: number; dailyLimit: number
   createdAt: string; attachments: string; ccRecipients: string
 }
@@ -204,14 +204,15 @@ function AttachmentUploader({ attachments, onAdd, onRemove }: { attachments: Att
 
 // ─── CampaignCard ─────────────────────────────────────────────────────────────
 
-function CampaignCard({ campaign: c, onAction }: { campaign: Campaign; onAction: () => void }) {
+function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; onAction: () => void; onView: () => void }) {
   const [acting, setActing] = useState(false)
   const pct = c.totalCount > 0 ? Math.round((c.sentCount / c.totalCount) * 100) : 0
   const audienceLabel: Record<string, string> = { users: 'Registered users', subscribers: 'Subscribers', both: 'Everyone', none: 'Manual list' }
 
-  const doAction = async (action: 'send' | 'cancel' | 'delete') => {
+  const doAction = async (action: 'send' | 'cancel' | 'delete' | 'retry') => {
     if (action === 'cancel' && !confirm('Cancel this campaign? Remaining emails will not be sent.')) return
     if (action === 'delete' && !confirm('Delete this campaign and its logs?')) return
+    if (action === 'retry' && !confirm('Retry this campaign? It will restart from the beginning.')) return
     setActing(true)
     try {
       if (action === 'delete') {
@@ -222,7 +223,11 @@ function CampaignCard({ campaign: c, onAction }: { campaign: Campaign; onAction:
         const res = await fetch(`/api/admin/email/${c.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) })
         const d = await res.json()
         if (res.ok) {
-          toast.success(action === 'send' ? `Sending! First batch: ${d.sent}` : 'Cancelled')
+          toast.success(
+            action === 'send' ? `Sending! First batch: ${d.sent}`
+            : action === 'retry' ? `Retrying — sent ${d.sent} so far`
+            : 'Cancelled'
+          )
           onAction()
         } else { toast.error(d.error ?? 'Action failed') }
       }
@@ -256,11 +261,17 @@ function CampaignCard({ campaign: c, onAction }: { campaign: Campaign; onAction:
         )}
       </div>
 
-      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-50">
+      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-50 flex-wrap">
         {c.status === 'DRAFT' && (
           <button onClick={() => doAction('send')} disabled={acting}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 disabled:opacity-50 transition-colors">
             {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />} Send Now
+          </button>
+        )}
+        {c.status === 'FAILED' && (
+          <button onClick={() => doAction('retry')} disabled={acting}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 disabled:opacity-50 transition-colors">
+            {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />} Retry
           </button>
         )}
         {c.status === 'SENDING' && (
@@ -269,6 +280,10 @@ function CampaignCard({ campaign: c, onAction }: { campaign: Campaign; onAction:
             {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Ban className="h-3.5 w-3.5" />} Cancel
           </button>
         )}
+        <button onClick={onView}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-100 transition-colors">
+          <Eye className="h-3.5 w-3.5" /> View
+        </button>
         {['COMPLETED', 'FAILED', 'CANCELLED', 'DRAFT'].includes(c.status) && (
           <button onClick={() => doAction('delete')} disabled={acting}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100 disabled:opacity-50 transition-colors ml-auto">
@@ -499,6 +514,44 @@ function TemplateGallery({ onSelect, onClose }: { onSelect: (subject: string, ht
   )
 }
 
+// ─── CampaignPreviewModal ─────────────────────────────────────────────────────
+
+function CampaignPreviewModal({
+  campaign, onClose, onEditResend,
+}: {
+  campaign: Campaign
+  onClose: () => void
+  onEditResend: (subject: string, htmlBody: string) => void
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[88vh] flex flex-col">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+          <div className="min-w-0 flex-1 mr-4">
+            <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-1">Subject</p>
+            <p className="font-semibold text-gray-900 leading-snug">{campaign.subject}</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => { onEditResend(campaign.subject, campaign.htmlBody); onClose() }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 transition-colors">
+              <Send className="h-3.5 w-3.5" /> Edit &amp; Resend
+            </button>
+            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-y-auto flex-1 p-4">
+          <div className="border border-gray-100 rounded-xl overflow-hidden text-sm"
+            dangerouslySetInnerHTML={{ __html: campaign.htmlBody }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Audience options ──────────────────────────────────────────────────────────
 
 const AUDIENCE_OPTIONS = [
@@ -517,6 +570,7 @@ export default function AdminEmailPage() {
 
   const [showGallery, setShowGallery] = useState(false)
   const [editorKey, setEditorKey] = useState(0)
+  const [viewingCampaign, setViewingCampaign] = useState<Campaign | null>(null)
 
   // Compose fields
   const [subject, setSubject] = useState('')
@@ -872,7 +926,7 @@ export default function AdminEmailPage() {
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Active</h2>
                 <button onClick={loadCampaigns} className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"><RefreshCw className="h-3 w-3" /> Refresh</button>
               </div>
-              <div className="space-y-3">{activeCampaigns.map(c => <CampaignCard key={c.id} campaign={c} onAction={loadCampaigns} />)}</div>
+              <div className="space-y-3">{activeCampaigns.map(c => <CampaignCard key={c.id} campaign={c} onAction={loadCampaigns} onView={() => setViewingCampaign(c)} />)}</div>
             </div>
           )}
           <div>
@@ -885,7 +939,7 @@ export default function AdminEmailPage() {
                   <p className="text-gray-500 font-medium">No campaigns yet</p>
                   <button onClick={() => setTab('compose')} className="mt-4 text-brand-700 text-sm font-medium">Compose now →</button>
                 </div>
-              : <div className="space-y-3">{campaigns.filter(c => c.status !== 'SENDING').map(c => <CampaignCard key={c.id} campaign={c} onAction={loadCampaigns} />)}</div>
+              : <div className="space-y-3">{campaigns.filter(c => c.status !== 'SENDING').map(c => <CampaignCard key={c.id} campaign={c} onAction={loadCampaigns} onView={() => setViewingCampaign(c)} />)}</div>
             }
           </div>
         </div>
@@ -1029,6 +1083,20 @@ export default function AdminEmailPage() {
         <TemplateGallery
           onSelect={loadBaseTemplate}
           onClose={() => setShowGallery(false)}
+        />
+      )}
+
+      {viewingCampaign && (
+        <CampaignPreviewModal
+          campaign={viewingCampaign}
+          onClose={() => setViewingCampaign(null)}
+          onEditResend={(subject, htmlBody) => {
+            setSubject(subject)
+            setHtmlBody(htmlBody)
+            setEditorKey(k => k + 1)
+            setTab('compose')
+            toast.success('Loaded — edit and resend as a new campaign')
+          }}
         />
       )}
     </div>
