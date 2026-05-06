@@ -893,41 +893,72 @@ export default function AdminEmailPage() {
 
       {/* ── Templates ── */}
       {tab === 'templates' && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-500">{templates.length} template{templates.length !== 1 ? 's' : ''} saved</p>
-            <button onClick={() => setTab('compose')} className="flex items-center gap-2 px-4 py-2 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
-              <Mail className="h-4 w-4" /> New Email
-            </button>
-          </div>
-          {templates.length === 0
-            ? <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <BookOpen className="h-10 w-10 mx-auto text-gray-200 mb-3" />
-                <p className="text-gray-500 font-medium">No templates yet</p>
-                <p className="text-sm text-gray-400 mt-1">Compose an email and save it as a template.</p>
+        <div className="space-y-8">
+          {/* Built-in starter templates */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Starter Templates</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Pre-designed layouts — click to load into Compose</p>
               </div>
-            : <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {templates.map(t => (
-                  <div key={t.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3">
-                    <div>
-                      <p className="font-semibold text-gray-900 truncate">{t.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5 truncate">{t.subject || 'No subject'}</p>
-                      <p className="text-xs text-gray-300 mt-1">{new Date(t.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                    </div>
-                    <div className="flex gap-2 mt-auto">
-                      <button onClick={() => loadTemplate(t)}
-                        className="flex-1 py-2 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 transition-colors">
-                        Use Template
-                      </button>
-                      <button onClick={() => handleDeleteTemplate(t.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+              <button onClick={() => setTab('compose')} className="flex items-center gap-2 px-4 py-2 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
+                <Mail className="h-4 w-4" /> New Email
+              </button>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {BASE_TEMPLATES.map(t => (
+                <div key={t.name}
+                  onClick={() => { loadBaseTemplate(t.subject, t.html); setTab('compose') }}
+                  className="border border-gray-100 rounded-2xl overflow-hidden hover:border-brand-400 hover:shadow-md transition-all cursor-pointer group">
+                  <div className="p-3 bg-gray-50 group-hover:bg-brand-50 transition-colors">
+                    <TemplateThumbnail type={t.preview} />
+                  </div>
+                  <div className="p-4">
+                    <p className="font-semibold text-gray-900 text-sm">{t.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{t.desc}</p>
+                    <div className="mt-3 w-full py-2 bg-brand-700 group-hover:bg-brand-800 text-white rounded-lg text-xs font-semibold text-center transition-colors">
+                      Use this template
                     </div>
                   </div>
-                ))}
-              </div>
-          }
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Saved templates */}
+          <div>
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+              Saved Templates <span className="text-gray-400 font-normal normal-case ml-1">({templates.length})</span>
+            </h2>
+            {templates.length === 0
+              ? <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
+                  <BookOpen className="h-8 w-8 mx-auto text-gray-200 mb-3" />
+                  <p className="text-gray-500 font-medium text-sm">No saved templates yet</p>
+                  <p className="text-xs text-gray-400 mt-1">Compose an email and click "Save as Template".</p>
+                </div>
+              : <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {templates.map(t => (
+                    <div key={t.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3">
+                      <div>
+                        <p className="font-semibold text-gray-900 truncate">{t.name}</p>
+                        <p className="text-xs text-gray-400 mt-0.5 truncate">{t.subject || 'No subject'}</p>
+                        <p className="text-xs text-gray-300 mt-1">{new Date(t.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                      </div>
+                      <div className="flex gap-2 mt-auto">
+                        <button onClick={() => loadTemplate(t)}
+                          className="flex-1 py-2 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 transition-colors">
+                          Use Template
+                        </button>
+                        <button onClick={() => handleDeleteTemplate(t.id)}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+            }
+          </div>
         </div>
       )}
 
