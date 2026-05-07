@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get('category')
     const search = searchParams.get('search')?.trim() || ''
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50')))
+    const limit = Math.min(10000, Math.max(1, parseInt(searchParams.get('limit') ?? '100')))
     const skip = (page - 1) * limit
 
     const where: any = {}

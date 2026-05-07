@@ -1,13 +1,13 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, ChevronLeft, ChevronRight, Users, ImageIcon } from 'lucide-react'
+import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, Users, ImageIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
 // xlsx is lazy-loaded only when export/import is triggered — avoids 500KB upfront parse
 
-const PAGE_SIZE = 50
+const PAGE_SIZE = 100
 
 const emptyForm = {
   title: '',
@@ -30,8 +30,6 @@ const emptyForm = {
 export default function AdminOpportunitiesPage() {
   const [opps, setOpps] = useState<any[]>([])
   const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
-  const [pages, setPages] = useState(1)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -73,26 +71,24 @@ export default function AdminOpportunitiesPage() {
     setPosterLog(d.activity ?? [])
   }, [])
 
-  const fetchOpps = useCallback(async (p: number, q: string) => {
+  const fetchOpps = useCallback(async (q: string) => {
     setLoading(true)
-    const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) })
+    const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
     if (q) params.set('search', q)
     const res = await fetch(`/api/admin/opportunities?${params}`)
     const d = await res.json()
     setOpps(Array.isArray(d.data) ? d.data : [])
     setTotal(d.total ?? 0)
-    setPages(d.pages ?? 1)
     setLoading(false)
   }, [])
 
-  useEffect(() => { fetchOpps(page, search) }, [page, search, fetchOpps])
+  useEffect(() => { fetchOpps(search) }, [search, fetchOpps])
 
   const handleSearchChange = (val: string) => {
     setSearchInput(val)
     if (searchTimer.current) clearTimeout(searchTimer.current)
     searchTimer.current = setTimeout(() => {
       setSearch(val)
-      setPage(1)
       setSelected(new Set())
     }, 350)
   }
@@ -142,7 +138,7 @@ export default function AdminOpportunitiesPage() {
     if (res.ok) {
       toast.success(editOpp ? 'Updated!' : 'Created!')
       setModalOpen(false)
-      fetchOpps(page, search)
+      fetchOpps(search)
     } else {
       toast.error('Error saving opportunity')
     }
@@ -154,7 +150,7 @@ export default function AdminOpportunitiesPage() {
     const res = await fetch(`/api/admin/opportunities/${id}`, { method: 'DELETE' })
     if (res.ok) {
       toast.success('Deleted')
-      fetchOpps(page, search)
+      fetchOpps(search)
     }
   }
 
@@ -462,8 +458,7 @@ export default function AdminOpportunitiesPage() {
       (importPreview?.skipped > 0 ? ` · ${importPreview.skipped} rows had no title` : '')
     )
 
-    setPage(1)
-    fetchOpps(1, search)
+    fetchOpps(search)
     setImporting(false)
     setImportProgress('')
   }
@@ -500,7 +495,7 @@ export default function AdminOpportunitiesPage() {
       if (res.ok) {
         setSelected(new Set())
         toast.success(`Done — ${ids.length} updated`)
-        fetchOpps(page, search)
+        fetchOpps(search)
       } else {
         toast.error('Bulk action failed')
       }
@@ -831,29 +826,12 @@ export default function AdminOpportunitiesPage() {
         </div>
       )}
 
-      {/* ── Pagination ── */}
-      {pages > 1 && (
-        <div className="flex items-center justify-between mt-4 px-1">
-          <p className="text-sm text-gray-500">
-            Page {page} of {pages} · {total} opportunities
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setPage(p => Math.max(1, p - 1)); setSelected(new Set()) }}
-              disabled={page === 1 || loading}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4" /> Prev
-            </button>
-            <button
-              onClick={() => { setPage(p => Math.min(pages, p + 1)); setSelected(new Set()) }}
-              disabled={page === pages || loading}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors"
-            >
-              Next <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+      {/* ── Footer note ── */}
+      {!loading && total > 0 && (
+        <p className="mt-3 px-1 text-xs text-gray-400 text-center">
+          Showing {opps.length} of {total} opportunities
+          {total > PAGE_SIZE && !search && ' · Search to find others'}
+        </p>
       )}
 
       {/* ── Import Preview Modal ── */}
