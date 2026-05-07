@@ -61,6 +61,7 @@ export const opportunitySchema = z.object({
   requiredDocs: z.array(z.string()).max(50).default([]),
   applicationLink: z.string().max(2000).default(''),
   description: z.string().max(10000).nullable().optional(),
+  imageUrl: z.string().url().nullable().optional(),
   featured: z.boolean().optional(),
   // Job/Internship-specific fields
   jobType: z.string().max(50).nullable().optional(),

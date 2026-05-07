@@ -189,6 +189,20 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
         </div>
       </div>
 
+      {/* Poster image */}
+      {opp.imageUrl && (
+        <div className="max-w-4xl mx-auto px-4 pt-8">
+          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={opp.imageUrl}
+              alt={`${opp.title} poster`}
+              className="w-full max-h-[520px] object-contain"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Body */}
       <div className="max-w-4xl mx-auto px-4 py-10">
         <div className="grid md:grid-cols-3 gap-8">

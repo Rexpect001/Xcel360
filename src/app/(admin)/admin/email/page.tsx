@@ -995,7 +995,19 @@ export default function AdminEmailPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Active</h2>
-                <button onClick={loadCampaigns} className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"><RefreshCw className="h-3 w-3" /> Refresh</button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={async () => {
+                      const res = await fetch('/api/admin/email/resume', { method: 'POST' })
+                      const d = await res.json()
+                      if (res.ok) { toast.success(`Resumed — sent ${d.results?.reduce((s: number, r: any) => s + r.sent, 0) ?? 0} emails`); loadCampaigns() }
+                      else toast.error(d.error ?? 'Resume failed')
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 transition-colors">
+                    <RotateCcw className="h-3 w-3" /> Resume Batch Now
+                  </button>
+                  <button onClick={loadCampaigns} className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"><RefreshCw className="h-3 w-3" /> Refresh</button>
+                </div>
               </div>
               <div className="space-y-3">{activeCampaigns.map(c => <CampaignCard key={c.id} campaign={c} onAction={loadCampaigns} onView={() => setViewingCampaign(c)} />)}</div>
             </div>

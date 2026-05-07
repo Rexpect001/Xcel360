@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, ChevronLeft, ChevronRight, Users } from 'lucide-react'
+import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, ChevronLeft, ChevronRight, Users, ImageIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
@@ -19,6 +19,7 @@ const emptyForm = {
   eligibility: '',
   applicationLink: '',
   description: '',
+  imageUrl: '',
   programLevel: [] as string[],
   fieldTags: [] as string[],
   requiredDocs: ['CV', 'SOP', 'Transcripts', 'References'] as string[],
@@ -55,6 +56,10 @@ export default function AdminOpportunitiesPage() {
   // Bulk selection
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkLoading, setBulkLoading] = useState(false)
+
+  // Image upload
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const imageInputRef = useRef<HTMLInputElement>(null)
 
   // Poster activity
   const [posterStats, setPosterStats] = useState<{ poster: string; _count: { _all: number } }[]>([])
@@ -110,6 +115,7 @@ export default function AdminOpportunitiesPage() {
       eligibility: opp.eligibility,
       applicationLink: opp.applicationLink,
       description: opp.description ?? '',
+      imageUrl: opp.imageUrl ?? '',
       programLevel: opp.programLevel ?? [],
       fieldTags: opp.fieldTags ?? [],
       requiredDocs: opp.requiredDocs ?? [],
@@ -125,7 +131,7 @@ export default function AdminOpportunitiesPage() {
       return
     }
     setSaving(true)
-    const body = { ...form, deadline: new Date(form.deadline).toISOString() }
+    const body = { ...form, deadline: new Date(form.deadline).toISOString(), imageUrl: form.imageUrl || null }
     const url = editOpp ? `/api/admin/opportunities/${editOpp.id}` : '/api/admin/opportunities'
     const method = editOpp ? 'PATCH' : 'POST'
     const res = await fetch(url, {
@@ -500,6 +506,27 @@ export default function AdminOpportunitiesPage() {
       }
     } finally {
       setBulkLoading(false)
+    }
+  }
+
+  const handleImageUpload = async (file: File) => {
+    if (!file) return
+    setUploadingImage(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const d = await res.json()
+      if (res.ok) {
+        setForm(f => ({ ...f, imageUrl: d.url }))
+        toast.success('Image uploaded')
+      } else {
+        toast.error(d.error ?? 'Upload failed')
+      }
+    } catch {
+      toast.error('Upload failed')
+    } finally {
+      setUploadingImage(false)
     }
   }
 
@@ -1155,6 +1182,36 @@ export default function AdminOpportunitiesPage() {
                 placeholder="Full scholarship description..."
               />
             </div>
+          </div>
+
+          {/* Poster / Flyer image */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-2">Poster / Flyer Image</label>
+            <input ref={imageInputRef} type="file" accept="image/*" className="hidden"
+              onChange={e => { if (e.target.files?.[0]) handleImageUpload(e.target.files[0]) }} />
+            {form.imageUrl ? (
+              <div className="relative w-full rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={form.imageUrl} alt="Poster preview" className="w-full max-h-48 object-contain" />
+                <div className="absolute top-2 right-2 flex gap-1.5">
+                  <button type="button" onClick={() => imageInputRef.current?.click()}
+                    className="px-2.5 py-1.5 bg-white/90 text-gray-700 rounded-lg text-xs font-medium shadow-sm hover:bg-white transition-colors">
+                    Change
+                  </button>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, imageUrl: '' }))}
+                    className="p-1.5 bg-white/90 text-red-500 rounded-lg shadow-sm hover:bg-white transition-colors">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={() => imageInputRef.current?.click()} disabled={uploadingImage}
+                className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:border-brand-300 hover:text-brand-600 transition-colors disabled:opacity-50">
+                {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImageIcon className="h-5 w-5" />}
+                <span className="text-sm">{uploadingImage ? 'Uploading…' : 'Click to upload poster / flyer'}</span>
+                <span className="text-xs">JPG, PNG, WebP · max 5 MB</span>
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-3">

@@ -106,6 +106,7 @@ model Opportunity {
   status          OpportunityStatus    @default(OPEN)
   featured        Boolean              @default(false)
   description     String?              @db.Text
+  imageUrl        String?
   views           Int                  @default(0)
   postedBy        String?
   createdAt       DateTime             @default(now())
