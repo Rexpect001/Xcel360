@@ -4,6 +4,25 @@ import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowUpRight, Activity, Briefcase } from 'lucide-react'
 import Link from 'next/link'
+import { formatDate } from '@/lib/utils'
+
+const ACTION_BADGE: Record<string, string> = {
+  LOGIN: 'bg-green-100 text-green-700',
+  LOGIN_FAILED: 'bg-red-100 text-red-700',
+  LOGOUT: 'bg-gray-100 text-gray-600',
+  SIGNUP: 'bg-teal-100 text-teal-700',
+  OPPORTUNITY_CREATE: 'bg-blue-100 text-blue-700',
+  OPPORTUNITY_LIST: 'bg-gray-100 text-gray-500',
+  CREATE: 'bg-blue-100 text-blue-700',
+  UPDATE: 'bg-yellow-100 text-yellow-700',
+  DELETE: 'bg-red-100 text-red-700',
+  PUBLISH: 'bg-green-100 text-green-700',
+  UNPUBLISH: 'bg-orange-100 text-orange-700',
+  ASSIGN_ROLE: 'bg-purple-100 text-purple-700',
+  APPLY: 'bg-cyan-100 text-cyan-700',
+  VIEW: 'bg-gray-100 text-gray-400',
+  DOWNLOAD: 'bg-violet-100 text-violet-700',
+}
 
 export default async function AdminPage() {
   const session = await getAuth()
@@ -12,7 +31,7 @@ export default async function AdminPage() {
   if (!isAdminRole(session.user.role)) redirect('/')
 
   const db = prisma as any
-  const [users, scholarships, jobs, internships, saved, applications, events, blogPosts, mentors] = await Promise.all([
+  const [users, scholarships, jobs, internships, saved, applications, events, blogPosts, mentors, recentActivity] = await Promise.all([
     prisma.user.count(),
     db.opportunity.count({ where: { category: 'SCHOLARSHIP' } }),
     db.opportunity.count({ where: { category: 'JOB' } }),
@@ -22,6 +41,10 @@ export default async function AdminPage() {
     prisma.event.count(),
     prisma.blogPost.count(),
     prisma.mentorshipOffering.count(),
+    prisma.activityLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 15,
+    }),
   ])
 
   const stats = [
@@ -82,13 +105,6 @@ export default async function AdminPage() {
       count: `${saved} saves`,
       iconColor: 'text-rose-600', iconBg: 'bg-rose-50',
       hoverBorder: 'hover:border-rose-200',
-    },
-    {
-      href: '/admin/activity',      icon: Activity,  label: 'Activity Log',
-      desc: 'Audit trail of all admin and user actions — logins, roles, content edits.',
-      count: 'Live feed',
-      iconColor: 'text-slate-600', iconBg: 'bg-slate-100',
-      hoverBorder: 'hover:border-slate-300',
     },
   ]
 
@@ -162,6 +178,70 @@ export default async function AdminPage() {
             </Link>
           )
         })}
+      </div>
+
+      {/* ── Recent Activity ── */}
+      <div className="mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 rounded-full bg-gradient-to-b from-slate-400 to-slate-600" />
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Recent Activity</h2>
+          </div>
+          <Link
+            href="/admin/activity"
+            className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1 transition-colors"
+          >
+            View full log <ArrowUpRight className="h-3 w-3" />
+          </Link>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          {recentActivity.length === 0 ? (
+            <div className="px-5 py-10 text-center text-slate-400 text-sm">
+              No activity logged yet — events will appear here as users interact with the platform.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 border-b border-slate-100">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-medium text-slate-500 whitespace-nowrap text-xs">Time</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-500 text-xs">User</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-500 text-xs">Action</th>
+                    <th className="text-left px-4 py-3 font-medium text-slate-500 text-xs hidden md:table-cell">Resource</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {recentActivity.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-2.5 text-xs text-slate-400 whitespace-nowrap">
+                        {formatDate(log.createdAt)}
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-slate-700 max-w-[160px] truncate">
+                        {log.userEmail ?? <span className="text-slate-300 italic">anonymous</span>}
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ACTION_BADGE[log.action] ?? 'bg-slate-100 text-slate-500'}`}>
+                          {log.action}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 hidden md:table-cell text-xs text-slate-500">
+                        {log.resource ? (
+                          <span>
+                            <span className="font-medium text-slate-600">{log.resource}</span>
+                            {log.resourceName && <span className="text-slate-400"> · {log.resourceName}</span>}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
