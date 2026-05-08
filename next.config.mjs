@@ -7,6 +7,11 @@ const nextConfig = {
         destination: '/events/cmobns2gx0000u9klishjmwqr',
         permanent: false,
       },
+      {
+        source: '/volunteer',
+        destination: 'https://edifier.thexcel360.com/volunteer',
+        permanent: false,
+      },
     ]
   },
 
