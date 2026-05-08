@@ -422,6 +422,56 @@ const BASE_TEMPLATES = [
 </div>`,
   },
   {
+    name: 'Event Reconnect',
+    desc: 'Re-engage past event attendees — introduces the platform, teases the next event, and links to WhatsApp.',
+    preview: 'reconnect',
+    subject: "A lot has happened since our last event — meet Xcel360",
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
+    <p style="color:#bae6fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">From the Xcel360 Team</p>
+    <h1 style="color:#ffffff;font-size:26px;margin:0 0 10px;line-height:1.3;">We've Been Building Something for You</h1>
+    <p style="color:#e0f2fe;font-size:15px;margin:0;">Introducing the Xcel360 Scholarship Platform</p>
+  </div>
+  <div style="padding:40px 32px;color:#1f2937;">
+    <p style="font-size:16px;line-height:1.7;">Hi Scholar,</p>
+    <p style="font-size:16px;line-height:1.7;">It's been a minute since we connected at our last event — and it's been a busy one. We've been working tirelessly behind the scenes, and we're excited to finally share what we've built.</p>
+    <p style="font-size:16px;line-height:1.7;">Meet <strong>Xcel360</strong> — a scholarship discovery platform built to help you navigate your scholarship journey, search smarter, and find the right programme for you.</p>
+    <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:28px 0;">
+      <p style="font-size:13px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What Xcel360 gives you</p>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>A rich scholarship database</strong> — curated opportunities updated regularly to support your journey</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline reminders</strong> — save opportunities and get notified before they close</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>More features on the way</strong> — we're constantly improving the platform to better support your search and applications</p>
+      </div>
+    </div>
+    <p style="font-size:16px;line-height:1.7;">We're doing well, and we're genuinely proud of what we've put together for you. Check it out, explore, and let us know what you think.</p>
+    <div style="text-align:center;margin:36px 0;">
+      <a href="https://thexcel360.com" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Explore the Platform</a>
+    </div>
+    <div style="background:#fef9c3;border-left:4px solid #facc15;border-radius:0 8px 8px 0;padding:20px 24px;margin:28px 0;">
+      <p style="font-size:15px;font-weight:700;color:#92400e;margin:0 0 6px;">Something big is coming.</p>
+      <p style="font-size:15px;color:#78350f;line-height:1.7;margin:0;">Last year we had a Narrative. This year? Stay tuned — our next event is shaping up to be something you really don't want to miss.</p>
+    </div>
+    <p style="font-size:16px;line-height:1.7;">In the meantime, join our WhatsApp channel for real-time updates, resources, and opportunities dropped straight to your feed.</p>
+    <div style="text-align:center;margin:32px 0;">
+      <a href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" style="display:inline-block;background:#25D366;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:15px;">Join the WhatsApp Channel</a>
+    </div>
+    <p style="font-size:15px;color:#6b7280;line-height:1.7;text-align:center;">This is for you — let's make the most of this opportunity together.</p>
+    <p style="font-size:16px;line-height:1.7;margin-top:32px;">With excitement,<br/><strong>The Xcel360 Team</strong></p>
+  </div>
+  <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+    <p style="font-size:13px;color:#9ca3af;margin:0;">© 2025 Xcel360. Empowering scholars across Africa.</p>
+  </div>
+</div>`,
+  },
+  {
     name: 'Platform Invitation',
     desc: 'Invite external contacts to join Xcel360 — highlights key benefits and links to sign up.',
     preview: 'invitation',
@@ -518,6 +568,18 @@ function TemplateThumbnail({ type }: { type: string }) {
         </div>
         <div className={`${bar} w-full`} />
         <div className="flex justify-center"><div className="w-20 h-3 bg-sky-500 rounded" /></div>
+      </>}
+      {type === 'reconnect' && <>
+        <div className={`${bar} w-full`} />
+        <div className={`${bar} w-4/5`} />
+        <div className="border-l-2 border-yellow-400 pl-1.5 bg-yellow-50 rounded-r py-1 space-y-1">
+          <div className={`${bar} w-full`} />
+          <div className={`${bar} w-3/5`} />
+        </div>
+        <div className="flex justify-center gap-1.5 mt-0.5">
+          <div className="w-10 h-3 bg-sky-500 rounded" />
+          <div className="w-10 h-3 bg-green-500 rounded" />
+        </div>
       </>}
       <div className="mt-auto h-3 bg-gray-50 rounded flex items-center justify-center shrink-0">
         <div className="w-16 h-1 bg-gray-200 rounded-full" />
