@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { DEFAULT_CHECKLIST_ITEMS } from '@/types'
-import { notifyAdminNewApplication } from '@/lib/notify'
 
 export async function GET() {
   try {
@@ -37,13 +36,6 @@ export async function POST(req: NextRequest) {
       },
       include: { opportunity: true, checklist: true },
     })
-
-    // Notify admin of new application (non-blocking)
-    notifyAdminNewApplication(
-      session.user.name ?? session.user.email ?? 'Unknown',
-      session.user.email ?? '',
-      app.opportunity.title,
-    ).catch(() => {})
 
     return NextResponse.json(app, { status: 201 })
   } catch (err: any) {

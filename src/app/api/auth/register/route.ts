@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import prisma from '@/lib/prisma'
-import { notifyAdminNewUser } from '@/lib/notify'
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,9 +32,6 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, email: true, name: true },
     })
-
-    // Notify admin of new registration (non-blocking)
-    notifyAdminNewUser(user.name!, user.email!).catch(() => {})
 
     // Log new registration to ActivityLog (non-blocking)
     prisma.activityLog.create({

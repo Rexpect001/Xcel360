@@ -46,31 +46,31 @@ export async function scheduleDeadlineReminders(userId: string, opportunityId: s
 }
 
 export async function sendDeadlineReminders() {
-  // Called by a cron job (e.g., daily at 8am)
+  // Called by a cron job (daily at 8am via vercel.json)
   const now = new Date()
+  const notificationDays = [30, 14, 7, 2]
 
+  // Track notified (userId:opportunityId) to avoid duplicates when a user
+  // has both saved and applied to the same opportunity
+  const notified = new Set<string>()
+
+  // 1. Users tracking via Applications
   const applications = await prisma.application.findMany({
     include: {
       opportunity: true,
-      user: {
-        include: { profile: true },
-      },
+      user: { include: { profile: true } },
     },
     where: {
-      opportunity: {
-        deadline: { gt: now },
-        status: 'OPEN',
-      },
+      opportunity: { deadline: { gt: now }, status: 'OPEN' },
     },
   })
-
-  const notificationDays = [30, 14, 7, 2]
 
   for (const app of applications) {
     const daysLeft = daysUntilDeadline(app.opportunity.deadline)
     const reminderDays = app.user.profile?.reminderDays ?? notificationDays
 
     if (reminderDays.includes(daysLeft)) {
+      notified.add(`${app.userId}:${app.opportunityId}`)
       await createNotification({
         userId: app.userId,
         type: 'DEADLINE_REMINDER',
@@ -78,14 +78,50 @@ export async function sendDeadlineReminders() {
         message: `The deadline for "${app.opportunity.title}" is in ${daysLeft} days.`,
         link: `/opportunities/${app.opportunityId}`,
       })
-
-      // Also send email if user has email notifications enabled
       if (app.user.profile?.notifyEmail !== false && app.user.email) {
         sendDeadlineReminderEmail({
           to: app.user.email,
           name: app.user.name ?? 'there',
           opportunityTitle: app.opportunity.title,
           opportunityId: app.opportunityId,
+          daysLeft,
+        }).catch(console.error)
+      }
+    }
+  }
+
+  // 2. Users who bookmarked (saved) but haven't applied
+  const savedOpps = await prisma.savedOpportunity.findMany({
+    include: {
+      opportunity: true,
+      user: { include: { profile: true } },
+    },
+    where: {
+      opportunity: { deadline: { gt: now }, status: 'OPEN' },
+    },
+  })
+
+  for (const saved of savedOpps) {
+    const key = `${saved.userId}:${saved.opportunityId}`
+    if (notified.has(key)) continue // already reminded via application
+
+    const daysLeft = daysUntilDeadline(saved.opportunity.deadline)
+    const reminderDays = saved.user.profile?.reminderDays ?? notificationDays
+
+    if (reminderDays.includes(daysLeft)) {
+      await createNotification({
+        userId: saved.userId,
+        type: 'DEADLINE_REMINDER',
+        title: `Deadline in ${daysLeft} days`,
+        message: `"${saved.opportunity.title}" closes in ${daysLeft} days — don't miss it!`,
+        link: `/opportunities/${saved.opportunityId}`,
+      })
+      if (saved.user.profile?.notifyEmail !== false && saved.user.email) {
+        sendDeadlineReminderEmail({
+          to: saved.user.email,
+          name: saved.user.name ?? 'there',
+          opportunityTitle: saved.opportunity.title,
+          opportunityId: saved.opportunityId,
           daysLeft,
         }).catch(console.error)
       }
