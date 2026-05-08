@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/ai',
+        destination: '/events/cmobns2gx0000u9klishjmwqr',
+        permanent: false,
+      },
+    ]
+  },
+
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
