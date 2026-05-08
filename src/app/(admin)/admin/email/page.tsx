@@ -461,7 +461,7 @@ const BASE_TEMPLATES = [
     </div>
     <p style="font-size:16px;line-height:1.7;">In the meantime, join our WhatsApp channel for real-time updates, resources, and opportunities dropped straight to your feed.</p>
     <div style="text-align:center;margin:32px 0;">
-      <a href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" style="display:inline-block;background:#25D366;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:15px;">Join the WhatsApp Channel</a>
+      <a href="https://www.whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" style="display:inline-block;background:#25D366;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:15px;">Join the WhatsApp Channel</a>
     </div>
     <p style="font-size:15px;color:#6b7280;line-height:1.7;text-align:center;">This is for you — let's make the most of this opportunity together.</p>
     <p style="font-size:16px;line-height:1.7;margin-top:32px;">With excitement,<br/><strong>The Xcel360 Team</strong></p>
