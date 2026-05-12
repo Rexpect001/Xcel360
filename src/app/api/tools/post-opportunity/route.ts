@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     // Auto-generate branded image if none was uploaded
     if (!imageUrl) {
-      const generatedImageUrl = `${APP_URL}/api/og?id=${opportunity.id}&type=${typeParam}`
+      const generatedImageUrl = `${APP_URL}/api/og?id=${opportunity.id}&type=${typeParam}&simple=true`
       await db.opportunity.update({ where: { id: opportunity.id }, data: { imageUrl: generatedImageUrl } })
       opportunity.imageUrl = generatedImageUrl
     }

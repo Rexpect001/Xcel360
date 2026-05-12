@@ -78,7 +78,9 @@ export async function GET(req: NextRequest) {
     } catch { /* fallback to defaults */ }
   }
 
+  const simple = searchParams.get('simple') === 'true'
   const titleSize = title.length > 80 ? '44px' : title.length > 55 ? '52px' : title.length > 35 ? '62px' : '72px'
+  const simpleTitleSize = title.length > 80 ? '52px' : title.length > 55 ? '62px' : title.length > 35 ? '72px' : '84px'
 
   return new ImageResponse(
     (
@@ -113,7 +115,7 @@ export async function GET(req: NextRequest) {
 
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '48px 72px 44px', justifyContent: 'space-between' }}>
 
-          {/* Brand + badge */}
+          {/* Brand + funding badge */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{
@@ -140,7 +142,7 @@ export async function GET(req: NextRequest) {
 
           {/* Big title */}
           <div style={{
-            fontSize: titleSize,
+            fontSize: simple ? simpleTitleSize : titleSize,
             fontWeight: 900,
             color: '#ffffff',
             lineHeight: 1.1,
@@ -152,47 +154,59 @@ export async function GET(req: NextRequest) {
             {title}
           </div>
 
-          {/* Bottom meta row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
-              {/* Sub (host/company) */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  {type === 'job' || type === 'internship' ? 'Company' : type === 'event' ? 'Host' : 'Offered by'}
-                </span>
-                <span style={{ fontSize: '20px', color: '#7dd3fc', fontWeight: 700 }}>{sub}</span>
+          {/* Bottom row — simple: field pill + domain / full: all meta */}
+          {simple ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1.5px solid rgba(255,255,255,0.12)',
+                color: '#94a3b8',
+                fontSize: '18px', fontWeight: 600,
+                padding: '10px 24px', borderRadius: '999px',
+                display: 'flex', alignItems: 'center',
+              }}>
+                {meta2Value}
               </div>
-              <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
-              {/* Meta 1 */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta1Label}</span>
-                <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta1Value}</span>
+              <span style={{ fontSize: '16px', color: '#334155', fontWeight: 500, letterSpacing: '0.04em' }}>
+                thexcel360.com
+              </span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    {type === 'job' || type === 'internship' ? 'Company' : type === 'event' ? 'Host' : 'Offered by'}
+                  </span>
+                  <span style={{ fontSize: '20px', color: '#7dd3fc', fontWeight: 700 }}>{sub}</span>
+                </div>
+                <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta1Label}</span>
+                  <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta1Value}</span>
+                </div>
+                <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta2Label}</span>
+                  <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta2Value}</span>
+                </div>
+                <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta3Label}</span>
+                  <span style={{ fontSize: '20px', color: meta3Value === 'Open' ? '#4ade80' : '#e2e8f0', fontWeight: 600 }}>{meta3Value}</span>
+                </div>
               </div>
-              <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
-              {/* Meta 2 */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta2Label}</span>
-                <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta2Value}</span>
-              </div>
-              <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
-              {/* Meta 3 (deadline/date) */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta3Label}</span>
-                <span style={{ fontSize: '20px', color: meta3Value === 'Open' ? '#4ade80' : '#e2e8f0', fontWeight: 600 }}>{meta3Value}</span>
+              <div style={{
+                background: 'linear-gradient(135deg, #0369a1, #0284c7)',
+                color: 'white', fontSize: '17px', fontWeight: 700,
+                padding: '12px 28px', borderRadius: '12px',
+                display: 'flex', alignItems: 'center', gap: '8px',
+                boxShadow: '0 4px 24px rgba(3,105,161,0.5)',
+              }}>
+                {type === 'event' ? 'Register now →' : 'Apply now →'}
               </div>
             </div>
-
-            {/* CTA */}
-            <div style={{
-              background: 'linear-gradient(135deg, #0369a1, #0284c7)',
-              color: 'white', fontSize: '17px', fontWeight: 700,
-              padding: '12px 28px', borderRadius: '12px',
-              display: 'flex', alignItems: 'center', gap: '8px',
-              boxShadow: '0 4px 24px rgba(3,105,161,0.5)',
-            }}>
-              {type === 'event' ? 'Register now →' : type === 'job' || type === 'internship' ? 'Apply now →' : 'Apply now →'}
-            </div>
-          </div>
+          )}
         </div>
       </div>
     ),
