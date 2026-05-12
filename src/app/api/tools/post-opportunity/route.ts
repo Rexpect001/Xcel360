@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     title, hostOrg, country, fundingType, field, programLevel,
     deadline, eligibility, description, applicationLink,
     requiredDocs, fieldTags, featured, status,
+    imageUrl,
     // Job / Internship fields
     company, jobType, salary, remote, experienceLevel, skills,
   } = body
@@ -46,6 +47,8 @@ export async function POST(req: NextRequest) {
   }
 
   const category = postType === 'JOB' ? 'JOB' : postType === 'INTERNSHIP' ? 'INTERNSHIP' : 'SCHOLARSHIP'
+  const APP_URL = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
+  const typeParam = category === 'JOB' ? 'job' : category === 'INTERNSHIP' ? 'internship' : 'scholarship'
 
   const db = prisma as any
 
@@ -68,6 +71,7 @@ export async function POST(req: NextRequest) {
         fieldTags:       Array.isArray(fieldTags) ? fieldTags : [],
         featured:        featured === true,
         status:          status ?? 'OPEN',
+        imageUrl:        imageUrl ?? null,
         // Job / Internship extras
         company:         company ?? null,
         jobType:         jobType ?? null,
@@ -78,6 +82,13 @@ export async function POST(req: NextRequest) {
         postedBy:        postedBy ?? null,
       },
     })
+
+    // Auto-generate branded image if none was uploaded
+    if (!imageUrl) {
+      const generatedImageUrl = `${APP_URL}/api/og?id=${opportunity.id}&type=${typeParam}`
+      await db.opportunity.update({ where: { id: opportunity.id }, data: { imageUrl: generatedImageUrl } })
+      opportunity.imageUrl = generatedImageUrl
+    }
 
     await db.toolPostActivity.create({
       data: {
@@ -94,5 +105,5 @@ export async function POST(req: NextRequest) {
   }
 
   console.log('[post-opportunity] Created:', opportunity.id, opportunity.title)
-  return NextResponse.json({ id: opportunity.id, title: opportunity.title, category: opportunity.category })
+  return NextResponse.json({ id: opportunity.id, title: opportunity.title, category: opportunity.category, imageUrl: opportunity.imageUrl })
 }
