@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
   if (!ALLOWED.includes(file.type)) return NextResponse.json({ error: 'Only JPG, PNG, WebP and GIF images are allowed' }, { status: 400 })
   if (file.size > MAX_SIZE) return NextResponse.json({ error: 'File exceeds 5 MB limit' }, { status: 400 })
 
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  const EXT_MAP: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }
+  const ext = EXT_MAP[file.type] ?? 'jpg'
   const filename = `opportunities/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
   const blob = await put(filename, file, { access: 'public', contentType: file.type })

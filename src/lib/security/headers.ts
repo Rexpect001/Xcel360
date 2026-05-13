@@ -56,9 +56,12 @@ export const corsConfig = {
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002',
-    // Add your production domains here:
-    // 'https://xcel360.com',
-    // 'https://www.xcel360.com',
+    'https://xcel360.com',
+    'https://www.xcel360.com',
+    'https://thexcel360.com',
+    'https://www.thexcel360.com',
+    'https://tool.thexcel360.com',
+    'https://edifier.thexcel360.com',
   ],
   
   // Allowed methods
