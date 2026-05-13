@@ -208,6 +208,21 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
         <div className="grid md:grid-cols-3 gap-8">
           {/* Main */}
           <div className="md:col-span-2 space-y-8">
+            {/* Email application notice */}
+            {opp.applicationLink && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(opp.applicationLink.trim()) && (
+              <section className="bg-brand-50 border-2 border-brand-200 rounded-2xl p-6">
+                <h2 className="text-lg font-bold text-brand-900 mb-2 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-brand-600" /> How to Apply
+                </h2>
+                <p className="text-sm text-brand-800 font-semibold leading-relaxed">
+                  Send your application directly via email to:{' '}
+                  <a href={`mailto:${opp.applicationLink.trim()}`} className="underline text-brand-700 break-all">
+                    {opp.applicationLink.trim()}
+                  </a>
+                </p>
+              </section>
+            )}
+
             {opp.description && (
               <section className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">

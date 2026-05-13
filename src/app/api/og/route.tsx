@@ -80,7 +80,22 @@ export async function GET(req: NextRequest) {
 
   const simple = searchParams.get('simple') === 'true'
   const titleSize = title.length > 80 ? '44px' : title.length > 55 ? '52px' : title.length > 35 ? '62px' : '72px'
-  const simpleTitleSize = title.length > 80 ? '52px' : title.length > 55 ? '62px' : title.length > 35 ? '72px' : '84px'
+  const simpleTitleSize = title.length > 80 ? '58px' : title.length > 55 ? '68px' : title.length > 35 ? '80px' : '96px'
+
+  const bgGradient =
+    type === 'job'        ? 'linear-gradient(145deg, #0a1a10 0%, #0c2518 40%, #0e3a22 100%)'
+    : type === 'internship' ? 'linear-gradient(145deg, #0f0a1e 0%, #1a0d2e 40%, #26104a 100%)'
+    : 'linear-gradient(145deg, #0a0f1e 0%, #0d1b2e 40%, #0f2744 100%)'
+
+  const glowColor =
+    type === 'job'        ? 'rgba(34,197,94,0.15)'
+    : type === 'internship' ? 'rgba(139,92,246,0.18)'
+    : 'rgba(14,165,233,0.18)'
+
+  const accentGradient =
+    type === 'job'        ? 'linear-gradient(90deg, #16a34a, #4ade80, #86efac)'
+    : type === 'internship' ? 'linear-gradient(90deg, #7c3aed, #a78bfa, #c4b5fd)'
+    : 'linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc)'
 
   return new ImageResponse(
     (
@@ -90,7 +105,7 @@ export async function GET(req: NextRequest) {
           height: '630px',
           display: 'flex',
           flexDirection: 'column',
-          background: 'linear-gradient(145deg, #0a0f1e 0%, #0d1b2e 40%, #0f2744 100%)',
+          background: bgGradient,
           fontFamily: 'sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -100,7 +115,7 @@ export async function GET(req: NextRequest) {
         <div style={{
           position: 'absolute', top: '-120px', right: '-120px',
           width: '500px', height: '500px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 65%)',
+          background: `radial-gradient(circle, ${glowColor} 0%, transparent 65%)`,
           display: 'flex',
         }} />
         <div style={{
@@ -111,7 +126,7 @@ export async function GET(req: NextRequest) {
         }} />
 
         {/* Top accent */}
-        <div style={{ height: '4px', background: 'linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc)', display: 'flex', flexShrink: 0 }} />
+        <div style={{ height: '4px', background: accentGradient, display: 'flex', flexShrink: 0 }} />
 
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '48px 72px 44px', justifyContent: 'space-between' }}>
 
