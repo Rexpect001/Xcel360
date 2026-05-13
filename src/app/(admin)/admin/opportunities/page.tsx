@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, Users, ImageIcon } from 'lucide-react'
+import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, Users, ImageIcon, AlertTriangle } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
@@ -63,6 +63,10 @@ export default function AdminOpportunitiesPage() {
   const [posterStats, setPosterStats] = useState<{ poster: string; _count: { _all: number } }[]>([])
   const [posterLog, setPosterLog] = useState<any[]>([])
   const [showPosterPanel, setShowPosterPanel] = useState(false)
+
+  // Cleanup state
+  const [cleanupLoading, setCleanupLoading] = useState(false)
+  const [backfillLoading, setBackfillLoading] = useState(false)
 
   const loadPosterActivity = useCallback(async () => {
     const res = await fetch('/api/admin/poster-activity')
@@ -535,6 +539,39 @@ export default function AdminOpportunitiesPage() {
   }
 
 
+  const handleCleanup = async () => {
+    setCleanupLoading(true)
+    try {
+      const preview = await fetch('/api/admin/cleanup-opportunities').then(r => r.json())
+      if (!preview.preview || preview.preview === 0) {
+        toast.success('Nothing to clean up — all opportunities have an application method.')
+        return
+      }
+      const titles = (preview.titles as string[]).slice(0, 5).join('\n• ')
+      if (!confirm(`Delete ${preview.preview} opportunities with no application link or email?\n\nSample:\n• ${titles}${preview.preview > 5 ? `\n… and ${preview.preview - 5} more` : ''}`)) return
+      const result = await fetch('/api/admin/cleanup-opportunities', { method: 'POST' }).then(r => r.json())
+      toast.success(result.message ?? `Removed ${result.deleted} opportunities`)
+      fetchOpps(search)
+    } catch {
+      toast.error('Cleanup failed')
+    } finally {
+      setCleanupLoading(false)
+    }
+  }
+
+  const handleBackfill = async () => {
+    setBackfillLoading(true)
+    try {
+      const result = await fetch('/api/admin/backfill-images', { method: 'POST' }).then(r => r.json())
+      toast.success(result.message ?? `Backfilled ${result.updated} images`)
+      fetchOpps(search)
+    } catch {
+      toast.error('Backfill failed')
+    } finally {
+      setBackfillLoading(false)
+    }
+  }
+
   // opps is already the current page from the server — no client-side filter needed
   const filtered = opps
 
@@ -586,6 +623,24 @@ export default function AdminOpportunitiesPage() {
             title="Export to Excel"
           >
             <Download className="h-4 w-4" /> Export Excel
+          </button>
+          <button
+            onClick={handleBackfill}
+            disabled={backfillLoading}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-sky-200 bg-white text-sky-700 hover:bg-sky-50 transition-colors disabled:opacity-60"
+            title="Auto-generate OG images for any opportunities missing one"
+          >
+            {backfillLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+            Backfill Images
+          </button>
+          <button
+            onClick={handleCleanup}
+            disabled={cleanupLoading}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors disabled:opacity-60"
+            title="Remove opportunities with no application link or email"
+          >
+            {cleanupLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <AlertTriangle className="h-4 w-4" />}
+            Cleanup
           </button>
           <button
             onClick={openAdd}

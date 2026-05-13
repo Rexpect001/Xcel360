@@ -259,23 +259,54 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
                 key={opp.id}
                 className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
               >
-                <div className="h-1.5 bg-gradient-to-r from-brand-600 to-brand-400" />
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                {(opp as any).imageUrl ? (
+                  <div className="h-40 overflow-hidden relative flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={(opp as any).imageUrl}
+                      alt={opp.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                    <div className="absolute top-2 left-2 flex gap-1.5">
                       {(opp as any).category === 'JOB' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-sm">
                           <Briefcase className="h-3 w-3" />Job
                         </span>
                       )}
                       {(opp as any).category === 'INTERNSHIP' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-purple-500/90 text-white backdrop-blur-sm">
+                          <Building2 className="h-3 w-3" />Internship
+                        </span>
+                      )}
+                    </div>
+                    <div className="absolute bottom-2 right-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${getFundingBadgeColor(opp.fundingType)} backdrop-blur-sm`}>
+                        {opp.fundingType}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-1.5 bg-gradient-to-r from-brand-600 to-brand-400 flex-shrink-0" />
+                )}
+                <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {!(opp as any).imageUrl && (opp as any).category === 'JOB' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+                          <Briefcase className="h-3 w-3" />Job
+                        </span>
+                      )}
+                      {!(opp as any).imageUrl && (opp as any).category === 'INTERNSHIP' && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700">
                           <Building2 className="h-3 w-3" />Internship
                         </span>
                       )}
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getFundingBadgeColor(opp.fundingType)}`}>
-                        {opp.fundingType}
-                      </span>
+                      {!(opp as any).imageUrl && (
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getFundingBadgeColor(opp.fundingType)}`}>
+                          {opp.fundingType}
+                        </span>
+                      )}
                     </div>
                     {opp.status === 'OPEN' ? (
                       <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Open</span>
