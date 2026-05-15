@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
 import Link from 'next/link'
 
