@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { generateAndStoreOpImage } from '@/lib/generateOpImage'
 
 export const dynamic = 'force-dynamic'
 
@@ -181,9 +182,12 @@ export async function POST(req: NextRequest) {
     })
 
     if (!imageUrl) {
-      const generatedImageUrl = `${APP_URL}/api/og?id=${opportunity.id}&type=${typeParam}&simple=true`
-      await db.opportunity.update({ where: { id: opportunity.id }, data: { imageUrl: generatedImageUrl } })
-      opportunity.imageUrl = generatedImageUrl
+      // Generate the branded card image and store it as a permanent static PNG in
+      // Vercel Blob so card loads are served from CDN with zero compute.
+      const staticUrl = await generateAndStoreOpImage(opportunity.id, typeParam, APP_URL)
+      const finalUrl = staticUrl ?? `${APP_URL}/api/og?id=${opportunity.id}&type=${typeParam}&simple=true`
+      await db.opportunity.update({ where: { id: opportunity.id }, data: { imageUrl: finalUrl } })
+      opportunity.imageUrl = finalUrl
     }
 
     await db.toolPostActivity.create({
