@@ -1,6 +1,76 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, Users, ImageIcon, AlertTriangle } from 'lucide-react'
+import { Plus, Pencil, Trash2, Star, StarOff, Search, Loader2, X, Download, Upload, Eye, ExternalLink, Calendar, Globe, Building2, BookOpen, FileCheck, Users, ImageIcon, AlertTriangle, CheckCircle, Mail, Link2 } from 'lucide-react'
+import type { ReactNode } from 'react'
+
+// ── Rich-text helpers for the detail modal ────────────────────────────────────
+
+function renderInline(text: string): ReactNode {
+  const parts = text.split(/\*\*(.+?)\*\*/)
+  if (parts.length === 1) return text
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} className="font-semibold text-gray-900">{part}</strong>
+      : part
+  )
+}
+
+function RichDescription({ text }: { text: string }) {
+  const lines = text.split('\n')
+  const nodes: ReactNode[] = []
+  let bullets: string[] = []
+
+  const flushBullets = (key: string) => {
+    if (!bullets.length) return
+    nodes.push(
+      <ul key={key} className="space-y-2 my-1">
+        {bullets.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+            <span className="text-brand-500 mt-0.5 shrink-0 font-bold">•</span>
+            <span className="leading-relaxed">{renderInline(item)}</span>
+          </li>
+        ))}
+      </ul>
+    )
+    bullets = []
+  }
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim()
+    if (!trimmed) { flushBullets(`ul-${idx}`); return }
+    const m = trimmed.match(/^[•\-\*]\s*(.+)/)
+    if (m) {
+      bullets.push(m[1])
+    } else {
+      flushBullets(`ul-${idx}`)
+      nodes.push(
+        <p key={`p-${idx}`} className="text-sm text-gray-700 leading-relaxed">
+          {renderInline(trimmed)}
+        </p>
+      )
+    }
+  })
+  flushBullets('ul-end')
+  return <div className="space-y-1.5">{nodes}</div>
+}
+
+function EligibilityList({ text }: { text: string }) {
+  // Split on sentence boundaries (. followed by space + capital letter)
+  const sentences = text.split(/\.\s+(?=[A-Z])/).map(s => s.replace(/\.$/, '').trim()).filter(Boolean)
+  if (sentences.length <= 1) {
+    return <p className="text-sm text-gray-700 leading-relaxed">{text}</p>
+  }
+  return (
+    <ul className="space-y-1.5">
+      {sentences.map((s, i) => (
+        <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+          <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 shrink-0" />
+          <span className="leading-relaxed">{s}.</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
@@ -975,92 +1045,103 @@ export default function AdminOpportunitiesPage() {
           size="lg"
         >
           <div className="space-y-5">
-            {/* Header */}
+            {/* Poster image */}
+            {detailOpp.imageUrl && (
+              <div className="rounded-xl overflow-hidden border border-gray-100 -mx-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={detailOpp.imageUrl} alt={detailOpp.title} className="w-full max-h-52 object-cover" />
+              </div>
+            )}
+
+            {/* Badges + title */}
             <div>
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap gap-2 mb-2">
                 <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${detailOpp.status === 'OPEN' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                   {detailOpp.status}
                 </span>
-                {detailOpp.featured && (
-                  <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-yellow-100 text-yellow-700">
-                    Featured
-                  </span>
-                )}
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-brand-50 text-brand-700">
                   {detailOpp.fundingType}
                 </span>
+                {detailOpp.featured && (
+                  <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-yellow-100 text-yellow-700">⭐ Featured</span>
+                )}
+                {detailOpp.category && detailOpp.category !== 'SCHOLARSHIP' && (
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${detailOpp.category === 'JOB' ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'}`}>
+                    {detailOpp.category}
+                  </span>
+                )}
               </div>
-              <h2 className="text-xl font-bold text-gray-900 leading-tight">{detailOpp.title}</h2>
+              <h2 className="text-xl font-bold text-gray-900 leading-snug">{detailOpp.title}</h2>
+              <p className="text-sm text-gray-500 mt-0.5">{detailOpp.hostOrg}</p>
             </div>
 
             {/* Info grid */}
-            <div className="grid sm:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-start gap-2">
-                <Building2 className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Host</p>
-                  <p className="text-gray-800 font-medium">{detailOpp.hostOrg}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { icon: <Globe className="h-3.5 w-3.5" />, label: 'Country', value: detailOpp.country },
+                { icon: <Calendar className="h-3.5 w-3.5" />, label: 'Deadline', value: detailOpp.deadline ? formatDate(detailOpp.deadline) : '—' },
+                { icon: <BookOpen className="h-3.5 w-3.5" />, label: 'Field', value: detailOpp.field },
+                { icon: <Building2 className="h-3.5 w-3.5" />, label: 'Host', value: detailOpp.hostOrg },
+              ].map(({ icon, label, value }) => (
+                <div key={label} className="bg-gray-50 rounded-xl p-3">
+                  <div className="flex items-center gap-1 text-gray-400 mb-1">{icon}<span className="text-xs font-medium uppercase tracking-wide">{label}</span></div>
+                  <p className="text-sm font-semibold text-gray-800 truncate">{value}</p>
                 </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Globe className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Country</p>
-                  <p className="text-gray-800">{detailOpp.country}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Calendar className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Deadline</p>
-                  <p className="text-gray-800">{detailOpp.deadline ? formatDate(detailOpp.deadline) : '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <BookOpen className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Field</p>
-                  <p className="text-gray-800">{detailOpp.field}</p>
-                </div>
-              </div>
+              ))}
             </div>
 
             {/* Program levels */}
             {detailOpp.programLevel?.length > 0 && (
               <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">Program Level</p>
+                <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-2">Program Level</p>
                 <div className="flex flex-wrap gap-1.5">
                   {detailOpp.programLevel.map((l: string) => (
-                    <span key={l} className="text-xs bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full font-medium">{l}</span>
+                    <span key={l} className="text-xs bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full font-medium border border-brand-100">{l}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Eligibility */}
+            {/* Eligibility — auto-split into sentence checklist */}
             {detailOpp.eligibility && (
-              <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1.5">Eligibility</p>
-                <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-xl p-3">{detailOpp.eligibility}</p>
+              <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+                <p className="text-xs text-green-700 font-semibold uppercase tracking-wide mb-3">Eligibility</p>
+                <EligibilityList text={detailOpp.eligibility} />
               </div>
             )}
 
-            {/* Description */}
+            {/* Description — renders • bullets and **bold** */}
             {detailOpp.description && (
-              <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1.5">Description</p>
-                <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-xl p-3 whitespace-pre-line">{detailOpp.description}</p>
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-3">Description</p>
+                <RichDescription text={detailOpp.description} />
+              </div>
+            )}
+
+            {/* Application method */}
+            {detailOpp.applicationLink && (
+              <div className={`rounded-xl p-4 border ${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailOpp.applicationLink.trim()) ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-200'}`}>
+                <p className="text-xs font-semibold uppercase tracking-wide mb-1.5 text-gray-500">Application Method</p>
+                {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailOpp.applicationLink.trim()) ? (
+                  <a href={`mailto:${detailOpp.applicationLink.trim()}`} className="flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">
+                    <Mail className="h-4 w-4 shrink-0" />{detailOpp.applicationLink.trim()}
+                  </a>
+                ) : (
+                  <a href={detailOpp.applicationLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-brand-700 hover:underline break-all">
+                    <Link2 className="h-4 w-4 shrink-0" />{detailOpp.applicationLink}
+                  </a>
+                )}
               </div>
             )}
 
             {/* Required docs */}
             {detailOpp.requiredDocs?.length > 0 && (
               <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">Required Documents</p>
+                <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-2">Required Documents</p>
                 <div className="flex flex-wrap gap-1.5">
                   {detailOpp.requiredDocs.map((d: string) => (
-                    <span key={d} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
-                      <FileCheck className="h-3 w-3" />{d}
+                    <span key={d} className="inline-flex items-center gap-1.5 text-xs bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-full font-medium">
+                      <FileCheck className="h-3 w-3 text-brand-500" />{d}
                     </span>
                   ))}
                 </div>
@@ -1068,21 +1149,30 @@ export default function AdminOpportunitiesPage() {
             )}
 
             {/* Actions */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-1 border-t border-gray-100">
               <button
                 onClick={() => { setDetailOpp(null); openEdit(detailOpp) }}
                 className="flex items-center gap-2 flex-1 justify-center py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors"
               >
                 <Pencil className="h-4 w-4" /> Edit Opportunity
               </button>
-              {detailOpp.applicationLink && (
+              <a
+                href={`/opportunities/${detailOpp.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
+                title="View public page"
+              >
+                <Eye className="h-4 w-4" /> Preview
+              </a>
+              {detailOpp.applicationLink && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailOpp.applicationLink.trim()) && (
                 <a
                   href={detailOpp.applicationLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
                 >
-                  <ExternalLink className="h-4 w-4" /> Apply Link
+                  <ExternalLink className="h-4 w-4" /> Apply
                 </a>
               )}
             </div>
