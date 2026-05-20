@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import {
   Plus, Pencil, Trash2, Search, ToggleLeft, ToggleRight,
-  ExternalLink, CheckSquare, Square, Calendar, X,
+  ExternalLink, CheckSquare, Square, Calendar, X, Linkedin,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
@@ -13,6 +13,7 @@ const emptyForm = {
   description: '',
   expertise: '',
   link: '',
+  linkedIn: '',
   available: true,
 }
 
@@ -57,6 +58,7 @@ export default function AdminMentorshipPage() {
       description: m.description ?? '',
       expertise: (m.expertise ?? []).join(', '),
       link: m.link ?? '',
+      linkedIn: m.linkedIn ?? '',
       available: m.available,
     })
     setModalOpen(true)
@@ -72,6 +74,7 @@ export default function AdminMentorshipPage() {
       ...form,
       expertise: form.expertise.split(',').map((t) => t.trim()).filter(Boolean),
       link: form.link || null,
+      linkedIn: form.linkedIn || null,
     }
     const url = editMentor ? `/api/admin/mentorship/${editMentor.id}` : '/api/admin/mentorship'
     const method = editMentor ? 'PATCH' : 'POST'
@@ -453,6 +456,23 @@ export default function AdminMentorshipPage() {
               </div>
             )}
 
+            {/* LinkedIn */}
+            {detailMentor.linkedIn && (
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">LinkedIn</p>
+                <a
+                  href={detailMentor.linkedIn}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#0077b5] hover:text-[#005885] transition-colors"
+                >
+                  <Linkedin className="h-4 w-4" />
+                  View LinkedIn Profile
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            )}
+
             {/* Booking link */}
             {detailMentor.link && (
               <div>
@@ -560,7 +580,21 @@ export default function AdminMentorshipPage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
-              Booking Link <span className="text-gray-400">(optional)</span>
+              LinkedIn Profile <span className="text-gray-400">(optional)</span>
+            </label>
+            <div className="relative">
+              <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#0077b5]" />
+              <input
+                value={form.linkedIn}
+                onChange={(e) => setForm((f) => ({ ...f, linkedIn: e.target.value }))}
+                className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Booking Link <span className="text-gray-400">(optional — Calendly, etc.)</span>
             </label>
             <input
               value={form.link}

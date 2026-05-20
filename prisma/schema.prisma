@@ -247,6 +247,7 @@ model MentorshipOffering {
   expertise   String[]
   available   Boolean  @default(true)
   link        String?
+  linkedIn    String?
   image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

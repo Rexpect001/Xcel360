@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       expertise: body.expertise ?? [],
       available: body.available ?? true,
       link: body.link ?? null,
+      linkedIn: body.linkedIn ?? null,
     },
   })
   return NextResponse.json(mentor, { status: 201 })

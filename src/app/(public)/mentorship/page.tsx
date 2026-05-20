@@ -1,6 +1,8 @@
 export const revalidate = 60
 import type { Metadata } from 'next'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
+// @ts-ignore — lucide ships Linkedin icon
+import { Linkedin } from 'lucide-react'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 
@@ -112,23 +114,35 @@ export default async function MentorshipPage() {
                   </span>
                 ))}
               </div>
-              {mentor.link ? (
-                <a
-                  href={mentor.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm font-semibold text-brand-700 hover:text-brand-800"
-                >
-                  Book a session <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              ) : (
-                <Link
-                  href="/signup"
-                  className="flex items-center gap-2 text-sm font-semibold text-brand-700 hover:text-brand-800"
-                >
-                  Connect <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              )}
+              <div className="flex items-center gap-3 flex-wrap">
+                {(mentor as any).linkedIn && (
+                  <a
+                    href={(mentor as any).linkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm font-semibold text-[#0077b5] hover:text-[#005885] transition-colors"
+                  >
+                    <Linkedin className="h-4 w-4" /> Connect
+                  </a>
+                )}
+                {mentor.link ? (
+                  <a
+                    href={mentor.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800 transition-colors"
+                  >
+                    Book a session <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                ) : !(mentor as any).linkedIn && (
+                  <Link
+                    href="/signup"
+                    className="flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800 transition-colors"
+                  >
+                    Connect <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                )}
+              </div>
             </div>
           ))}
         </div>

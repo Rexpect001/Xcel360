@@ -16,6 +16,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       ...(body.expertise !== undefined && { expertise: body.expertise }),
       ...(body.available !== undefined && { available: body.available }),
       ...(body.link !== undefined && { link: body.link }),
+      ...(body.linkedIn !== undefined && { linkedIn: body.linkedIn }),
     },
   })
   return NextResponse.json(mentor)
