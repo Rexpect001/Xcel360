@@ -14,6 +14,7 @@ const emptyForm = {
   type: 'Zoom',
   date: '',
   host: '',
+  link: '',
   coverImage: '',
   published: false,
 }
@@ -119,6 +120,7 @@ export default function AdminEventsPage() {
       type: e.type,
       date: new Date(e.date).toISOString().slice(0, 16),
       host: e.host ?? '',
+      link: (e as any).link ?? '',
       coverImage: (e as any).coverImage ?? '',
       published: e.published,
     })
@@ -471,50 +473,8 @@ export default function AdminEventsPage() {
               placeholder="Event title"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Date & Time *</label>
-              <input
-                type="datetime-local"
-                value={form.date}
-                onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
-              <select
-                value={form.type}
-                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              >
-                {['Zoom', 'In-person', 'Webinar', 'Workshop'].map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Host</label>
-            <input
-              value={form.host}
-              onChange={(e) => setForm((f) => ({ ...f, host: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="Host name or organization"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
-            <textarea
-              rows={3}
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-              placeholder="What is this event about?"
-            />
-          </div>
 
-          {/* Flyer upload */}
+          {/* Flyer upload — first so it's always visible */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Event Flyer / Cover Image</label>
             <input
@@ -542,15 +502,68 @@ export default function AdminEventsPage() {
                 type="button"
                 onClick={() => flyerInputRef.current?.click()}
                 disabled={uploading}
-                className="w-full py-8 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-brand-400 hover:text-brand-600 transition-colors flex flex-col items-center gap-2 disabled:opacity-60"
+                className="w-full py-6 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-brand-400 hover:text-brand-600 transition-colors flex flex-col items-center gap-2 disabled:opacity-60"
               >
                 {uploading ? (
                   <><Loader2 className="h-6 w-6 animate-spin text-brand-500" /><span>Uploading…</span></>
                 ) : (
-                  <><ImageIcon className="h-6 w-6 text-gray-300" /><span>Click to upload flyer <span className="text-gray-400 text-xs">(JPG, PNG, WebP — max 5 MB)</span></span></>
+                  <><Upload className="h-5 w-5 text-gray-300" /><span>Click to upload flyer <span className="text-gray-400 text-xs">(JPG, PNG, WebP — max 5 MB)</span></span></>
                 )}
               </button>
             )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Date & Time *</label>
+              <input
+                type="datetime-local"
+                value={form.date}
+                onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+              <select
+                value={form.type}
+                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              >
+                {['Zoom', 'In-person', 'Webinar', 'Workshop', 'Q&A', 'Info Session'].map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Host</label>
+            <input
+              value={form.host}
+              onChange={(e) => setForm((f) => ({ ...f, host: e.target.value }))}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="Host name or organization"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Event Link (Zoom / Registration URL)</label>
+            <input
+              type="url"
+              value={form.link}
+              onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="https://zoom.us/j/..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+            <textarea
+              rows={3}
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+              placeholder="What is this event about?"
+            />
           </div>
 
           <div className="flex items-center gap-3">
