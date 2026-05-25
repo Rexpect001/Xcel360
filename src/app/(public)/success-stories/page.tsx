@@ -1,4 +1,4 @@
-export const revalidate = 60
+export const revalidate = 86400
 import prisma from '@/lib/prisma'
 import { Quote } from 'lucide-react'
 

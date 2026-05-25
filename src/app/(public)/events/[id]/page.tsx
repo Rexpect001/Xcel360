@@ -1,4 +1,4 @@
-export const revalidate = 300
+export const revalidate = 3600
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { Calendar, Clock, User, Video, MapPin, ArrowLeft, Users, Sparkles } from 'lucide-react'

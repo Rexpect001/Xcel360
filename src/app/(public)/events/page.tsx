@@ -1,4 +1,4 @@
-export const revalidate = 60
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import prisma from '@/lib/prisma'
 import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight, MapPin, Zap } from 'lucide-react'

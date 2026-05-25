@@ -1,4 +1,4 @@
-export const revalidate = 300
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'

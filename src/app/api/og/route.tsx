@@ -3,15 +3,38 @@ import { NextRequest } from 'next/server'
 import prisma from '@/lib/prisma'
 
 export const runtime = 'nodejs'
-export const revalidate = 3600 // cache OG images for 1 hour — content rarely changes
+
+// In-memory rate limiter: max 30 requests/min per IP
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 })
+    return false
+  }
+  if (entry.count >= 30) return true
+  entry.count++
+  return false
+}
 
 export async function GET(req: NextRequest) {
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    'unknown'
+
+  if (isRateLimited(ip)) {
+    return new Response('Too Many Requests', { status: 429 })
+  }
+
   const { searchParams } = new URL(req.url)
   const id = searchParams.get('id')
   const type = searchParams.get('type') ?? 'scholarship' // scholarship | job | internship | event
 
   let title = 'Opportunity'
-  let sub = 'Xcel360'      // host org / company / host
+  let sub = 'Xcel360'
   let meta1Label = 'Country'
   let meta1Value = 'Global'
   let meta2Label = 'Field'
@@ -66,7 +89,6 @@ export async function GET(req: NextRequest) {
             meta2Value = opp.jobType ?? (type === 'internship' ? 'Internship' : 'Full-time')
             meta3Label = 'Deadline'
           } else {
-            // scholarship
             badgeText = opp.fundingType ?? 'Scholarship'
             const isFull = opp.fundingType === 'Fully funded'
             const isPartial = opp.fundingType === 'Partial'
@@ -97,7 +119,7 @@ export async function GET(req: NextRequest) {
     : type === 'internship' ? 'linear-gradient(90deg, #7c3aed, #a78bfa, #c4b5fd)'
     : 'linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc)'
 
-  return new ImageResponse(
+  const img = new ImageResponse(
     (
       <div
         style={{
@@ -169,7 +191,7 @@ export async function GET(req: NextRequest) {
             {title}
           </div>
 
-          {/* Bottom row — simple: field pill + domain / full: all meta */}
+          {/* Bottom row */}
           {simple ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{
@@ -227,4 +249,14 @@ export async function GET(req: NextRequest) {
     ),
     { width: 1200, height: 630 }
   )
+
+  // Cache the generated image at Vercel's CDN for 24 hours.
+  // Without this, every request hits the function even for the same ?id=
+  return new Response(img.body, {
+    status: 200,
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+    },
+  })
 }

@@ -1,4 +1,4 @@
-export const revalidate = 60
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import Hero3D from '@/components/landing/Hero3D'
 import HowItWorks from '@/components/landing/HowItWorks'

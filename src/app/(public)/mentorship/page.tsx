@@ -1,4 +1,4 @@
-export const revalidate = 60
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
 // @ts-ignore — lucide ships Linkedin icon
