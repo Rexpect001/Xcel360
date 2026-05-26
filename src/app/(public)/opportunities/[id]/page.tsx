@@ -53,18 +53,27 @@ import SaveButton from '@/components/ui/SaveButton'
 import { getAuth } from '@/lib/auth'
 import type { ReactNode } from 'react'
 
-// Renders inline **bold** markers safely (no dangerouslySetInnerHTML)
+// Renders inline **bold** markers safely
 function renderInline(text: string): ReactNode {
   const parts = text.split(/\*\*(.+?)\*\*/)
   if (parts.length === 1) return text
   return parts.map((part, i) =>
     i % 2 === 1
-      ? <strong key={i} className="font-semibold text-gray-800">{part}</strong>
+      ? <strong key={i} className="font-semibold text-gray-900">{part}</strong>
       : part
   )
 }
 
-// Renders a description that may contain bullet lines (•/-/*) and **bold**
+// Detects only explicit markdown section headers: ## or ###
+function isHeader(line: string): boolean {
+  return line.startsWith('### ') || line.startsWith('## ')
+}
+
+function headerText(line: string): string {
+  return line.replace(/^#{1,3}\s*/, '').replace(/:$/, '').trim()
+}
+
+// Renders description with bold headers, bullet lists, and inline **bold**
 function Description({ text }: { text: string }) {
   const lines = text.split('\n')
   const nodes: ReactNode[] = []
@@ -73,10 +82,10 @@ function Description({ text }: { text: string }) {
   const flushBullets = (key: string) => {
     if (!bullets.length) return
     nodes.push(
-      <ul key={key} className="space-y-2 my-2">
+      <ul key={key} className="space-y-1.5 my-2 pl-1">
         {bullets.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-            <span className="text-brand-500 mt-0.5 select-none flex-shrink-0">•</span>
+          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+            <span className="text-brand-500 mt-1 select-none flex-shrink-0 text-xs">●</span>
             <span>{renderInline(item)}</span>
           </li>
         ))}
@@ -88,13 +97,24 @@ function Description({ text }: { text: string }) {
   lines.forEach((line, idx) => {
     const trimmed = line.trim()
     if (!trimmed) { flushBullets(`ul-${idx}`); return }
+
     const bulletMatch = trimmed.match(/^[•\-\*]\s*(.+)/)
     if (bulletMatch) {
       bullets.push(bulletMatch[1])
-    } else {
-      flushBullets(`ul-${idx}`)
+      return
+    }
+
+    flushBullets(`ul-${idx}`)
+
+    if (isHeader(trimmed)) {
       nodes.push(
-        <p key={`p-${idx}`} className="text-gray-600 text-sm leading-relaxed">
+        <h3 key={`h-${idx}`} className="font-bold text-gray-900 text-sm mt-4 mb-1">
+          {headerText(trimmed)}
+        </h3>
+      )
+    } else {
+      nodes.push(
+        <p key={`p-${idx}`} className="text-gray-700 text-sm leading-relaxed">
           {renderInline(trimmed)}
         </p>
       )
@@ -102,7 +122,7 @@ function Description({ text }: { text: string }) {
   })
   flushBullets('ul-end')
 
-  return <div className="space-y-2">{nodes}</div>
+  return <div className="space-y-1">{nodes}</div>
 }
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
@@ -234,7 +254,9 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
 
             <section className="bg-white rounded-2xl border border-gray-100 p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">{opp.eligibility}</p>
+              <div className="text-gray-700 text-sm leading-relaxed">
+                <Description text={opp.eligibility ?? ''} />
+              </div>
             </section>
 
             <section className="bg-white rounded-2xl border border-gray-100 p-6">
