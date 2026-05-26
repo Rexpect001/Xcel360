@@ -1,4 +1,4 @@
-export const revalidate = 3600
+export const revalidate = 900
 import type { Metadata } from 'next'
 import prisma from '@/lib/prisma'
 import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight, MapPin, Zap } from 'lucide-react'
@@ -20,25 +20,21 @@ export const metadata: Metadata = {
 }
 
 async function getData() {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = prisma as any
-    const [events, programs, beneficiaries] = await Promise.all([
-      db.event.findMany({ where: { published: true }, orderBy: { date: 'asc' } }),
-      db.program.findMany({
-        where: { published: true },
-        orderBy: { cohortNumber: 'asc' },
-        include: { _count: { select: { beneficiaries: true } } },
-      }),
-      db.beneficiary.findMany({
-        select: { id: true, firstName: true, department: true, school: true },
-        orderBy: { createdAt: 'desc' },
-      }),
-    ])
-    return { events, programs, beneficiaries }
-  } catch {
-    return { events: [], programs: [], beneficiaries: [] }
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = prisma as any
+  const [events, programs, beneficiaries] = await Promise.all([
+    db.event.findMany({ where: { published: true }, orderBy: { date: 'asc' } }).catch(() => []),
+    db.program.findMany({
+      where: { published: true },
+      orderBy: { cohortNumber: 'asc' },
+      include: { _count: { select: { beneficiaries: true } } },
+    }).catch(() => []),
+    db.beneficiary.findMany({
+      select: { id: true, firstName: true, department: true, school: true },
+      orderBy: { createdAt: 'desc' },
+    }).catch(() => []),
+  ])
+  return { events, programs, beneficiaries }
 }
 
 const TYPE_COLORS: Record<string, string> = {
