@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma'
 import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowUpRight, Activity, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
+import RevalidateButton from '@/components/admin/RevalidateButton'
 
 const ACTION_BADGE: Record<string, string> = {
   LOGIN: 'bg-green-100 text-green-700',
@@ -242,6 +243,18 @@ export default async function AdminPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Cache Control */}
+      <div className="mt-10 bg-white rounded-2xl border border-slate-100 p-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Activity className="h-4 w-4 text-brand-600" />
+          <h2 className="font-semibold text-slate-900 text-sm">Page Cache</h2>
+        </div>
+        <p className="text-xs text-slate-500 mb-4">
+          Public pages cache data for up to 1 hour. If you just published an event or scholarship and it isn&apos;t showing yet, flush the cache here.
+        </p>
+        <RevalidateButton />
       </div>
     </div>
   )

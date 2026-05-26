@@ -27,22 +27,14 @@ export const metadata: Metadata = {
 }
 
 async function getPosts() {
-  try {
-    return await prisma.blogPost.findMany({ where: { published: true }, orderBy: { createdAt: 'desc' } })
-  } catch {
-    return []
-  }
+  return await prisma.blogPost.findMany({ where: { published: true }, orderBy: { createdAt: 'desc' } })
 }
 
 async function getResources() {
-  try {
-    return await (prisma as any).resource.findMany({
-      where: { published: true },
-      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-    })
-  } catch {
-    return []
-  }
+  return await (prisma as any).resource.findMany({
+    where: { published: true },
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+  })
 }
 
 function getFileIcon(fileType?: string) {

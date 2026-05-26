@@ -17,21 +17,17 @@ export const metadata: Metadata = {
 }
 
 async function getJobs() {
-  try {
-    const all = await (prisma as any).opportunity.findMany({
-      where: { status: 'OPEN', category: 'JOB' },
-      orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
-    })
-    const seen = new Set<string>()
-    return all.filter((o: any) => {
-      const key = o.title.toLowerCase().trim()
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
-  } catch {
-    return []
-  }
+  const all = await (prisma as any).opportunity.findMany({
+    where: { status: 'OPEN', category: 'JOB' },
+    orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
+  })
+  const seen = new Set<string>()
+  return all.filter((o: any) => {
+    const key = o.title.toLowerCase().trim()
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 export default async function JobsPage() {
