@@ -39,7 +39,7 @@ export default function Hero3D() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative flex items-center overflow-hidden"
       style={{ background: 'linear-gradient(150deg, #ffffff 0%, #f0f9ff 40%, #dbeafe 80%, #bfdbfe 100%)' }}
     >
       {/* Dot grid */}
@@ -48,47 +48,14 @@ export default function Hero3D() {
         backgroundSize: '28px 28px',
       }} />
 
-      {/* Colour blobs */}
+      {/* Subtle colour blobs */}
       <div className="absolute -top-32 -right-32 w-[560px] h-[560px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)' }} />
       <div className="absolute -bottom-32 -left-32 w-[480px] h-[480px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(3,105,161,0.06) 0%, transparent 70%)' }} />
-
-      {/* Floating shapes */}
-      <motion.div className="absolute top-[12%] left-[8%] opacity-50 pointer-events-none"
-        animate={{ y: [0, -18, 0], rotate: [0, 8, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}>
-        <svg width="56" height="56" viewBox="0 0 56 56">
-          <polygon points="28,4 52,48 4,48" fill="none" stroke="#0369a1" strokeWidth="2" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute top-[22%] right-[12%] opacity-40 pointer-events-none"
-        animate={{ y: [0, 14, 0], rotate: [0, -6, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
-        <svg width="72" height="72" viewBox="0 0 72 72">
-          <path d="M18 18 L54 54 M54 18 L18 54" stroke="#0369a1" strokeWidth="2.5" strokeLinecap="round" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute bottom-[18%] left-[18%] opacity-45 pointer-events-none"
-        animate={{ y: [0, -14, 0], scale: [1, 1.06, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}>
-        <svg width="48" height="48" viewBox="0 0 48 48">
-          <polygon points="24,4 40,14 40,34 24,44 8,34 8,14" fill="none" stroke="#f59e0b" strokeWidth="2" />
-        </svg>
-      </motion.div>
-      <motion.div className="absolute bottom-[28%] right-[8%] opacity-35 pointer-events-none"
-        animate={{ y: [0, 18, 0], x: [0, 8, 0] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 2 }}>
-        <svg width="90" height="90" viewBox="0 0 90 90">
-          <circle cx="45" cy="45" r="40" fill="none" stroke="#0284c7" strokeWidth="1.5" strokeDasharray="6,4" />
-          <circle cx="45" cy="45" r="25" fill="none" stroke="#0284c7" strokeWidth="1" />
-        </svg>
-      </motion.div>
+        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)' }} />
 
       <motion.div style={{ y, opacity }}
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 w-full">
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-14 w-full">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* ── Left: copy ── */}
@@ -165,7 +132,7 @@ export default function Hero3D() {
               </div>
 
               <div className="flex items-center flex-wrap gap-2 mt-3">
-                <span className="text-xs" style={{ color: '#64748b' }}>Popular:</span>
+                <span className="text-xs" style={{ color: '#475569' }}>Popular:</span>
                 {popularSearches.map((term) => (
                   <button key={term} type="button"
                     onClick={() => router.push(`/opportunities?search=${encodeURIComponent(term)}`)}
@@ -217,7 +184,7 @@ export default function Hero3D() {
                     <Star key={i} className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
                   ))}
                 </div>
-                <p className="text-xs" style={{ color: '#64748b' }}>
+                <p className="text-xs" style={{ color: '#475569' }}>
                   Join <strong style={{ color: '#0c4a6e' }}>10,000+</strong> students already on Xcel360
                 </p>
               </div>
@@ -321,22 +288,6 @@ export default function Hero3D() {
         </div>
       </motion.div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.4 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        style={{ color: '#0369a1' }}>
-        <span className="text-xs tracking-widest uppercase">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
-          style={{ border: '2px solid #7dd3fc' }}>
-          <div className="w-1 h-2 rounded-full" style={{ background: '#0369a1' }} />
-        </motion.div>
-      </motion.div>
     </section>
   )
 }

@@ -36,7 +36,7 @@ export default async function LandingPage() {
     .findMany({
       where: { status: 'OPEN', featured: true },
       orderBy: { deadline: 'asc' },
-      take: 10,
+      take: 8,
       select: {
         id: true,
         title: true,
@@ -58,10 +58,7 @@ export default async function LandingPage() {
       />
       <div className="overflow-x-hidden">
         <Hero3D />
-        <StatsSection />
         <TopScholarships scholarships={scholarships} />
-        <HowItWorks />
-        <CommunityJoin />
         <EmailCapture />
       </div>
     </>
