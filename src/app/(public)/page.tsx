@@ -1,9 +1,8 @@
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import Hero3D from '@/components/landing/Hero3D'
 import EmailCapture from '@/components/landing/EmailCapture'
 import TopScholarships from '@/components/landing/TopScholarships'
-import CommunityLinks from '@/components/landing/CommunityLinks'
 import prisma from '@/lib/prisma'
 
 export const metadata: Metadata = {
@@ -59,7 +58,6 @@ export default async function LandingPage() {
         <Hero3D />
         <TopScholarships scholarships={scholarships} />
         <EmailCapture />
-        <CommunityLinks />
       </div>
     </>
   )

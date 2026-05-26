@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { Bell, CheckCircle, ArrowRight } from 'lucide-react'
+import { Bell, CheckCircle, ArrowRight, MessageCircle, Youtube } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import Link from 'next/link'
 
 export default function EmailCapture() {
   const [email, setEmail] = useState('')
@@ -25,59 +26,81 @@ export default function EmailCapture() {
   }
 
   return (
-    <section className="relative py-24 overflow-hidden"
+    <section className="relative py-20 overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #eef4ff 0%, #f8faff 50%, #fffbf5 100%)' }}>
-      {/* Dot grid */}
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.07) 1px, transparent 1px)',
         backgroundSize: '28px 28px',
       }} />
-      {/* Glows */}
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
-      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)' }} />
 
       <div className="relative max-w-xl mx-auto px-4 text-center">
+
         {/* Icon */}
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6 shadow-md text-white"
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 shadow-sm text-white"
           style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)' }}>
-          <Bell className="h-7 w-7" />
+          <Bell className="h-5 w-5" />
         </div>
 
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3" style={{ color: '#0f172a' }}>
+        {/* Heading — smaller */}
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight mb-2" style={{ color: '#0f172a' }}>
           Never miss a scholarship
         </h2>
-        <p className="text-lg mb-10" style={{ color: '#64748b' }}>
-          Be the first to know when opportunities matching your profile are posted.
+        <p className="text-sm mb-7" style={{ color: '#475569' }}>
+          Be the first to know when new opportunities are posted.
         </p>
 
+        {/* Email form */}
         {submitted ? (
-          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl"
+          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl mb-8"
             style={{ background: '#ecfdf5', border: '1.5px solid #bbf7d0' }}>
             <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-            <span className="font-medium" style={{ color: '#065f46' }}>You&apos;re subscribed! We&apos;ll be in touch.</span>
+            <span className="font-medium text-sm" style={{ color: '#065f46' }}>You&apos;re subscribed!</span>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-8">
             <input
               type="email" value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               required
-              className="flex-1 px-5 py-4 rounded-2xl text-sm focus:outline-none bg-white placeholder:text-gray-400"
-              style={{
-                border: '1.5px solid #e0e7ff',
-                boxShadow: '0 2px 12px rgba(99,102,241,0.08)',
-                color: '#0f172a',
-              }}
+              className="flex-1 px-5 py-3.5 rounded-2xl text-sm focus:outline-none bg-white placeholder:text-gray-400"
+              style={{ border: '1.5px solid #e0e7ff', boxShadow: '0 2px 12px rgba(99,102,241,0.08)', color: '#0f172a' }}
             />
             <button type="submit" disabled={loading}
-              className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50 whitespace-nowrap"
-              style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)', boxShadow: '0 4px 16px rgba(99,102,241,0.25)' }}>
+              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50 whitespace-nowrap"
+              style={{ background: 'linear-gradient(135deg, #0369a1, #6366f1)', boxShadow: '0 4px 16px rgba(99,102,241,0.2)' }}>
               {loading ? 'Subscribing...' : <><ArrowRight className="h-4 w-4" />Get Alerts</>}
             </button>
           </form>
         )}
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px" style={{ background: '#e2e8f0' }} />
+          <span className="text-xs font-medium" style={{ color: '#94a3b8' }}>or stay connected via</span>
+          <div className="flex-1 h-px" style={{ background: '#e2e8f0' }} />
+        </div>
+
+        {/* WhatsApp + YouTube */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30"
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 w-full sm:w-auto justify-center"
+            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 3px 12px rgba(22,163,74,0.2)' }}
+          >
+            <MessageCircle className="h-4 w-4 flex-shrink-0" />
+            Join WhatsApp Channel
+          </Link>
+          <Link
+            href="https://www.youtube.com/@Xcel_360"
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 w-full sm:w-auto justify-center"
+            style={{ background: 'linear-gradient(135deg, #dc2626, #ef4444)', boxShadow: '0 3px 12px rgba(220,38,38,0.2)' }}
+          >
+            <Youtube className="h-4 w-4 flex-shrink-0" />
+            Watch on YouTube
+          </Link>
+        </div>
 
       </div>
     </section>
