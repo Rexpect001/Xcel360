@@ -34,8 +34,8 @@ const orgJsonLd = {
 export default async function LandingPage() {
   const scholarships = await prisma.opportunity
     .findMany({
-      where: { status: 'OPEN', featured: true },
-      orderBy: { deadline: 'asc' },
+      where: { status: 'OPEN' },
+      orderBy: { createdAt: 'desc' },
       take: 8,
       select: {
         id: true,
@@ -46,6 +46,7 @@ export default async function LandingPage() {
         deadline: true,
         field: true,
         programLevel: true,
+        createdAt: true,
       },
     })
     .catch(() => [])
@@ -57,8 +58,8 @@ export default async function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
       <div className="overflow-x-hidden">
-        <Hero3D />
         <TopScholarships scholarships={scholarships} />
+        <Hero3D />
         <EmailCapture />
       </div>
     </>
