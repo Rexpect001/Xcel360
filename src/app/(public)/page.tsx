@@ -36,7 +36,7 @@ export default async function LandingPage() {
     .findMany({
       where: { status: 'OPEN' },
       orderBy: { createdAt: 'desc' },
-      take: 8,
+      take: 12,
       select: {
         id: true,
         title: true,
@@ -58,8 +58,9 @@ export default async function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
       <div className="overflow-x-hidden">
-        <TopScholarships scholarships={scholarships} />
         <Hero3D />
+        <TopScholarships scholarships={scholarships} />
+        <CommunityJoin />
         <EmailCapture />
       </div>
     </>

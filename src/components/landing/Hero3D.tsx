@@ -22,10 +22,10 @@ export default function Hero3D() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
 
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3" style={{ color: '#0c4a6e' }}>
-          Find Your Dream Scholarship
+          Find Your Dream Opportunity
         </h2>
         <p className="text-sm mb-7" style={{ color: '#475569' }}>
-          Search 2,700+ fully funded scholarships, grants, and fellowships for African students
+          Search 2,700+ scholarships, grants, fellowships, jobs and internships for African students
         </p>
 
         {/* Search bar */}
@@ -39,7 +39,7 @@ export default function Hero3D() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by scholarship, country, or field..."
+              placeholder="Search opportunity, country, or field..."
               className="flex-1 px-4 py-4 text-sm focus:outline-none placeholder:text-gray-400 min-w-0"
               style={{ color: '#0f172a' }}
             />
