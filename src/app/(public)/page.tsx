@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 import type { Metadata } from 'next'
 import Hero3D from '@/components/landing/Hero3D'
 import EmailCapture from '@/components/landing/EmailCapture'
