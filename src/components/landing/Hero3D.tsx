@@ -22,7 +22,7 @@ export default function Hero3D() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
 
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3" style={{ color: '#0c4a6e' }}>
-          Find Your Dream Opportunity
+          Find Your Dream Scholarship
         </h2>
         <p className="text-sm mb-7" style={{ color: '#475569' }}>
           Search 2,700+ scholarships, grants, fellowships, jobs and internships for African students

@@ -79,9 +79,6 @@ export default function EmailCapture() {
           </form>
         )}
 
-        <p className="mt-5 text-xs" style={{ color: '#94a3b8' }}>
-          No spam · Unsubscribe anytime · 100% free
-        </p>
       </div>
     </section>
   )

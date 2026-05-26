@@ -44,10 +44,10 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
               <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Recently added — Updated daily</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: '#0f172a' }}>
-              Opportunities with Xcel
+              Open Opportunities
             </h2>
             <p className="text-sm mt-1.5" style={{ color: '#475569' }}>
-              The latest scholarships added to our platform — apply before they close
+              The latest scholarships and opportunities added — apply before they close
             </p>
           </div>
           <Link

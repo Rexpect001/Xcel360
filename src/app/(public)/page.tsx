@@ -1,11 +1,9 @@
 export const revalidate = 3600
 import type { Metadata } from 'next'
 import Hero3D from '@/components/landing/Hero3D'
-import HowItWorks from '@/components/landing/HowItWorks'
-import CommunityJoin from '@/components/landing/CommunityJoin'
 import EmailCapture from '@/components/landing/EmailCapture'
-import StatsSection from '@/components/landing/StatsSection'
 import TopScholarships from '@/components/landing/TopScholarships'
+import CommunityLinks from '@/components/landing/CommunityLinks'
 import prisma from '@/lib/prisma'
 
 export const metadata: Metadata = {
@@ -60,8 +58,8 @@ export default async function LandingPage() {
       <div className="overflow-x-hidden">
         <Hero3D />
         <TopScholarships scholarships={scholarships} />
-        <CommunityJoin />
         <EmailCapture />
+        <CommunityLinks />
       </div>
     </>
   )
