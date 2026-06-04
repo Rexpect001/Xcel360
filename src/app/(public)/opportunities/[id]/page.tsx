@@ -32,13 +32,14 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       description,
       url: `${BASE}/opportunities/${opp.id}`,
       type: 'article',
-      images: [{ url: `${BASE}/api/og?id=${opp.id}`, width: 1200, height: 630, alt: opp.title }],
+      // Use uploaded image if available; skip auto-generated OG otherwise
+      ...(opp.imageUrl ? { images: [{ url: opp.imageUrl, alt: opp.title }] } : {}),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: opp.imageUrl ? 'summary_large_image' : 'summary',
       title: opp.title,
       description,
-      images: [`${BASE}/api/og?id=${opp.id}`],
+      ...(opp.imageUrl ? { images: [opp.imageUrl] } : {}),
     },
   }
 }
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 import { formatDate, daysUntilDeadline, getFundingBadgeColor } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import ShareButtons from '@/components/ui/ShareButtons'
-import { Calendar, MapPin, BookOpen, FileText, CheckCircle } from 'lucide-react'
+import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Download } from 'lucide-react'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
@@ -196,6 +197,16 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
           <div className="flex flex-wrap gap-3 mt-6 items-center">
             <ApplyButton href={opp.applicationLink} title={opp.title} />
             <SaveButton opportunityId={opp.id} />
+            {(opp as any).pdfUrl && (
+              <a
+                href={(opp as any).pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Download className="h-4 w-4 text-brand-600" /> Download PDF
+              </a>
+            )}
           </div>
 
           {/* Share buttons */}

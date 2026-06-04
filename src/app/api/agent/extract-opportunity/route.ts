@@ -13,7 +13,7 @@ Extract all relevant details and return ONLY a valid JSON object with exactly th
   "field": "one of: STEM, Non-STEM, Arts, Business, Law, Medicine, Social Sciences, Humanities, General",
   "programLevel": ["array from: Undergraduate, Masters, PhD, Postdoctoral, Professional, Any"],
   "deadline": "YYYY-MM-DD format string, or null if not found",
-  "eligibility": "who can apply — nationalities, GPA, degree requirements, etc.",
+  "eligibility": "Format as bullet points. Start each point with '• '. Example: '• Open to African nationals\n• Must hold a Bachelor\'s degree\n• Minimum GPA: 3.5/4.0\n• Age limit: 35 years'. Keep each point concise.",
   "description": "IMPORTANT: Format using markdown sections and bullet points. Use '### Section Name' for section headers (e.g. '### Benefits', '### Requirements', '### About the Program'). Under each section, list points starting with '• '. Bold key details using **double asterisks**. Example: '### Benefits\\n• **Fully funded** — covers tuition, accommodation, and living stipend\\n• Monthly **€800** living allowance\\n\\n### Requirements\\n• Open to students from **all African countries**\\n• Minimum GPA: **3.5/4.0**'. Keep points concise and easy to scan.",
   "applicationLink": "CRITICAL: Extract the direct application URL (starting with http/https) OR the application email address if a URL is not available. This is the most important field — look carefully for phrases like 'apply at', 'apply here', 'applications to', 'send CV to', 'email your application'. Return empty string ONLY if absolutely no link or email is mentioned.",
   "requiredDocs": ["array of required document names, e.g. CV, SOP, Transcripts, References, Research Proposal"],

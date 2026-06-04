@@ -90,6 +90,7 @@ const emptyForm = {
   applicationLink: '',
   description: '',
   imageUrl: '',
+  pdfUrl: '',
   programLevel: [] as string[],
   fieldTags: [] as string[],
   requiredDocs: ['CV', 'SOP', 'Transcripts', 'References'] as string[],
@@ -128,6 +129,10 @@ export default function AdminOpportunitiesPage() {
   // Image upload
   const [uploadingImage, setUploadingImage] = useState(false)
   const imageInputRef = useRef<HTMLInputElement>(null)
+
+  // PDF upload
+  const [uploadingPdf, setUploadingPdf] = useState(false)
+  const pdfInputRef = useRef<HTMLInputElement>(null)
 
   // Poster activity
   const [posterStats, setPosterStats] = useState<{ poster: string; _count: { _all: number } }[]>([])
@@ -186,6 +191,7 @@ export default function AdminOpportunitiesPage() {
       applicationLink: opp.applicationLink,
       description: opp.description ?? '',
       imageUrl: opp.imageUrl ?? '',
+      pdfUrl: opp.pdfUrl ?? '',
       programLevel: opp.programLevel ?? [],
       fieldTags: opp.fieldTags ?? [],
       requiredDocs: opp.requiredDocs ?? [],
@@ -201,7 +207,7 @@ export default function AdminOpportunitiesPage() {
       return
     }
     setSaving(true)
-    const body = { ...form, deadline: new Date(form.deadline).toISOString(), imageUrl: form.imageUrl || null }
+    const body = { ...form, deadline: new Date(form.deadline).toISOString(), imageUrl: form.imageUrl || null, pdfUrl: form.pdfUrl || null }
     const url = editOpp ? `/api/admin/opportunities/${editOpp.id}` : '/api/admin/opportunities'
     const method = editOpp ? 'PATCH' : 'POST'
     const res = await fetch(url, {
@@ -596,6 +602,27 @@ export default function AdminOpportunitiesPage() {
       toast.error('Upload failed')
     } finally {
       setUploadingImage(false)
+    }
+  }
+
+  const handlePdfUpload = async (file: File) => {
+    if (!file) return
+    setUploadingPdf(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/admin/upload-pdf', { method: 'POST', body: fd })
+      const d = await res.json()
+      if (res.ok) {
+        setForm(f => ({ ...f, pdfUrl: d.url }))
+        toast.success('PDF uploaded')
+      } else {
+        toast.error(d.error ?? 'Upload failed')
+      }
+    } catch {
+      toast.error('Upload failed')
+    } finally {
+      setUploadingPdf(false)
     }
   }
 
@@ -1286,24 +1313,47 @@ export default function AdminOpportunitiesPage() {
               </div>
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Eligibility *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-medium text-gray-600">Eligibility *</label>
+                <button type="button"
+                  className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                  onClick={() => setForm(f => ({ ...f, eligibility: f.eligibility + (f.eligibility && !f.eligibility.endsWith('\n') ? '\n' : '') + '• ' }))}>
+                  + Add bullet
+                </button>
+              </div>
               <textarea
-                rows={2}
+                rows={4}
                 value={form.eligibility}
                 onChange={(e) => setForm((f) => ({ ...f, eligibility: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-                placeholder="Who is eligible to apply..."
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-y font-mono"
+                placeholder={'• Open to African students\n• Must hold a Bachelor\'s degree\n• Minimum GPA: 3.5'}
               />
+              <p className="text-xs text-gray-400 mt-1">Start each line with <code className="bg-gray-100 px-1 rounded">• </code> for bullet points</p>
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-medium text-gray-600">Description</label>
+                <div className="flex gap-3">
+                  <button type="button"
+                    className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                    onClick={() => setForm(f => ({ ...f, description: f.description + (f.description && !f.description.endsWith('\n') ? '\n' : '') + '### ' }))}>
+                    + Header
+                  </button>
+                  <button type="button"
+                    className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                    onClick={() => setForm(f => ({ ...f, description: f.description + (f.description && !f.description.endsWith('\n') ? '\n' : '') + '• ' }))}>
+                    + Bullet
+                  </button>
+                </div>
+              </div>
               <textarea
-                rows={3}
+                rows={6}
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-                placeholder="Full scholarship description..."
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-y font-mono"
+                placeholder={'### Benefits\n• Fully funded — tuition, stipend, accommodation\n• Duration: 2 years\n\n### Requirements\n• Open to African nationals\n• Bachelor\'s degree required'}
               />
+              <p className="text-xs text-gray-400 mt-1">Use <code className="bg-gray-100 px-1 rounded">### Section</code> for headers and <code className="bg-gray-100 px-1 rounded">• </code> for bullets</p>
             </div>
           </div>
 
@@ -1333,6 +1383,40 @@ export default function AdminOpportunitiesPage() {
                 {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImageIcon className="h-5 w-5" />}
                 <span className="text-sm">{uploadingImage ? 'Uploading…' : 'Click to upload poster / flyer'}</span>
                 <span className="text-xs">JPG, PNG, WebP · max 5 MB</span>
+              </button>
+            )}
+          </div>
+
+          {/* PDF upload */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-2">Scholarship PDF / Brochure</label>
+            <input ref={pdfInputRef} type="file" accept="application/pdf" className="hidden"
+              onChange={e => { if (e.target.files?.[0]) handlePdfUpload(e.target.files[0]) }} />
+            {form.pdfUrl ? (
+              <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl bg-gray-50">
+                <FileCheck className="h-8 w-8 text-red-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-700 truncate">PDF uploaded</p>
+                  <a href={form.pdfUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-brand-600 hover:underline truncate block">View PDF</a>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button type="button" onClick={() => pdfInputRef.current?.click()}
+                    className="text-xs px-2.5 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors">
+                    Replace
+                  </button>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, pdfUrl: '' }))}
+                    className="p-1.5 text-red-400 hover:text-red-600 transition-colors">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={() => pdfInputRef.current?.click()} disabled={uploadingPdf}
+                className="w-full flex flex-col items-center justify-center gap-2 py-5 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:border-brand-300 hover:text-brand-600 transition-colors disabled:opacity-50">
+                {uploadingPdf ? <Loader2 className="h-5 w-5 animate-spin" /> : <FileCheck className="h-5 w-5" />}
+                <span className="text-sm">{uploadingPdf ? 'Uploading…' : 'Click to upload PDF brochure'}</span>
+                <span className="text-xs">PDF only · max 20 MB</span>
               </button>
             )}
           </div>

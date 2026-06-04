@@ -108,6 +108,7 @@ model Opportunity {
   featured        Boolean              @default(false)
   description     String?              @db.Text
   imageUrl        String?
+  pdfUrl          String?
   views           Int                  @default(0)
   postedBy        String?
   createdAt       DateTime             @default(now())
