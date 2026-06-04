@@ -25,15 +25,14 @@ function formatDeadline(date: Date | string | null) {
 
 function isNew(createdAt: Date | string) {
   const created = new Date(createdAt)
-  const now = new Date()
-  return (now.getTime() - created.getTime()) < 7 * 24 * 60 * 60 * 1000
+  return (Date.now() - created.getTime()) < 7 * 24 * 60 * 60 * 1000
 }
 
 export default function TopScholarships({ scholarships }: { scholarships: Scholarship[] }) {
   if (scholarships.length === 0) return null
 
   return (
-    <section className="pt-24 pb-14 bg-white">
+    <section className="pt-10 pb-14 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -41,7 +40,9 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Recently added — Updated daily</span>
+              <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
+                Recently added — Updated daily
+              </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: '#0f172a' }}>
               Open Opportunities
@@ -59,8 +60,8 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
           </Link>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* Grid — 1 col mobile → 2 sm → 3 lg → 4 xl → 5 2xl */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
           {scholarships.map((s) => {
             const days = daysUntilDeadline(s.deadline)
             const dl = deadlineLabel(days)
@@ -72,64 +73,73 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
               <Link
                 key={s.id}
                 href={`/opportunities/${s.id}`}
-                className="group flex flex-col bg-white rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-md relative overflow-hidden"
+                className="group flex flex-col bg-white rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-lg relative overflow-hidden"
                 style={{ border: `1.5px solid ${urgentBorder}`, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
               >
                 {/* NEW ribbon */}
                 {fresh && (
-                  <div className="absolute top-3 right-3">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(14,165,233,0.1)', color: '#0369a1', border: '1px solid rgba(3,105,161,0.2)' }}>
+                  <div className="absolute top-3.5 right-3.5">
+                    <span
+                      className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+                      style={{ background: 'rgba(14,165,233,0.1)', color: '#0369a1', border: '1px solid rgba(3,105,161,0.2)' }}
+                    >
                       <Sparkles className="h-3 w-3" /> NEW
                     </span>
                   </div>
                 )}
 
                 {/* Funding + deadline badges */}
-                <div className="flex items-center gap-2 mb-3 flex-wrap pr-10">
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${fundingColor}`}>
+                <div className="flex items-center gap-2 mb-3.5 flex-wrap pr-12">
+                  <span className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${fundingColor}`}>
                     {s.fundingType}
                   </span>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${dl.color}`}>
+                  <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ${dl.color}`}>
                     {dl.text}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h3 className="font-bold text-sm leading-snug mb-1 line-clamp-2 group-hover:text-brand-700 transition-colors"
-                  style={{ color: '#111827' }}>
+                <h3
+                  className="font-bold text-base leading-snug mb-1.5 line-clamp-2 group-hover:text-brand-700 transition-colors"
+                  style={{ color: '#111827' }}
+                >
                   {s.title}
                 </h3>
 
                 {/* Host org */}
-                <p className="text-xs font-medium mb-3" style={{ color: '#475569' }}>{s.hostOrg}</p>
+                <p className="text-sm font-medium mb-3" style={{ color: '#475569' }}>{s.hostOrg}</p>
 
                 {/* Field */}
                 {s.field && (
-                  <div className="flex items-center gap-1 text-xs mb-3" style={{ color: '#64748b' }}>
-                    <BookOpen className="h-3 w-3 flex-shrink-0" />
+                  <div className="flex items-center gap-1.5 text-[13px] mb-3" style={{ color: '#64748b' }}>
+                    <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
                     <span className="truncate">{s.field}</span>
                   </div>
                 )}
 
                 {/* Country + deadline */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs mt-auto" style={{ color: '#64748b' }}>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3 flex-shrink-0" />{s.country}
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-[13px] mt-auto" style={{ color: '#64748b' }}>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />{s.country}
                   </span>
                   {s.deadline && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3 flex-shrink-0" />{formatDeadline(s.deadline)}
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 flex-shrink-0" />{formatDeadline(s.deadline)}
                     </span>
                   )}
                 </div>
 
                 {/* Level tags */}
                 {s.programLevel.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-gray-100">
                     {s.programLevel.slice(0, 2).map((l) => (
-                      <span key={l} className="text-xs px-2 py-0.5 rounded-full font-medium"
-                        style={{ background: '#eef2ff', color: '#4338ca' }}>{l}</span>
+                      <span
+                        key={l}
+                        className="text-xs px-2.5 py-1 rounded-full font-medium"
+                        style={{ background: '#eef2ff', color: '#4338ca' }}
+                      >
+                        {l}
+                      </span>
                     ))}
                   </div>
                 )}
@@ -140,9 +150,11 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
 
         {/* Mobile view all */}
         <div className="mt-8 text-center md:hidden">
-          <Link href="/opportunities"
+          <Link
+            href="/opportunities"
             className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 rounded-xl text-white"
-            style={{ background: 'linear-gradient(135deg, #0369a1, #0284c7)' }}>
+            style={{ background: 'linear-gradient(135deg, #0369a1, #0284c7)' }}
+          >
             Browse all scholarships <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

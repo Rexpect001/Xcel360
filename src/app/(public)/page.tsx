@@ -33,7 +33,7 @@ export default async function LandingPage() {
     .findMany({
       where: { status: 'OPEN' },
       orderBy: { createdAt: 'desc' },
-      take: 12,
+      take: 20,
       select: {
         id: true,
         title: true,
