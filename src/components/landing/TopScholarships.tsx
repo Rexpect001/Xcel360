@@ -24,19 +24,22 @@ function formatDeadline(date: Date | string | null) {
 }
 
 function isNew(createdAt: Date | string) {
-  const created = new Date(createdAt)
-  return (Date.now() - created.getTime()) < 7 * 24 * 60 * 60 * 1000
+  return (Date.now() - new Date(createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000
 }
 
 export default function TopScholarships({ scholarships }: { scholarships: Scholarship[] }) {
   if (scholarships.length === 0) return null
 
   return (
-    <section className="pt-10 pb-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="pt-10 pb-14 bg-white w-full">
+      {/*
+        No max-w cap on the outer wrapper — padding scales with viewport.
+        This lets the grid fill available space at any browser zoom level.
+      */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
 
-        {/* Header */}
-        <div className="flex items-end justify-between mb-8">
+        {/* Header — capped so headline text doesn't stretch uncomfortably wide */}
+        <div className="max-w-[1800px] mx-auto flex items-end justify-between mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -53,15 +56,27 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
           </div>
           <Link
             href="/opportunities"
-            className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+            className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-colors whitespace-nowrap"
             style={{ color: '#0369a1', border: '1.5px solid rgba(3,105,161,0.2)', background: 'rgba(240,249,255,0.8)' }}
           >
             View all <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
-        {/* Grid — 1 col mobile → 2 sm → 3 lg → 4 xl → 5 2xl */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
+        {/*
+          auto-fill grid: browser calculates how many 240px columns fit
+          at the current viewport width — works at any zoom level.
+          Zoomed out → more columns form automatically.
+          Zoomed in / mobile → fewer columns, never below 1.
+        */}
+        <div
+          className="max-w-[1800px] mx-auto"
+          style={{
+            display: 'grid',
+            gap: '20px',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+          }}
+        >
           {scholarships.map((s) => {
             const days = daysUntilDeadline(s.deadline)
             const dl = deadlineLabel(days)
