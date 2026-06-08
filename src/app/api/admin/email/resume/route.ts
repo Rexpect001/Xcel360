@@ -8,6 +8,8 @@ import {
   buildResendAttachments,
   injectUnsubscribeFooter,
   logEmailBatch,
+  buildFirstNameMap,
+  personalize,
   AttachmentMeta,
 } from '@/lib/email-utils'
 
@@ -46,6 +48,7 @@ export async function POST(req: NextRequest) {
       const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
       const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
       const resendAttachments = await buildResendAttachments(attachmentMetas)
+      const firstNameMap = await buildFirstNameMap(todayBatch)
 
       let sent = 0
       for (let i = 0; i < todayBatch.length; i += BATCH_SIZE) {
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
           chunk.map((to: string) => ({
             from: FROM, to,
             subject: campaign.subject,
-            html: injectUnsubscribeFooter(campaign.htmlBody, to),
+            html: injectUnsubscribeFooter(personalize(campaign.htmlBody, to, firstNameMap), to),
             ...(cc ? { cc } : {}),
             ...(bcc ? { bcc } : {}),
             ...(resendAttachments ? { attachments: resendAttachments } : {}),

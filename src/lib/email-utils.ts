@@ -25,6 +25,52 @@ export function injectUnsubscribeFooter(html: string, email: string): string {
     : html + footer
 }
 
+// ── First-name personalisation ───────────────────────────────────────────────
+
+/**
+ * Builds a map of email → firstName for a list of recipient addresses.
+ * Checks User table first, then EventRegistration as a fallback for
+ * people who registered for events but never created a full account.
+ * Falls back to "Scholar" when no name can be found.
+ */
+export async function buildFirstNameMap(emails: string[]): Promise<Map<string, string>> {
+  const db = prisma as any
+  const lower = emails.map(e => e.toLowerCase())
+  const map = new Map<string, string>()
+
+  // Pull from User table
+  const users = await prisma.user.findMany({
+    where: { email: { in: lower } },
+    select: { email: true, name: true },
+  })
+  for (const u of users) {
+    if (u.name) map.set(u.email.toLowerCase(), u.name.trim().split(/\s+/)[0])
+  }
+
+  // Fill gaps from EventRegistration (people who only registered for events)
+  const missing = lower.filter(e => !map.has(e))
+  if (missing.length) {
+    const regs = await db.eventRegistration.findMany({
+      where: { email: { in: missing } },
+      select: { email: true, fullName: true },
+      distinct: ['email'],
+    })
+    for (const r of regs) {
+      if (r.fullName && !map.has(r.email.toLowerCase())) {
+        map.set(r.email.toLowerCase(), r.fullName.trim().split(/\s+/)[0])
+      }
+    }
+  }
+
+  return map
+}
+
+/** Replace [First Name] in htmlBody with the recipient's actual first name. */
+export function personalize(html: string, email: string, firstNameMap: Map<string, string>): string {
+  const name = firstNameMap.get(email.toLowerCase()) ?? 'Scholar'
+  return html.replace(/\[First Name\]/gi, name)
+}
+
 // ── Unsubscribe check ────────────────────────────────────────────────────────
 
 export async function filterUnsubscribed(emails: string[]): Promise<string[]> {
