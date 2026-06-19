@@ -673,6 +673,7 @@ function CampaignPreviewModal({
 
 const AUDIENCE_OPTIONS = [
   { value: 'none',        label: 'Manual only',            desc: 'Send only to addresses entered in To field' },
+  { value: 'contacts',    label: 'Master contacts list',   desc: 'Everyone imported via Contacts page' },
   { value: 'users',       label: 'Registered users',       desc: 'All accounts in the platform' },
   { value: 'subscribers', label: 'Newsletter subscribers', desc: 'Homepage email signups' },
   { value: 'both',        label: 'Everyone',               desc: 'Users + subscribers (deduplicated)' },

@@ -287,6 +287,17 @@ model EmailSubscriber {
   createdAt DateTime @default(now())
 }
 
+// Master contacts list — aggregates all contact sources
+model Contact {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  source    String   @default("import") // 'import' | 'event' | 'user' | 'subscriber'
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Admin email campaigns — supports batched sending across multiple days
 model EmailCampaign {
   id               String   @id @default(cuid())

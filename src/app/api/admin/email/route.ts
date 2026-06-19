@@ -9,7 +9,8 @@ import {
 } from '@/lib/email-utils'
 
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
-const MAX_SEND_LIMIT = 100
+// Resend free plan caps at 100/day; SendChamp is paid with no hard cap
+function maxLimit(provider: string) { return provider === 'sendchamp' ? 5000 : 100 }
 
 // GET — campaigns list or email log
 export async function GET(req: NextRequest) {
@@ -58,6 +59,10 @@ export async function POST(req: NextRequest) {
     const subs = await (prisma as any).emailSubscriber.findMany({ select: { email: true } })
     subs.forEach((s: any) => emails.add(s.email.toLowerCase().trim()))
   }
+  if (audience === 'contacts') {
+    const contacts = await (prisma as any).contact.findMany({ select: { email: true } })
+    contacts.forEach((c: any) => emails.add(c.email.toLowerCase().trim()))
+  }
   manualRecipients.forEach((e: string) => { const t = e.toLowerCase().trim(); if (t) emails.add(t) })
 
   const allRecipients = Array.from(emails)
@@ -69,7 +74,7 @@ export async function POST(req: NextRequest) {
     const campaign = await db.emailCampaign.create({
       data: {
         subject, htmlBody, audience, provider,
-        dailyLimit: Math.min(dailyLimit, MAX_SEND_LIMIT),
+        dailyLimit: Math.min(dailyLimit, maxLimit(provider)),
         recipients: JSON.stringify(allRecipients),
         manualRecipients: JSON.stringify(manualRecipients),
         ccRecipients: JSON.stringify(ccRecipients),
@@ -92,13 +97,13 @@ export async function POST(req: NextRequest) {
   }
 
   const eligible = await filterUnsubscribed(allRecipients)
-  const limit = sendAll ? eligible.length : Math.min(dailyLimit, MAX_SEND_LIMIT)
+  const limit = sendAll ? eligible.length : Math.min(dailyLimit, maxLimit(provider))
   const firstBatch = eligible.slice(0, limit)
 
   const campaign = await db.emailCampaign.create({
     data: {
       subject, htmlBody, audience, provider,
-      dailyLimit: Math.min(dailyLimit, MAX_SEND_LIMIT),
+      dailyLimit: Math.min(dailyLimit, maxLimit(provider)),
       recipients: JSON.stringify(allRecipients),
       manualRecipients: JSON.stringify(manualRecipients),
       ccRecipients: JSON.stringify(ccRecipients),

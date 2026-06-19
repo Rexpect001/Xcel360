@@ -49,11 +49,25 @@ export async function buildFirstNameMap(emails: string[]): Promise<Map<string, s
     if (u.name) map.set(u.email.toLowerCase(), u.name.trim().split(/\s+/)[0])
   }
 
-  // Fill gaps from EventRegistration (people who only registered for events)
-  const missing = lower.filter(e => !map.has(e))
-  if (missing.length) {
+  // Fill gaps from Contacts master list
+  const missing1 = lower.filter(e => !map.has(e))
+  if (missing1.length) {
+    const contacts = await db.contact.findMany({
+      where: { email: { in: missing1 } },
+      select: { email: true, name: true },
+    })
+    for (const c of contacts) {
+      if (c.name && !map.has(c.email)) {
+        map.set(c.email, c.name.trim().split(/\s+/)[0])
+      }
+    }
+  }
+
+  // Fill remaining gaps from EventRegistration
+  const missing2 = lower.filter(e => !map.has(e))
+  if (missing2.length) {
     const regs = await db.eventRegistration.findMany({
-      where: { email: { in: missing } },
+      where: { email: { in: missing2 } },
       select: { email: true, fullName: true },
       distinct: ['email'],
     })
