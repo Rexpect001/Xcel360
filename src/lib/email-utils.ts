@@ -27,6 +27,10 @@ export function injectUnsubscribeFooter(html: string, email: string): string {
     : html + footer
 }
 
+export function injectUnsubscribePlainFooter(text: string, email: string): string {
+  return text + `\n\n────────────────────────────────────\nTo unsubscribe: ${unsubscribeUrl(email)}`
+}
+
 // ── First-name personalisation ───────────────────────────────────────────────
 
 /**
@@ -136,6 +140,7 @@ export interface SendBatchOpts {
   emails: string[]           // pre-filtered, unsubscribes removed
   subject: string
   htmlBody: string
+  textBody?: string          // plain text body — required when provider is 'sendchamp'
   firstNameMap: Map<string, string>
   from: string               // "Xcel360 <noreply@xcel360.com>"
   cc?: string[]
@@ -183,6 +188,7 @@ async function _sendViaResend(opts: SendBatchOpts): Promise<number> {
 
 async function _sendViaSendchamp(opts: SendBatchOpts): Promise<number> {
   if (!process.env.SENDCHAMP_API_KEY?.trim()) throw new Error('SENDCHAMP_API_KEY not configured')
+  if (!opts.textBody?.trim()) throw new Error('Plain text body is required for SendChamp campaigns')
 
   const from = parseFromString(opts.from)
   let sent = 0
@@ -191,9 +197,9 @@ async function _sendViaSendchamp(opts: SendBatchOpts): Promise<number> {
     const chunk = opts.emails.slice(i, i + SENDCHAMP_CHUNK)
     const results = await Promise.allSettled(
       chunk.map(async (to) => {
-        const html = injectUnsubscribeFooter(personalize(opts.htmlBody, to, opts.firstNameMap), to)
+        const text = injectUnsubscribePlainFooter(personalize(opts.textBody!, to, opts.firstNameMap), to)
         const toName = opts.firstNameMap.get(to.toLowerCase()) ?? 'Scholar'
-        const { ok, error } = await sendchampOne({ to, toName, from, subject: opts.subject, html })
+        const { ok, error } = await sendchampOne({ to, toName, from, subject: opts.subject, text })
         if (!ok) throw new Error(error)
         return to
       })

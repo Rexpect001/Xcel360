@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const {
-    subject, htmlBody, audience,
+    subject, htmlBody, textBody = '', audience,
     provider = 'resend',
     dailyLimit = 100, sendAll = false,
     manualRecipients = [], ccRecipients = [], bccRecipients = [],
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   if (isDraft) {
     const campaign = await db.emailCampaign.create({
       data: {
-        subject, htmlBody, audience, provider,
+        subject, htmlBody, textBody: textBody || null, audience, provider,
         dailyLimit: Math.min(dailyLimit, maxLimit(provider)),
         recipients: JSON.stringify(allRecipients),
         manualRecipients: JSON.stringify(manualRecipients),
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 
   const campaign = await db.emailCampaign.create({
     data: {
-      subject, htmlBody, audience, provider,
+      subject, htmlBody, textBody: textBody || null, audience, provider,
       dailyLimit: Math.min(dailyLimit, maxLimit(provider)),
       recipients: JSON.stringify(allRecipients),
       manualRecipients: JSON.stringify(manualRecipients),
@@ -121,6 +121,7 @@ export async function POST(req: NextRequest) {
     emails: firstBatch,
     subject,
     htmlBody,
+    textBody: textBody || undefined,
     firstNameMap,
     from: FROM,
     cc: ccRecipients.length ? ccRecipients : undefined,

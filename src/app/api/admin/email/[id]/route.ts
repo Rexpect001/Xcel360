@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
 
     const firstNameMap = await buildFirstNameMap(firstBatch)
-    const sent = await sendBatch({ provider, emails: firstBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
+    const sent = await sendBatch({ provider, emails: firstBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
 
     const completed = sent >= allRecipients.length
     await db.emailCampaign.update({
@@ -87,7 +87,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
 
     const firstNameMap = await buildFirstNameMap(firstBatch)
-    const sent = await sendBatch({ provider, emails: firstBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
+    const sent = await sendBatch({ provider, emails: firstBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
 
     const completed = sent >= allRecipients.length
     await db.emailCampaign.update({ where: { id: params.id }, data: { sentCount: sent, status: completed ? 'COMPLETED' : sent === 0 ? 'FAILED' : 'SENDING' } })

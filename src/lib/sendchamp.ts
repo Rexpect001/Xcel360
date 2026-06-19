@@ -6,48 +6,13 @@ export function sendchampConfigured(): boolean {
   return !!process.env.SENDCHAMP_API_KEY?.trim()
 }
 
-/** Convert HTML email to clean plain text for SendChamp delivery. */
-function htmlToPlainText(html: string): string {
-  return html
-    // Remove style and script blocks entirely
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-    // Preserve links as "label (url)"
-    .replace(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, url, label) => {
-      const text = label.replace(/<[^>]+>/g, '').trim()
-      return text ? `${text} ( ${url} )` : url
-    })
-    // Block-level elements → newlines
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/?(p|div|tr|h[1-6])[^>]*>/gi, '\n')
-    .replace(/<\/?(td|th)[^>]*>/gi, '  ')
-    .replace(/<\/?(li)[^>]*>/gi, '\n• ')
-    // Strip remaining tags
-    .replace(/<[^>]+>/g, '')
-    // Decode HTML entities
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&mdash;/g, '—')
-    .replace(/&ndash;/g, '–')
-    .replace(/&#x2019;/g, "'")
-    // Collapse excessive whitespace / blank lines
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n[ \t]+/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
-}
-
-/** Send a single email via SendChamp (plain text — most reliable delivery). */
+/** Send a single email via SendChamp using plain text content. */
 export async function sendchampOne(opts: {
   to: string
   toName: string
   from: ScFrom
   subject: string
-  html: string
+  text: string
 }): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.SENDCHAMP_API_KEY
   if (!apiKey) return { ok: false, error: 'SENDCHAMP_API_KEY not set' }
@@ -58,7 +23,7 @@ export async function sendchampOne(opts: {
     from: opts.from,
     message_body: {
       type: 'text',
-      value: htmlToPlainText(opts.html),
+      value: opts.text,
     },
   }
 

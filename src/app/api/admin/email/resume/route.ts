@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
 
       const firstNameMap = await buildFirstNameMap(todayBatch)
-      const sent = await sendBatch({ provider, emails: todayBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
+      const sent = await sendBatch({ provider, emails: todayBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
 
       const processed = Math.min(campaign.dailyLimit, unsent.length)
       const newTotal = campaign.sentCount + processed

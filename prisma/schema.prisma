@@ -303,6 +303,7 @@ model EmailCampaign {
   id               String   @id @default(cuid())
   subject          String
   htmlBody         String   @db.Text
+  textBody         String?  @db.Text          // plain text body — used when provider is sendchamp
   audience         String   // 'users' | 'subscribers' | 'both' | 'none'
   provider         String   @default("resend") // 'resend' | 'sendchamp'
   status           String   @default("DRAFT") // DRAFT | SENDING | COMPLETED | FAILED

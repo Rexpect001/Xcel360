@@ -696,6 +696,7 @@ export default function AdminEmailPage() {
   // Compose fields
   const [subject, setSubject] = useState('')
   const [htmlBody, setHtmlBody] = useState('')
+  const [textBody, setTextBody] = useState('')
   const [toChips, setToChips] = useState<string[]>([])
   const [ccChips, setCcChips] = useState<string[]>([])
   const [bccChips, setBccChips] = useState<string[]>([])
@@ -758,7 +759,7 @@ export default function AdminEmailPage() {
   useEffect(() => { if (tab === 'log') loadLog(1) }, [tab, loadLog])
 
   const resetForm = () => {
-    setSubject(''); setHtmlBody(''); setToChips([]); setCcChips([])
+    setSubject(''); setHtmlBody(''); setTextBody(''); setToChips([]); setCcChips([])
     setBccChips([]); setAttachments([]); setPreview(false); setShowCcBcc(false)
     setEditorKey(k => k + 1)
   }
@@ -769,14 +770,15 @@ export default function AdminEmailPage() {
   }
 
   const buildPayload = (isDraft: boolean) => ({
-    subject, htmlBody, audience, provider, dailyLimit, sendAll,
+    subject, htmlBody, textBody, audience, provider, dailyLimit, sendAll,
     manualRecipients: toChips, ccRecipients: ccChips,
     bccRecipients: bccChips, attachments, isDraft,
   })
 
   const validate = () => {
     if (!subject.trim()) { toast.error('Subject is required'); return false }
-    if (!htmlBody.trim()) { toast.error('Email body is required'); return false }
+    if (provider === 'sendchamp' && !textBody.trim()) { toast.error('Write your plain text message for SendChamp'); return false }
+    if (provider === 'resend' && !htmlBody.trim()) { toast.error('Email body is required'); return false }
     if (audience === 'none' && toChips.length === 0) { toast.error('Add at least one recipient or choose an audience group'); return false }
     return true
   }
@@ -816,7 +818,7 @@ export default function AdminEmailPage() {
     if (!validate()) return
     setTestSending(true)
     try {
-      const res = await fetch('/api/admin/email/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: testEmail, subject, htmlBody, provider }) })
+      const res = await fetch('/api/admin/email/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: testEmail, subject, htmlBody, textBody, provider }) })
       const d = await res.json()
       res.ok ? toast.success(`Test sent via ${d.provider ?? provider} to ${testEmail}`) : toast.error(d.error ?? 'Test send failed')
     } catch { toast.error('Something went wrong') }
@@ -935,20 +937,41 @@ export default function AdminEmailPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-700">Message</span>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setShowGallery(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors">
-                    <Layers className="h-3.5 w-3.5" /> Templates
-                  </button>
-                  <button onClick={() => setPreview(v => !v)} className="text-xs text-brand-700 font-medium hover:text-brand-800">
-                    {preview ? 'Edit' : 'Preview'}
-                  </button>
-                </div>
+                {provider === 'resend' && (
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowGallery(true)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors">
+                      <Layers className="h-3.5 w-3.5" /> Templates
+                    </button>
+                    <button onClick={() => setPreview(v => !v)} className="text-xs text-brand-700 font-medium hover:text-brand-800">
+                      {preview ? 'Edit' : 'Preview'}
+                    </button>
+                  </div>
+                )}
               </div>
-              {preview
-                ? <div className="min-h-[280px] border border-gray-200 rounded-xl p-4 overflow-auto text-sm" dangerouslySetInnerHTML={{ __html: htmlBody }} />
-                : <RichTextEditor key={editorKey} value={htmlBody} onChange={setHtmlBody} />
-              }
+
+              {provider === 'sendchamp' ? (
+                <div>
+                  <p className="text-xs text-gray-400 mb-2">
+                    Plain text only — write your email naturally. Links will be shown as full URLs.
+                    Use <code className="bg-gray-100 px-1 rounded">[First Name]</code> to personalise.
+                  </p>
+                  <textarea
+                    value={textBody}
+                    onChange={e => setTextBody(e.target.value)}
+                    placeholder={`XCEL360 · June 27, 2026\n\nHi [First Name],\n\nWrite your email here...\n\nSee you there!\nThe Xcel360 Team`}
+                    className="w-full min-h-[340px] px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 outline-none focus:ring-2 focus:ring-purple-500 resize-y leading-relaxed"
+                    spellCheck
+                  />
+                  <p className="text-xs text-gray-300 mt-1.5">
+                    An unsubscribe link is automatically appended to each email.
+                  </p>
+                </div>
+              ) : (
+                preview
+                  ? <div className="min-h-[280px] border border-gray-200 rounded-xl p-4 overflow-auto text-sm" dangerouslySetInnerHTML={{ __html: htmlBody }} />
+                  : <RichTextEditor key={editorKey} value={htmlBody} onChange={setHtmlBody} />
+              )}
             </div>
 
             {/* Attachments */}
