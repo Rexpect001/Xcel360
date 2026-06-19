@@ -293,6 +293,7 @@ model EmailCampaign {
   subject          String
   htmlBody         String   @db.Text
   audience         String   // 'users' | 'subscribers' | 'both' | 'none'
+  provider         String   @default("resend") // 'resend' | 'sendchamp'
   status           String   @default("DRAFT") // DRAFT | SENDING | COMPLETED | FAILED
   recipients       String   @db.Text          // JSON array of all To addresses (merged at send time)
   manualRecipients String   @default("[]") @db.Text // JSON array — raw manual To chips

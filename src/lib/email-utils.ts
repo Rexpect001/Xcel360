@@ -1,5 +1,7 @@
 import { createHmac } from 'crypto'
+import { Resend } from 'resend'
 import prisma from '@/lib/prisma'
+import { sendchampOne, parseFromString } from '@/lib/sendchamp'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -111,4 +113,82 @@ export async function logEmailBatch(
     data: recipients.map(to => ({ campaignId, to, status, error: error ?? null })),
     skipDuplicates: true,
   })
+}
+
+// ── Unified sendBatch ─────────────────────────────────────────────────────────
+
+export interface SendBatchOpts {
+  provider: string           // 'resend' | 'sendchamp'
+  emails: string[]           // pre-filtered, unsubscribes removed
+  subject: string
+  htmlBody: string
+  firstNameMap: Map<string, string>
+  from: string               // "Xcel360 <noreply@xcel360.com>"
+  cc?: string[]
+  bcc?: string[]
+  attachmentMetas?: AttachmentMeta[]
+  campaignId: string
+}
+
+const RESEND_CHUNK = 100
+const SENDCHAMP_CHUNK = 10  // SendChamp: small parallel batches to stay within rate limits
+
+export async function sendBatch(opts: SendBatchOpts): Promise<number> {
+  return opts.provider === 'sendchamp'
+    ? _sendViaSendchamp(opts)
+    : _sendViaResend(opts)
+}
+
+async function _sendViaResend(opts: SendBatchOpts): Promise<number> {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) throw new Error('RESEND_API_KEY not configured')
+
+  const resend = new Resend(apiKey)
+  const resendAttachments = await buildResendAttachments(opts.attachmentMetas ?? [])
+  let sent = 0
+
+  for (let i = 0; i < opts.emails.length; i += RESEND_CHUNK) {
+    const chunk = opts.emails.slice(i, i + RESEND_CHUNK)
+    const { error } = await resend.batch.send(
+      chunk.map((to) => ({
+        from: opts.from,
+        to,
+        subject: opts.subject,
+        html: injectUnsubscribeFooter(personalize(opts.htmlBody, to, opts.firstNameMap), to),
+        ...(opts.cc?.length ? { cc: opts.cc } : {}),
+        ...(opts.bcc?.length ? { bcc: opts.bcc } : {}),
+        ...(resendAttachments ? { attachments: resendAttachments } : {}),
+      }))
+    )
+    if (!error) { sent += chunk.length; await logEmailBatch(opts.campaignId, chunk, 'SENT') }
+    else { await logEmailBatch(opts.campaignId, chunk, 'FAILED', String(error)) }
+  }
+
+  return sent
+}
+
+async function _sendViaSendchamp(opts: SendBatchOpts): Promise<number> {
+  if (!process.env.SENDCHAMP_API_KEY?.trim()) throw new Error('SENDCHAMP_API_KEY not configured')
+
+  const from = parseFromString(opts.from)
+  let sent = 0
+
+  for (let i = 0; i < opts.emails.length; i += SENDCHAMP_CHUNK) {
+    const chunk = opts.emails.slice(i, i + SENDCHAMP_CHUNK)
+    const results = await Promise.allSettled(
+      chunk.map(async (to) => {
+        const html = injectUnsubscribeFooter(personalize(opts.htmlBody, to, opts.firstNameMap), to)
+        const toName = opts.firstNameMap.get(to.toLowerCase()) ?? 'Scholar'
+        const { ok, error } = await sendchampOne({ to, toName, from, subject: opts.subject, html })
+        if (!ok) throw new Error(error)
+        return to
+      })
+    )
+    const succeeded = results.flatMap((r, idx) => r.status === 'fulfilled' ? [chunk[idx]] : [])
+    const failed    = results.flatMap((r, idx) => r.status === 'rejected'  ? [chunk[idx]] : [])
+    if (succeeded.length) { sent += succeeded.length; await logEmailBatch(opts.campaignId, succeeded, 'SENT') }
+    if (failed.length)    await logEmailBatch(opts.campaignId, failed, 'FAILED', 'SendChamp delivery failed')
+  }
+
+  return sent
 }

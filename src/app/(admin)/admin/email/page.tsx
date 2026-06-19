@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast'
 
 type Campaign = {
   id: string; subject: string; htmlBody: string; audience: string; status: string
+  provider?: string
   totalCount: number; sentCount: number; dailyLimit: number
   createdAt: string; attachments: string; ccRecipients: string
 }
@@ -242,6 +243,7 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
           <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 flex-wrap">
             <span className="flex items-center gap-1"><Users className="h-3 w-3" />{audienceLabel[c.audience] ?? c.audience}</span>
             <span>{new Date(c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+            {c.provider === 'sendchamp' && <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded font-medium">SendChamp</span>}
           </div>
         </div>
         <StatusBadge status={c.status} />
@@ -683,6 +685,8 @@ export default function AdminEmailPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loadingCampaigns, setLoadingCampaigns] = useState(false)
   const [resendConfigured, setResendConfigured] = useState<boolean | null>(null)
+  const [sendchampConfigured, setSendchampConfigured] = useState<boolean | null>(null)
+  const [provider, setProvider] = useState<'resend' | 'sendchamp'>('resend')
 
   const [showGallery, setShowGallery] = useState(false)
   const [editorKey, setEditorKey] = useState(0)
@@ -745,7 +749,10 @@ export default function AdminEmailPage() {
 
   useEffect(() => {
     loadCampaigns(); loadTemplates()
-    fetch('/api/admin/email/status').then(r => r.json()).then(d => setResendConfigured(d.resendConfigured ?? false)).catch(() => setResendConfigured(false))
+    fetch('/api/admin/email/status').then(r => r.json()).then(d => {
+      setResendConfigured(d.resendConfigured ?? false)
+      setSendchampConfigured(d.sendchampConfigured ?? false)
+    }).catch(() => { setResendConfigured(false); setSendchampConfigured(false) })
   }, [loadCampaigns, loadTemplates])
   useEffect(() => { if (tab === 'log') loadLog(1) }, [tab, loadLog])
 
@@ -761,7 +768,7 @@ export default function AdminEmailPage() {
   }
 
   const buildPayload = (isDraft: boolean) => ({
-    subject, htmlBody, audience, dailyLimit, sendAll,
+    subject, htmlBody, audience, provider, dailyLimit, sendAll,
     manualRecipients: toChips, ccRecipients: ccChips,
     bccRecipients: bccChips, attachments, isDraft,
   })
@@ -862,15 +869,17 @@ export default function AdminEmailPage() {
         </div>
       </div>
 
-      {/* Resend not configured warning */}
-      {resendConfigured === false && (
+      {/* Provider not configured warning */}
+      {((provider === 'resend' && resendConfigured === false) || (provider === 'sendchamp' && sendchampConfigured === false)) && (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4 mb-6">
           <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
           <div className="text-sm">
-            <p className="font-semibold text-red-700">Email sending is not configured</p>
+            <p className="font-semibold text-red-700">{provider === 'resend' ? 'Resend' : 'SendChamp'} is not configured</p>
             <p className="text-red-600 mt-0.5">
-              <code className="bg-red-100 px-1 rounded">RESEND_API_KEY</code> is missing from your environment.
-              Get a free key at <strong>resend.com</strong>, add it to your <code className="bg-red-100 px-1 rounded">.env.local</code> and Vercel settings, then restart the server.
+              {provider === 'resend'
+                ? <><code className="bg-red-100 px-1 rounded">RESEND_API_KEY</code> is missing. Get a free key at <strong>resend.com</strong> and add it to your Vercel environment variables.</>
+                : <><code className="bg-red-100 px-1 rounded">SENDCHAMP_API_KEY</code> is missing. Get your key from <strong>sendchamp.com</strong> and add it to your Vercel environment variables.</>
+              }
             </p>
           </div>
         </div>
@@ -884,7 +893,12 @@ export default function AdminEmailPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-100">
               <div className="flex items-center gap-3 px-5 py-3 text-sm">
                 <span className="w-8 text-right text-xs font-semibold text-gray-400 shrink-0">From</span>
-                <span className="text-gray-500 text-xs">Xcel360 via Resend</span>
+                <span className="text-gray-500 text-xs">
+                  Xcel360 via{' '}
+                  <span className={`font-semibold ${provider === 'sendchamp' ? 'text-purple-600' : 'text-brand-600'}`}>
+                    {provider === 'sendchamp' ? 'SendChamp' : 'Resend'}
+                  </span>
+                </span>
               </div>
               <div className="flex items-start gap-3 px-5 py-3">
                 <span className="w-8 text-right text-xs font-semibold text-gray-400 shrink-0 mt-2.5">To</span>
@@ -1009,6 +1023,35 @@ export default function AdminEmailPage() {
                 </div>
               )}
               {sendAll && <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-3">Free plan limit is 100/day. Remaining will continue via daily cron.</p>}
+            </div>
+
+            {/* Sending provider */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Sending provider</label>
+              <div className="space-y-2">
+                <label className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-colors ${provider === 'resend' ? 'border-brand-500 bg-brand-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                  <input type="radio" name="provider" value="resend" checked={provider === 'resend'} onChange={() => setProvider('resend')} className="mt-0.5 text-brand-600" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      Resend
+                      {resendConfigured === true && <span className="text-xs text-green-600 font-normal">✓ configured</span>}
+                      {resendConfigured === false && <span className="text-xs text-red-500 font-normal">not set up</span>}
+                    </p>
+                    <p className="text-xs text-gray-500">Free tier · 100/day · transactional</p>
+                  </div>
+                </label>
+                <label className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-colors ${provider === 'sendchamp' ? 'border-purple-500 bg-purple-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                  <input type="radio" name="provider" value="sendchamp" checked={provider === 'sendchamp'} onChange={() => setProvider('sendchamp')} className="mt-0.5 text-purple-600" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      SendChamp
+                      {sendchampConfigured === true && <span className="text-xs text-green-600 font-normal">✓ configured</span>}
+                      {sendchampConfigured === false && <span className="text-xs text-red-500 font-normal">not set up</span>}
+                    </p>
+                    <p className="text-xs text-gray-500">Paid · bulk-friendly · Nigerian routing</p>
+                  </div>
+                </label>
+              </div>
             </div>
 
             {/* Save template */}

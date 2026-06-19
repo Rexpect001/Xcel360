@@ -5,8 +5,9 @@ import { requireAdmin } from '@/lib/auth'
 export async function GET() {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
-  const resendConfigured = !!process.env.RESEND_API_KEY?.trim()
-  const fromAddress = process.env.EMAIL_FROM ?? ''
-
-  return NextResponse.json({ resendConfigured, fromAddress })
+  return NextResponse.json({
+    resendConfigured:     !!process.env.RESEND_API_KEY?.trim(),
+    sendchampConfigured:  !!process.env.SENDCHAMP_API_KEY?.trim(),
+    fromAddress:          process.env.EMAIL_FROM ?? '',
+  })
 }

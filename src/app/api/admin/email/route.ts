@@ -2,19 +2,13 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { Resend } from 'resend'
 import {
   filterUnsubscribed,
-  buildResendAttachments,
-  injectUnsubscribeFooter,
-  logEmailBatch,
   buildFirstNameMap,
-  personalize,
-  AttachmentMeta,
+  sendBatch,
 } from '@/lib/email-utils'
 
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
-const BATCH_SIZE = 100
 const MAX_SEND_LIMIT = 100
 
 // GET — campaigns list or email log
@@ -45,6 +39,7 @@ export async function POST(req: NextRequest) {
 
   const {
     subject, htmlBody, audience,
+    provider = 'resend',
     dailyLimit = 100, sendAll = false,
     manualRecipients = [], ccRecipients = [], bccRecipients = [],
     attachments = [], isDraft = false,
@@ -73,7 +68,7 @@ export async function POST(req: NextRequest) {
   if (isDraft) {
     const campaign = await db.emailCampaign.create({
       data: {
-        subject, htmlBody, audience,
+        subject, htmlBody, audience, provider,
         dailyLimit: Math.min(dailyLimit, MAX_SEND_LIMIT),
         recipients: JSON.stringify(allRecipients),
         manualRecipients: JSON.stringify(manualRecipients),
@@ -88,17 +83,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, campaignId: campaign.id, status: 'DRAFT', total: allRecipients.length })
   }
 
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
+  // Validate provider key before creating campaign
+  if (provider === 'resend' && !process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
+  }
+  if (provider === 'sendchamp' && !process.env.SENDCHAMP_API_KEY) {
+    return NextResponse.json({ error: 'SENDCHAMP_API_KEY not configured' }, { status: 503 })
+  }
 
-  // Filter unsubscribed before sending
   const eligible = await filterUnsubscribed(allRecipients)
   const limit = sendAll ? eligible.length : Math.min(dailyLimit, MAX_SEND_LIMIT)
   const firstBatch = eligible.slice(0, limit)
 
   const campaign = await db.emailCampaign.create({
     data: {
-      subject, htmlBody, audience,
+      subject, htmlBody, audience, provider,
       dailyLimit: Math.min(dailyLimit, MAX_SEND_LIMIT),
       recipients: JSON.stringify(allRecipients),
       manualRecipients: JSON.stringify(manualRecipients),
@@ -111,28 +110,19 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  const resendAttachments = await buildResendAttachments(attachments as AttachmentMeta[])
-  const cc = ccRecipients.length ? ccRecipients : undefined
-  const bcc = bccRecipients.length ? bccRecipients : undefined
-  const resend = new Resend(apiKey)
   const firstNameMap = await buildFirstNameMap(firstBatch)
-  let sent = 0
-
-  for (let i = 0; i < firstBatch.length; i += BATCH_SIZE) {
-    const chunk = firstBatch.slice(i, i + BATCH_SIZE)
-    const { error } = await resend.batch.send(
-      chunk.map((to: string) => ({
-        from: FROM, to,
-        subject,
-        html: injectUnsubscribeFooter(personalize(htmlBody, to, firstNameMap), to),
-        ...(cc ? { cc } : {}),
-        ...(bcc ? { bcc } : {}),
-        ...(resendAttachments ? { attachments: resendAttachments } : {}),
-      }))
-    )
-    if (!error) { sent += chunk.length; await logEmailBatch(campaign.id, chunk, 'SENT') }
-    else { await logEmailBatch(campaign.id, chunk, 'FAILED', String(error)) }
-  }
+  const sent = await sendBatch({
+    provider,
+    emails: firstBatch,
+    subject,
+    htmlBody,
+    firstNameMap,
+    from: FROM,
+    cc: ccRecipients.length ? ccRecipients : undefined,
+    bcc: bccRecipients.length ? bccRecipients : undefined,
+    attachmentMetas: attachments,
+    campaignId: campaign.id,
+  })
 
   const completed = sent >= allRecipients.length
   await db.emailCampaign.update({
