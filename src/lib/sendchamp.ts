@@ -22,7 +22,7 @@ export async function sendchampOne(opts: {
     to: [{ email: opts.to, name: opts.toName || opts.to.split('@')[0] }],
     from: opts.from,
     message_body: {
-      type: 'text/html',
+      type: 'html',
       value: opts.html,
     },
   }
