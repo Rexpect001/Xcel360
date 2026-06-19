@@ -11,7 +11,9 @@ import {
 } from '@/lib/email-utils'
 
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
-const MAX_SEND_LIMIT = 100
+function batchSize(provider: string, dailyLimit: number, total: number) {
+  return provider === 'sendchamp' ? total : Math.min(dailyLimit, 100)
+}
 
 // PATCH — send a DRAFT, cancel, or retry a FAILED campaign
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -47,7 +49,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     const allRecipients: string[] = JSON.parse(campaign.recipients ?? '[]')
     const eligible = await filterUnsubscribed(allRecipients)
-    const firstBatch = eligible.slice(0, Math.min(campaign.dailyLimit, MAX_SEND_LIMIT))
+    const firstBatch = eligible.slice(0, batchSize(provider, campaign.dailyLimit, eligible.length))
     const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
     const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
     const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
@@ -81,7 +83,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     const allRecipients: string[] = JSON.parse(campaign.recipients ?? '[]')
     const eligible = await filterUnsubscribed(allRecipients)
-    const firstBatch = eligible.slice(0, Math.min(campaign.dailyLimit, MAX_SEND_LIMIT))
+    const firstBatch = eligible.slice(0, batchSize(provider, campaign.dailyLimit, eligible.length))
     const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
     const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
     const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()

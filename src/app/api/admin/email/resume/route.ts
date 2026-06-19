@@ -10,7 +10,9 @@ import {
 } from '@/lib/email-utils'
 
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
-const MAX_SEND_LIMIT = 100
+function batchSize(provider: string, dailyLimit: number, total: number) {
+  return provider === 'sendchamp' ? total : Math.min(dailyLimit, 100)
+}
 
 // POST — manually resume all SENDING campaigns (same logic as cron)
 export async function POST(req: NextRequest) {
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
       }
 
       const eligible = await filterUnsubscribed(unsent)
-      const todayBatch = eligible.slice(0, Math.min(campaign.dailyLimit, MAX_SEND_LIMIT))
+      const todayBatch = eligible.slice(0, batchSize(provider, campaign.dailyLimit, eligible.length))
 
       const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
       const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()

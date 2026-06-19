@@ -1034,19 +1034,28 @@ export default function AdminEmailPage() {
             {/* Send settings */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <label className="block text-sm font-semibold text-gray-700 mb-3">Send settings</label>
-              <label className="flex items-center gap-2 mb-4 cursor-pointer">
-                <input type="checkbox" checked={sendAll} onChange={e => setSendAll(e.target.checked)} className="w-4 h-4 rounded text-brand-600" />
-                <span className="text-sm text-gray-700">Send all at once</span>
-              </label>
-              {!sendAll && (
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Daily limit <span className="text-gray-400">(max 100 free plan)</span></label>
-                  <input type="number" min={1} max={100} value={dailyLimit} onChange={e => setDailyLimit(Math.min(100, Math.max(1, Number(e.target.value))))}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
-                  <p className="text-xs text-gray-400 mt-1.5">Remaining emails continue at 7am each day.</p>
+              {provider === 'sendchamp' ? (
+                <div className="flex items-start gap-2 p-3 bg-purple-50 rounded-xl border border-purple-100">
+                  <CheckCircle className="h-4 w-4 text-purple-600 shrink-0 mt-0.5" />
+                  <p className="text-xs text-purple-700 font-medium">SendChamp sends all emails at once — no daily limit applies.</p>
                 </div>
+              ) : (
+                <>
+                  <label className="flex items-center gap-2 mb-4 cursor-pointer">
+                    <input type="checkbox" checked={sendAll} onChange={e => setSendAll(e.target.checked)} className="w-4 h-4 rounded text-brand-600" />
+                    <span className="text-sm text-gray-700">Send all at once</span>
+                  </label>
+                  {!sendAll && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1.5">Daily limit <span className="text-gray-400">(max 100 free plan)</span></label>
+                      <input type="number" min={1} max={100} value={dailyLimit} onChange={e => setDailyLimit(Math.min(100, Math.max(1, Number(e.target.value))))}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                      <p className="text-xs text-gray-400 mt-1.5">Remaining emails continue at 7am each day.</p>
+                    </div>
+                  )}
+                  {sendAll && <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-3">Free plan limit is 100/day. Remaining will continue via daily cron.</p>}
+                </>
               )}
-              {sendAll && <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-3">Free plan limit is 100/day. Remaining will continue via daily cron.</p>}
             </div>
 
             {/* Sending provider */}
