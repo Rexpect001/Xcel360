@@ -6,6 +6,11 @@ export function sendchampConfigured(): boolean {
   return !!process.env.SENDCHAMP_API_KEY?.trim()
 }
 
+function wrapHtml(html: string): string {
+  if (/^\s*<!DOCTYPE/i.test(html)) return html
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body>${html}</body></html>`
+}
+
 /** Send a single email via SendChamp. */
 export async function sendchampOne(opts: {
   to: string
@@ -23,7 +28,7 @@ export async function sendchampOne(opts: {
     from: opts.from,
     message_body: {
       type: 'html',
-      value: opts.html,
+      value: wrapHtml(opts.html),
     },
   }
 
