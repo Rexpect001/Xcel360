@@ -816,9 +816,9 @@ export default function AdminEmailPage() {
     if (!validate()) return
     setTestSending(true)
     try {
-      const res = await fetch('/api/admin/email/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: testEmail, subject, htmlBody }) })
+      const res = await fetch('/api/admin/email/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: testEmail, subject, htmlBody, provider }) })
       const d = await res.json()
-      res.ok ? toast.success(`Test sent to ${testEmail}`) : toast.error(d.error ?? 'Test send failed')
+      res.ok ? toast.success(`Test sent via ${d.provider ?? provider} to ${testEmail}`) : toast.error(d.error ?? 'Test send failed')
     } catch { toast.error('Something went wrong') }
     finally { setTestSending(false) }
   }
