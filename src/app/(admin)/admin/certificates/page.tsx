@@ -60,6 +60,7 @@ export default function AdminCertificatesPage() {
   const [generating, setGenerating] = useState(false)
   const [busyRow, setBusyRow] = useState<string | null>(null)
   const [showTemplate, setShowTemplate] = useState(false)
+  const [notifyEmail, setNotifyEmail] = useState(true) // email participants on generate
 
   // Load events on mount
   useEffect(() => {
@@ -122,7 +123,7 @@ export default function AdminCertificatesPage() {
       const res = await fetch('/api/admin/certificates/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId, registrationIds: ids, regenerate }),
+        body: JSON.stringify({ eventId, registrationIds: ids, regenerate, sendEmail: notifyEmail }),
       })
       const d = await res.json()
       if (!res.ok) throw new Error(d.error || 'Failed')
@@ -143,7 +144,7 @@ export default function AdminCertificatesPage() {
       const res = await fetch('/api/admin/certificates/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId, registrationIds: [registrationId], regenerate: true }),
+        body: JSON.stringify({ eventId, registrationIds: [registrationId], regenerate: true, sendEmail: notifyEmail }),
       })
       const d = await res.json()
       if (!res.ok) throw new Error(d.error || 'Failed')
@@ -283,7 +284,22 @@ export default function AdminCertificatesPage() {
               <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} className="rounded border-gray-300 text-brand-700 focus:ring-brand-500" />
               {selected.size > 0 ? `${selected.size} selected` : 'Select all'}
             </label>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-3">
+              <label
+                className="flex items-center gap-2 text-sm cursor-pointer select-none"
+                title="When off, certificates are created silently — no email is sent to participants"
+              >
+                <input
+                  type="checkbox"
+                  checked={notifyEmail}
+                  onChange={(e) => setNotifyEmail(e.target.checked)}
+                  className="rounded border-gray-300 text-brand-700 focus:ring-brand-500"
+                />
+                <span className={notifyEmail ? 'text-gray-600' : 'text-amber-600 font-medium'}>
+                  {notifyEmail ? 'Email participants' : "Don't email"}
+                </span>
+              </label>
+              <div className="w-px h-5 bg-gray-200" />
               <button
                 onClick={() => generate(true)}
                 disabled={generating || selected.size === 0}
