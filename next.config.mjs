@@ -10,6 +10,13 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Public certificate page lives at /certificate — forward the common
+      // plural so users who type /certificates don't hit a 404.
+      {
+        source: '/certificates',
+        destination: '/certificate',
+        permanent: false,
+      },
       {
         source: '/ai',
         destination: '/events/cmobns2gx0000u9klishjmwqr',
