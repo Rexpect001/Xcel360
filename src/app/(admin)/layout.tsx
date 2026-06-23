@@ -6,7 +6,7 @@ import AdminSidebar from './AdminSidebar'
 
 const ALL_SECTIONS = [
   '/', '/opportunities', '/jobs', '/programs', '/resources',
-  '/blog', '/mentorship', '/events', '/users', '/analytics', '/activity', '/email',
+  '/blog', '/mentorship', '/events', '/certificates', '/users', '/analytics', '/activity', '/email',
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

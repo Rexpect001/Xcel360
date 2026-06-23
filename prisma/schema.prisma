@@ -199,6 +199,8 @@ model Event {
   updatedAt     DateTime            @updatedAt
   registrations EventRegistration[]
   questions     EventQuestion[]
+  certificates  Certificate[]
+  certTemplate  CertificateTemplate?
 }
 
 model EventRegistration {
@@ -211,6 +213,7 @@ model EventRegistration {
   whatsappPhone String?
   createdAt     DateTime      @default(now())
   answers       EventAnswer[]
+  certificates  Certificate[]
 
   @@index([eventId])
 }
@@ -452,4 +455,74 @@ model SiteSetting {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+
+// ─── Certificate Generation Module ───────────────────────────────────────────
+
+enum CertificateStatus {
+  ISSUED
+  REVOKED
+}
+
+// One generated certificate, always linked to the original event + registration.
+model Certificate {
+  id              String            @id @default(cuid())
+  certificateId   String            @unique // human ID, e.g. XCL360-2026-000001
+  eventId         String
+  event           Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrationId  String
+  registration    EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  // Snapshot of registrant data at issue time (kept for the printed PDF & verification)
+  fullName        String
+  email           String
+  institution     String?
+  course          String?
+
+  certificateType String            @default("Certificate of Participation")
+  status          CertificateStatus @default(ISSUED)
+  pdfUrl          String?           // Vercel Blob URL of the generated PDF
+  emailSentAt     DateTime?
+  issuedAt        DateTime          @default(now())
+  revokedAt       DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([eventId, registrationId]) // one active certificate per registration per event
+  @@index([eventId])
+  @@index([email])
+}
+
+// Per-event certificate design. eventId null = global default template.
+model CertificateTemplate {
+  id              String   @id @default(cuid())
+  eventId         String?  @unique
+  event           Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  certificateType String   @default("Certificate of Participation")
+  backgroundUrl   String?  // full-page background image (PNG/JPG)
+  logoUrl         String?  // organization logo
+  signatureUrl    String?  // signature image
+  signatureName   String?  // e.g. "Dr. Jane Doe"
+  signatureTitle  String?  // e.g. "Program Director"
+  bodyText        String?  @db.Text // supports {{FULL_NAME}}, {{EVENT_NAME}}, {{EVENT_DATE}}, {{CERTIFICATE_ID}}, {{ISSUE_DATE}}
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Short-lived OTP codes for participant certificate access.
+model CertificateOtp {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// Per-year sequential counter for human-readable certificate IDs.
+model CertificateSequence {
+  year String @id // "2026"
+  seq  Int    @default(0)
 }

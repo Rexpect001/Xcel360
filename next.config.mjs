@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Bundle the certificate fonts into the serverless function on Vercel so
+  // fs.readFileSync can load them at runtime.
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/admin/certificates/**': ['./src/lib/certificates/fonts/**'],
+    },
+  },
+
   async redirects() {
     return [
       {
