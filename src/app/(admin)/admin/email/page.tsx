@@ -261,7 +261,7 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
             style={{ width: `${pct}%` }} />
         </div>
         {c.status === 'SENDING' && (
-          <p className="text-xs text-gray-400 mt-1.5">{(c.totalCount - c.sentCount).toLocaleString()} remaining · {c.dailyLimit}/day · next batch tomorrow at 7am</p>
+          <p className="text-xs text-gray-400 mt-1.5">{(c.totalCount - c.sentCount).toLocaleString()} remaining · click <span className="font-medium text-gray-500">Resume</span> to continue, or it resumes automatically daily</p>
         )}
       </div>
 

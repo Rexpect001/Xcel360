@@ -3,20 +3,10 @@ export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import {
-  filterUnsubscribed,
-  buildFirstNameMap,
-  logEmailBatch,
-  sendBatch,
-  AttachmentMeta,
-} from '@/lib/email-utils'
+import { runCampaignSend } from '@/lib/email-utils'
 
-const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
-function batchSize(provider: string, dailyLimit: number, total: number) {
-  return provider === 'sendchamp' ? total : Math.min(dailyLimit, 100)
-}
-
-// PATCH — send a DRAFT, cancel, or retry a FAILED campaign
+// PATCH — send a DRAFT, resume/cancel a SENDING, or retry a FAILED campaign.
+// All sending delegates to the centralized, resumable runCampaignSend.
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
@@ -34,102 +24,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ ok: true, status: 'CANCELLED' })
   }
 
-  // Send (DRAFT → send first batch)
-  if (action === 'send') {
-    if (campaign.status !== 'DRAFT') {
-      return NextResponse.json({ error: 'Only DRAFT campaigns can be sent' }, { status: 400 })
-    }
+  // Allowed status per action
+  const allowed: Record<string, string> = { send: 'DRAFT', resume: 'SENDING', retry: 'FAILED' }
+  if (!['send', 'resume', 'retry'].includes(action)) {
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+  }
+  if (campaign.status !== allowed[action]) {
+    return NextResponse.json({ error: `Only ${allowed[action]} campaigns can be ${action}d` }, { status: 400 })
+  }
 
-    const provider: string = campaign.provider ?? 'resend'
-    if (provider === 'resend' && !process.env.RESEND_API_KEY) {
-      return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
-    }
-    if (provider === 'sendchamp' && !process.env.SENDCHAMP_API_KEY) {
-      return NextResponse.json({ error: 'SENDCHAMP_API_KEY not configured' }, { status: 503 })
-    }
-
-    const allRecipients: string[] = JSON.parse(campaign.recipients ?? '[]')
-    const eligible = await filterUnsubscribed(allRecipients)
-    const firstBatch = eligible.slice(0, batchSize(provider, campaign.dailyLimit, eligible.length))
-    const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
-    const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
-    const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
-
-    const firstNameMap = await buildFirstNameMap(firstBatch)
-    const sent = await sendBatch({ provider, emails: firstBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
-
-    const completed = firstBatch.length >= eligible.length
-    await db.emailCampaign.update({
-      where: { id: params.id },
-      data: { sentCount: completed ? allRecipients.length : sent, status: sent === 0 ? 'FAILED' : completed ? 'COMPLETED' : 'SENDING' },
+  try {
+    const result = await runCampaignSend(params.id, { restart: action === 'retry' })
+    return NextResponse.json({
+      ok: true, sent: result.sent, total: result.total,
+      remaining: result.total - result.cursor, status: result.status,
     })
-    return NextResponse.json({ ok: true, sent, total: allRecipients.length, remaining: allRecipients.length - sent, status: completed ? 'COMPLETED' : 'SENDING' })
+  } catch (e: any) {
+    const msg = e?.message ?? 'Send failed'
+    const code = /not configured|required/i.test(msg) ? 503 : 500
+    return NextResponse.json({ error: msg }, { status: code })
   }
-
-  // Resume (SENDING → continue from where it left off, no duplicates)
-  if (action === 'resume') {
-    if (campaign.status !== 'SENDING') {
-      return NextResponse.json({ error: 'Only SENDING campaigns can be resumed' }, { status: 400 })
-    }
-    const provider: string = campaign.provider ?? 'resend'
-    if (provider === 'resend' && !process.env.RESEND_API_KEY) return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
-    if (provider === 'sendchamp' && !process.env.SENDCHAMP_API_KEY) return NextResponse.json({ error: 'SENDCHAMP_API_KEY not configured' }, { status: 503 })
-
-    const allRecipients: string[] = JSON.parse(campaign.recipients ?? '[]')
-    const unsent = allRecipients.slice(campaign.sentCount)
-    if (unsent.length === 0) {
-      await db.emailCampaign.update({ where: { id: params.id }, data: { status: 'COMPLETED' } })
-      return NextResponse.json({ ok: true, sent: 0, total: allRecipients.length, remaining: 0, status: 'COMPLETED' })
-    }
-
-    const eligible = await filterUnsubscribed(unsent)
-    const batch = eligible.slice(0, batchSize(provider, campaign.dailyLimit, eligible.length))
-    const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
-    const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
-    const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
-
-    const firstNameMap = await buildFirstNameMap(batch)
-    const sent = await sendBatch({ provider, emails: batch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
-
-    const processed = provider === 'sendchamp' ? unsent.length : Math.min(campaign.dailyLimit, unsent.length)
-    const newTotal = campaign.sentCount + processed
-    const completed = newTotal >= allRecipients.length
-    await db.emailCampaign.update({ where: { id: params.id }, data: { sentCount: newTotal, status: completed ? 'COMPLETED' : 'SENDING' } })
-    return NextResponse.json({ ok: true, sent, total: allRecipients.length, remaining: allRecipients.length - newTotal, status: completed ? 'COMPLETED' : 'SENDING' })
-  }
-
-  // Retry (FAILED → restart from beginning)
-  if (action === 'retry') {
-    if (campaign.status !== 'FAILED') {
-      return NextResponse.json({ error: 'Only FAILED campaigns can be retried' }, { status: 400 })
-    }
-
-    const provider: string = campaign.provider ?? 'resend'
-    if (provider === 'resend' && !process.env.RESEND_API_KEY) {
-      return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
-    }
-    if (provider === 'sendchamp' && !process.env.SENDCHAMP_API_KEY) {
-      return NextResponse.json({ error: 'SENDCHAMP_API_KEY not configured' }, { status: 503 })
-    }
-
-    await db.emailCampaign.update({ where: { id: params.id }, data: { sentCount: 0, status: 'SENDING' } })
-
-    const allRecipients: string[] = JSON.parse(campaign.recipients ?? '[]')
-    const eligible = await filterUnsubscribed(allRecipients)
-    const firstBatch = eligible.slice(0, batchSize(provider, campaign.dailyLimit, eligible.length))
-    const cc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.ccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
-    const bcc: string[] | undefined = (() => { try { const v = JSON.parse(campaign.bccRecipients ?? '[]'); return v.length ? v : undefined } catch { return undefined } })()
-    const attachmentMetas: AttachmentMeta[] = (() => { try { return JSON.parse(campaign.attachments ?? '[]') } catch { return [] } })()
-
-    const firstNameMap = await buildFirstNameMap(firstBatch)
-    const sent = await sendBatch({ provider, emails: firstBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
-
-    const completed = firstBatch.length >= eligible.length
-    await db.emailCampaign.update({ where: { id: params.id }, data: { sentCount: completed ? allRecipients.length : sent, status: sent === 0 ? 'FAILED' : completed ? 'COMPLETED' : 'SENDING' } })
-    return NextResponse.json({ ok: true, sent, total: allRecipients.length, remaining: allRecipients.length - sent, status: completed ? 'COMPLETED' : 'SENDING' })
-  }
-
-  return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
 }
 
 // GET — fetch logs for a specific campaign

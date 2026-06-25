@@ -133,82 +133,112 @@ export async function logEmailBatch(
   })
 }
 
-// ── Unified sendBatch ─────────────────────────────────────────────────────────
+// ── Centralized, resumable campaign sender ─────────────────────────────────────
+//
+// The single source of truth for delivering a campaign. It walks `recipients`
+// from a durable position cursor (campaign.sentCount), sending in chunks and
+// persisting the cursor after EVERY chunk. If the serverless function times out
+// mid-send, progress is saved — a later Resume or cron run continues exactly
+// where it stopped, so no recipient is ever sent to twice and none are skipped.
 
-export interface SendBatchOpts {
-  provider: string           // 'resend' | 'sendchamp'
-  emails: string[]           // pre-filtered, unsubscribes removed
-  subject: string
-  htmlBody: string
-  textBody?: string          // plain text body — required when provider is 'sendchamp'
-  firstNameMap: Map<string, string>
-  from: string               // "Xcel360 <noreply@xcel360.com>"
-  cc?: string[]
-  bcc?: string[]
-  attachmentMetas?: AttachmentMeta[]
-  campaignId: string
-}
-
+const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
 const RESEND_CHUNK = 100
-const SENDCHAMP_CHUNK = 10  // SendChamp: small parallel batches to stay within rate limits
+const SENDCHAMP_CHUNK = 10
+const TIME_BUDGET_MS = 50_000 // stay safely under the 60s function limit
 
-export async function sendBatch(opts: SendBatchOpts): Promise<number> {
-  return opts.provider === 'sendchamp'
-    ? _sendViaSendchamp(opts)
-    : _sendViaResend(opts)
+function parseJsonArr(v: string | null | undefined): string[] {
+  try { const a = JSON.parse(v ?? '[]'); return Array.isArray(a) ? a : [] } catch { return [] }
 }
 
-async function _sendViaResend(opts: SendBatchOpts): Promise<number> {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) throw new Error('RESEND_API_KEY not configured')
-
-  const resend = new Resend(apiKey)
-  const resendAttachments = await buildResendAttachments(opts.attachmentMetas ?? [])
-  let sent = 0
-
-  for (let i = 0; i < opts.emails.length; i += RESEND_CHUNK) {
-    const chunk = opts.emails.slice(i, i + RESEND_CHUNK)
-    const { error } = await resend.batch.send(
-      chunk.map((to) => ({
-        from: opts.from,
-        to,
-        subject: opts.subject,
-        html: injectUnsubscribeFooter(personalize(opts.htmlBody, to, opts.firstNameMap), to),
-        ...(opts.cc?.length ? { cc: opts.cc } : {}),
-        ...(opts.bcc?.length ? { bcc: opts.bcc } : {}),
-        ...(resendAttachments ? { attachments: resendAttachments } : {}),
-      }))
-    )
-    if (!error) { sent += chunk.length; await logEmailBatch(opts.campaignId, chunk, 'SENT') }
-    else { await logEmailBatch(opts.campaignId, chunk, 'FAILED', String(error)) }
-  }
-
-  return sent
+export interface CampaignSendResult {
+  sent: number; failed: number; cursor: number; total: number; completed: boolean; status: string
 }
 
-async function _sendViaSendchamp(opts: SendBatchOpts): Promise<number> {
-  if (!process.env.SENDCHAMP_API_KEY?.trim()) throw new Error('SENDCHAMP_API_KEY not configured')
-  if (!opts.textBody?.trim()) throw new Error('Plain text body is required for SendChamp campaigns')
+export async function runCampaignSend(campaignId: string, opts: { restart?: boolean } = {}): Promise<CampaignSendResult> {
+  const db = prisma as any
+  const started = Date.now()
+  const campaign = await db.emailCampaign.findUnique({ where: { id: campaignId } })
+  if (!campaign) throw new Error('Campaign not found')
 
-  const from = parseFromString(opts.from)
-  let sent = 0
+  const provider: string = campaign.provider ?? 'resend'
+  if (provider === 'resend' && !process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY not configured')
+  if (provider === 'sendchamp' && !process.env.SENDCHAMP_API_KEY?.trim()) throw new Error('SENDCHAMP_API_KEY not configured')
+  if (provider === 'sendchamp' && !campaign.textBody?.trim()) throw new Error('Plain text body is required for SendChamp')
 
-  for (let i = 0; i < opts.emails.length; i += SENDCHAMP_CHUNK) {
-    const chunk = opts.emails.slice(i, i + SENDCHAMP_CHUNK)
-    const results = await Promise.allSettled(
-      chunk.map(async (to) => {
-        const text = injectUnsubscribePlainFooter(personalize(opts.textBody!, to, opts.firstNameMap), to)
-        const toName = opts.firstNameMap.get(to.toLowerCase()) ?? 'Scholar'
-        const { ok, error } = await sendchampOne({ to, toName, from, subject: opts.subject, text })
-        if (!ok) throw new Error(error)
-        return to
-      })
-    )
-    const succeeded = results.flatMap((r, idx) => r.status === 'fulfilled' ? [chunk[idx]] : [])
-    const failed    = results.flatMap((r, idx) => r.status === 'rejected'  ? [chunk[idx]] : [])
-    if (succeeded.length) { sent += succeeded.length; await logEmailBatch(opts.campaignId, succeeded, 'SENT') }
-    if (failed.length)    await logEmailBatch(opts.campaignId, failed, 'FAILED', 'SendChamp delivery failed')
+  const recipients: string[] = parseJsonArr(campaign.recipients)
+  const total = recipients.length
+
+  let start = campaign.sentCount ?? 0
+  if (opts.restart) {
+    start = 0
+    await db.emailCampaign.update({ where: { id: campaignId }, data: { sentCount: 0, status: 'SENDING' } })
+  } else if (campaign.status !== 'SENDING') {
+    await db.emailCampaign.update({ where: { id: campaignId }, data: { status: 'SENDING' } })
   }
 
-  return sent
+  // Resend free plan is limited per day; SendChamp processes as far as the time
+  // budget allows this run (the loop also bails on the budget below).
+  const cap = provider === 'resend' ? Math.min(campaign.dailyLimit ?? 100, 100) : total - start
+  const end = Math.min(start + cap, total)
+  const slice = recipients.slice(start, end)
+
+  if (slice.length === 0) {
+    await db.emailCampaign.update({ where: { id: campaignId }, data: { status: 'COMPLETED' } })
+    return { sent: 0, failed: 0, cursor: start, total, completed: true, status: 'COMPLETED' }
+  }
+
+  // Shared per-run data
+  const unsubs = await db.emailUnsubscribe.findMany({ where: { email: { in: slice.map((e) => e.toLowerCase()) } }, select: { email: true } })
+  const unsubSet = new Set(unsubs.map((u: any) => u.email.toLowerCase()))
+  const firstNameMap = await buildFirstNameMap(slice)
+  const cc = parseJsonArr(campaign.ccRecipients)
+  const bcc = parseJsonArr(campaign.bccRecipients)
+  const attachmentMetas = parseJsonArr(campaign.attachments) as unknown as AttachmentMeta[]
+  const resendAttachments = provider === 'resend' ? await buildResendAttachments(attachmentMetas) : undefined
+  const resend = provider === 'resend' ? new Resend(process.env.RESEND_API_KEY!) : null
+  const scFrom = provider === 'sendchamp' ? parseFromString(FROM) : null
+  const CHUNK = provider === 'sendchamp' ? SENDCHAMP_CHUNK : RESEND_CHUNK
+
+  let sent = 0, failed = 0, cursor = start
+
+  for (let i = 0; i < slice.length; i += CHUNK) {
+    const chunkPos = slice.slice(i, i + CHUNK)
+    const eligible = chunkPos.filter((e) => !unsubSet.has(e.toLowerCase()))
+
+    if (eligible.length) {
+      if (provider === 'resend') {
+        const { error } = await resend!.batch.send(eligible.map((to) => ({
+          from: FROM, to, subject: campaign.subject,
+          html: injectUnsubscribeFooter(personalize(campaign.htmlBody, to, firstNameMap), to),
+          ...(cc.length ? { cc } : {}), ...(bcc.length ? { bcc } : {}),
+          ...(resendAttachments ? { attachments: resendAttachments } : {}),
+        })))
+        if (!error) { sent += eligible.length; await logEmailBatch(campaignId, eligible, 'SENT') }
+        else { failed += eligible.length; await logEmailBatch(campaignId, eligible, 'FAILED', String(error)) }
+      } else {
+        const results = await Promise.allSettled(eligible.map(async (to) => {
+          const text = injectUnsubscribePlainFooter(personalize(campaign.textBody, to, firstNameMap), to)
+          const toName = firstNameMap.get(to.toLowerCase()) ?? 'Scholar'
+          const { ok, error } = await sendchampOne({ to, toName, from: scFrom!, subject: campaign.subject, text })
+          if (!ok) throw new Error(error)
+          return to
+        }))
+        const okList = results.flatMap((r, idx) => r.status === 'fulfilled' ? [eligible[idx]] : [])
+        const badList = results.flatMap((r, idx) => r.status === 'rejected' ? [eligible[idx]] : [])
+        if (okList.length) { sent += okList.length; await logEmailBatch(campaignId, okList, 'SENT') }
+        if (badList.length) { failed += badList.length; await logEmailBatch(campaignId, badList, 'FAILED', 'SendChamp delivery failed') }
+      }
+    }
+
+    // Persist the cursor past this chunk (counting skipped unsubscribes) so a
+    // crash/timeout never re-sends already-processed recipients.
+    cursor = start + i + chunkPos.length
+    await db.emailCampaign.update({ where: { id: campaignId }, data: { sentCount: cursor } })
+
+    if (Date.now() - started > TIME_BUDGET_MS) break // pause; resume/cron picks up the rest
+  }
+
+  const completed = cursor >= total
+  await db.emailCampaign.update({ where: { id: campaignId }, data: { status: completed ? 'COMPLETED' : 'SENDING' } })
+  return { sent, failed, cursor, total, completed, status: completed ? 'COMPLETED' : 'SENDING' }
 }

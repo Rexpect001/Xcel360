@@ -3,13 +3,8 @@ export const maxDuration = 60 // allow time to send a large SendChamp batch in o
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import {
-  filterUnsubscribed,
-  buildFirstNameMap,
-  sendBatch,
-} from '@/lib/email-utils'
+import { runCampaignSend } from '@/lib/email-utils'
 
-const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
 // Resend free plan caps at 100/day; SendChamp is paid with no hard cap
 function maxLimit(provider: string) { return provider === 'sendchamp' ? 5000 : 100 }
 
@@ -42,7 +37,7 @@ export async function POST(req: NextRequest) {
   const {
     subject, htmlBody, textBody = '', audience, eventId,
     provider = 'resend',
-    dailyLimit = 100, sendAll = false,
+    dailyLimit = 100,
     manualRecipients = [], ccRecipients = [], bccRecipients = [],
     attachments = [], isDraft = false,
   } = await req.json()
@@ -104,13 +99,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'SENDCHAMP_API_KEY not configured' }, { status: 503 })
   }
 
-  const eligible = await filterUnsubscribed(allRecipients)
-  // SendChamp has no daily cap → always send the whole list in one request.
-  // Resend free plan is limited per day; the cron continues the remainder.
-  const sendEverything = sendAll || provider === 'sendchamp'
-  const limit = sendEverything ? eligible.length : Math.min(dailyLimit, maxLimit(provider))
-  const firstBatch = eligible.slice(0, limit)
-
   const campaign = await db.emailCampaign.create({
     data: {
       subject, htmlBody, textBody: textBody || null, audience, provider,
@@ -126,37 +114,14 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  const firstNameMap = await buildFirstNameMap(firstBatch)
-  const sent = await sendBatch({
-    provider,
-    emails: firstBatch,
-    subject,
-    htmlBody,
-    textBody: textBody || undefined,
-    firstNameMap,
-    from: FROM,
-    cc: ccRecipients.length ? ccRecipients : undefined,
-    bcc: bccRecipients.length ? bccRecipients : undefined,
-    attachmentMetas: attachments,
-    campaignId: campaign.id,
-  })
-
-  // Complete when we've dispatched the whole eligible list (unsubscribed are
-  // intentionally skipped). Advance sentCount past the full list so neither the
-  // cron nor a manual resume re-sends anyone.
-  const completed = firstBatch.length >= eligible.length
-  await db.emailCampaign.update({
-    where: { id: campaign.id },
-    data: {
-      sentCount: completed ? allRecipients.length : sent,
-      status: sent === 0 ? 'FAILED' : completed ? 'COMPLETED' : 'SENDING',
-    },
-  })
+  // Durable, resumable send. For very large lists this returns after a time
+  // budget with status SENDING; the Resume button / daily cron finishes the rest.
+  const result = await runCampaignSend(campaign.id)
 
   return NextResponse.json({
     ok: true, campaignId: campaign.id,
-    total: allRecipients.length, sent,
-    remaining: allRecipients.length - sent,
-    status: completed ? 'COMPLETED' : 'SENDING',
+    total: result.total, sent: result.sent,
+    remaining: result.total - result.cursor,
+    status: result.status,
   })
 }
