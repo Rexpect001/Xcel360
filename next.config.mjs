@@ -22,6 +22,13 @@ const nextConfig = {
         destination: '/events/cmobns2gx0000u9klishjmwqr',
         permanent: false,
       },
+      // Branded short link → joins the Leveraging AI Zoom meeting directly
+      // (passcode embedded in the URL, so one-tap join, no code entry).
+      {
+        source: '/join',
+        destination: 'https://umsystem.zoom.us/j/91459172327?pwd=qMeOcaOMXBXeVwCKJxb6MTdqIebXpY.1',
+        permanent: false,
+      },
       {
         source: '/volunteer',
         destination: 'https://edifier.thexcel360.com/volunteer',
