@@ -6,13 +6,10 @@ import QRCode from 'qrcode'
 
 const FONT_DIR = join(process.cwd(), 'src', 'lib', 'certificates', 'fonts')
 
-// Cache font bytes across invocations (read once per process).
 let _fontCache: { script: Buffer } | null = null
 function loadFontBytes() {
   if (!_fontCache) {
-    _fontCache = {
-      script: readFileSync(join(FONT_DIR, 'GreatVibes-Regular.ttf')), // script (recipient name + signature)
-    }
+    _fontCache = { script: readFileSync(join(FONT_DIR, 'GreatVibes-Regular.ttf')) }
   }
   return _fontCache
 }
@@ -36,32 +33,28 @@ export interface CertificateTemplateData {
   bodyText?: string | null
 }
 
-// ── Palette (from the provided CSS design) ─────────────────────────────────────
-const BLUE = rgb(0.184, 0.49, 0.882)      // #2f7de1 — main border
-const LIGHT_BORDER = rgb(0.498, 0.71, 1)  // #7fb5ff — inner border
-const TITLE_BLUE = rgb(0.416, 0.643, 0.957) // #6aa4f4 — CERTIFICATE
-const ORANGE = rgb(1, 0.42, 0)            // #ff6b00 — accents
-const ORANGE2 = rgb(1, 0.478, 0)          // #ff7a00 — logo "X"
-const NAVY = rgb(0, 0.122, 0.357)         // #001f5b — recipient name
-const BLUE_DARK = rgb(0.071, 0.384, 0.839) // #1262d6 — corners, sig name
-const LOGO_BLUE = rgb(0.04, 0.3, 0.74)    // logo badge fill
-const INK = rgb(0.067, 0.067, 0.067)      // #111
-const MUTED = rgb(0.44, 0.47, 0.53)
-const FAINT = rgb(0.86, 0.92, 0.99)       // faint decorative blue
-const BG = rgb(0.973, 0.988, 1)           // #f8fcff field
+// ── Palette (sampled from the Xcel360 reference design) ────────────────────────
+const TITLE_BLUE = rgb(0.231, 0.51, 0.84)  // #3b82d6 — CERTIFICATE
+const EVENT_BLUE = rgb(0.114, 0.435, 0.816) // #1d6fd0 — event line + sig name
+const BORDER_BLUE = rgb(0.36, 0.56, 0.84)  // #5c8fd6 — borders
+const CORNER_BLUE = rgb(0.114, 0.384, 0.78) // corner brackets
+const ORANGE = rgb(0.96, 0.51, 0.12)       // #f5821f — accents / "X"
+const NAVY = rgb(0.1, 0.16, 0.42)          // #1a296b — recipient name
+const GRAY = rgb(0.33, 0.34, 0.38)         // body text
+const MUTED = rgb(0.5, 0.53, 0.58)
+const LOGO_BLUE = rgb(0.114, 0.42, 0.78)   // badge fill
+const BG = rgb(0.984, 0.992, 1)            // near-white field
+const DECO_BLUE = rgb(0.36, 0.56, 0.86)    // decorations (drawn low-opacity)
+const BLOB_PEACH = rgb(0.99, 0.86, 0.74)
+const BLOB_BLUE = rgb(0.82, 0.89, 0.98)
 
 const PAGE_W = 842 // A4 landscape (pt)
 const PAGE_H = 595
 
 function fmtDate(d: Date | string): string {
-  return new Date(d).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
+  return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-/** Apply {{PLACEHOLDER}} substitutions used in custom body text. */
 export function applyPlaceholders(template: string, data: CertificateData): string {
   return template
     .replace(/\{\{\s*FULL_NAME\s*\}\}/g, data.fullName)
@@ -84,24 +77,20 @@ async function embedRemoteImage(pdf: PDFDocument, url: string): Promise<PDFImage
   }
 }
 
-/** Draw a string centered horizontally at the given y. */
-function drawCentered(page: PDFPage, text: string, y: number, font: PDFFont, size: number, color: RGB = INK) {
+function drawCentered(page: PDFPage, text: string, y: number, font: PDFFont, size: number, color: RGB = GRAY) {
   const w = font.widthOfTextAtSize(text, size)
   page.drawText(text, { x: (PAGE_W - w) / 2, y, size, font, color })
 }
 
-/** Draw centered text, shrinking the size until it fits maxWidth. */
-function drawCenteredFit(page: PDFPage, text: string, y: number, font: PDFFont, size: number, maxWidth: number, color: RGB = INK) {
+function drawCenteredFit(page: PDFPage, text: string, y: number, font: PDFFont, size: number, maxWidth: number, color: RGB = GRAY) {
   let s = size
   while (s > 10 && font.widthOfTextAtSize(text, s) > maxWidth) s -= 1
   drawCentered(page, text, y, font, s, color)
 }
 
-/** Draw centered text with letter-spacing (tracking), shrinking to fit maxWidth. */
 function drawTracked(page: PDFPage, text: string, y: number, font: PDFFont, size: number, tracking: number, maxWidth: number, color: RGB) {
   const chars = text.split('')
-  const measure = (sz: number) =>
-    chars.reduce((sum, ch) => sum + font.widthOfTextAtSize(ch, sz), 0) + tracking * (chars.length - 1)
+  const measure = (sz: number) => chars.reduce((sum, ch) => sum + font.widthOfTextAtSize(ch, sz), 0) + tracking * (chars.length - 1)
   let s = size
   while (s > 10 && measure(s) > maxWidth) s -= 1
   let x = (PAGE_W - measure(s)) / 2
@@ -111,8 +100,7 @@ function drawTracked(page: PDFPage, text: string, y: number, font: PDFFont, size
   }
 }
 
-/** Word-wrap a paragraph and draw it centered, returning the final y position. */
-function drawWrappedCentered(page: PDFPage, text: string, startY: number, font: PDFFont, size: number, maxWidth: number, lineHeight: number, color: RGB = MUTED): number {
+function drawWrappedCentered(page: PDFPage, text: string, startY: number, font: PDFFont, size: number, maxWidth: number, lineHeight: number, color: RGB = GRAY): number {
   const words = text.split(/\s+/)
   const lines: string[] = []
   let line = ''
@@ -127,12 +115,74 @@ function drawWrappedCentered(page: PDFPage, text: string, startY: number, font: 
   return y
 }
 
-/**
- * Generate a personalized certificate PDF rendered from the Xcel360 design:
- * light-blue field, double border with corner brackets, skewed brand badge,
- * spaced "CERTIFICATE" title with orange subtitle, Great Vibes recipient name,
- * orange event accent, signature block and a QR verification code.
- */
+// ── Decorative motif helpers (drawn faint via opacity) ─────────────────────────
+function drawDottedGrid(page: PDFPage, x0: number, y0: number, cols: number, rows: number, gap: number) {
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      page.drawEllipse({ x: x0 + i * gap, y: y0 - j * gap, xScale: 1.4, yScale: 1.4, color: DECO_BLUE, opacity: 0.5 })
+    }
+  }
+}
+
+function drawGlobe(page: PDFPage, cx: number, cy: number, r: number) {
+  const o = 0.28
+  page.drawEllipse({ x: cx, y: cy, xScale: r, yScale: r, borderColor: DECO_BLUE, borderWidth: 0.8, borderOpacity: o })
+  for (const f of [0.32, 0.66]) page.drawEllipse({ x: cx, y: cy, xScale: r * f, yScale: r, borderColor: DECO_BLUE, borderWidth: 0.6, borderOpacity: o })
+  for (const dy of [-r * 0.55, 0, r * 0.55]) {
+    const half = Math.sqrt(Math.max(0, r * r - dy * dy))
+    page.drawLine({ start: { x: cx - half, y: cy + dy }, end: { x: cx + half, y: cy + dy }, thickness: 0.6, color: DECO_BLUE, opacity: o })
+  }
+  // network nodes around + a few inside
+  const nodes: [number, number][] = []
+  for (let k = 0; k < 16; k++) {
+    const a = (k / 16) * Math.PI * 2
+    nodes.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r])
+  }
+  for (let k = 0; k < 6; k++) {
+    const a = Math.random() * Math.PI * 2, rr = r * (0.3 + (k % 3) * 0.2)
+    nodes.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr])
+  }
+  for (const [nx, ny] of nodes) page.drawEllipse({ x: nx, y: ny, xScale: 1.5, yScale: 1.5, color: DECO_BLUE, opacity: 0.55 })
+  for (let k = 0; k < 10; k++) {
+    const a = nodes[k], b = nodes[(k * 3 + 5) % nodes.length]
+    page.drawLine({ start: { x: a[0], y: a[1] }, end: { x: b[0], y: b[1] }, thickness: 0.4, color: DECO_BLUE, opacity: 0.22 })
+  }
+}
+
+function drawCircuit(page: PDFPage, baseX: number, baseY: number) {
+  const o = 0.25
+  const traces: [number, number][][] = [
+    [[0, 0], [34, 0], [34, -26], [70, -26]],
+    [[0, 40], [50, 40], [50, 18], [88, 18]],
+    [[0, 78], [28, 78], [28, 104], [64, 104]],
+    [[0, 120], [60, 120], [60, 96], [96, 96]],
+    [[0, -40], [44, -40], [44, -64], [80, -64]],
+  ]
+  for (const t of traces) {
+    for (let i = 0; i < t.length - 1; i++) {
+      page.drawLine({
+        start: { x: baseX + t[i][0], y: baseY + t[i][1] },
+        end: { x: baseX + t[i + 1][0], y: baseY + t[i + 1][1] },
+        thickness: 0.7, color: DECO_BLUE, opacity: o,
+      })
+    }
+    const end = t[t.length - 1]
+    page.drawEllipse({ x: baseX + end[0], y: baseY + end[1], xScale: 2, yScale: 2, color: DECO_BLUE, opacity: 0.4 })
+  }
+}
+
+/** Dash-dot accent flanking a centered label: •—— LABEL ——• */
+function drawFlankers(page: PDFPage, labelWidth: number, y: number, color: RGB) {
+  const gap = labelWidth / 2 + 18
+  const lineLen = 46
+  for (const dir of [-1, 1]) {
+    const x1 = PAGE_W / 2 + dir * gap
+    const x2 = x1 + dir * lineLen
+    page.drawLine({ start: { x: x1, y: y + 4 }, end: { x: x2, y: y + 4 }, thickness: 1.2, color })
+    page.drawEllipse({ x: x2 + dir * 7, y: y + 4, xScale: 2, yScale: 2, color })
+  }
+}
+
 export async function generateCertificatePdf(
   data: CertificateData,
   template: CertificateTemplateData = {},
@@ -147,140 +197,133 @@ export async function generateCertificatePdf(
   try { script = await pdf.embedFont(loadFontBytes().script) }
   catch (e) { console.error('[certificate fonts] script fallback:', e) }
 
-  // ── Field background ───────────────────────────────────────────────────────
+  // Field background
   page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: BG })
 
-  // ── Decorative motifs (faint) ──────────────────────────────────────────────
-  // Globe — concentric circles bleeding off the right edge
-  page.drawEllipse({ x: PAGE_W - 40, y: 360, xScale: 150, yScale: 150, borderColor: FAINT, borderWidth: 2 })
-  page.drawEllipse({ x: PAGE_W - 40, y: 360, xScale: 108, yScale: 108, borderColor: FAINT, borderWidth: 1 })
-  // Tech grid — faint squares on the lower left
-  for (let gx = 40; gx <= 190; gx += 26) page.drawLine({ start: { x: gx, y: 150 }, end: { x: gx, y: 300 }, thickness: 0.5, color: FAINT })
-  for (let gy = 150; gy <= 300; gy += 26) page.drawLine({ start: { x: 40, y: gy }, end: { x: 190, y: gy }, thickness: 0.5, color: FAINT })
+  // Soft blobs (corners)
+  page.drawEllipse({ x: PAGE_W - 30, y: PAGE_H - 90, xScale: 95, yScale: 70, color: BLOB_PEACH, opacity: 0.5 })
+  page.drawEllipse({ x: 20, y: 70, xScale: 90, yScale: 75, color: BLOB_BLUE, opacity: 0.55 })
 
-  // ── Borders ────────────────────────────────────────────────────────────────
-  page.drawRectangle({ x: 8, y: 8, width: PAGE_W - 16, height: PAGE_H - 16, borderColor: BLUE, borderWidth: 3 })
-  page.drawRectangle({ x: 18, y: 18, width: PAGE_W - 36, height: PAGE_H - 36, borderColor: LIGHT_BORDER, borderWidth: 1.2 })
+  // Globe (right) + circuit (left) + dotted grids
+  drawGlobe(page, PAGE_W - 70, 300, 105)
+  drawCircuit(page, 28, 300)
+  drawDottedGrid(page, PAGE_W - 120, PAGE_H - 70, 5, 5, 9)
+  drawDottedGrid(page, PAGE_W - 120, 120, 5, 5, 9)
 
-  // ── Corner brackets ────────────────────────────────────────────────────────
-  const ci = 14, cl = 26, ct = 4
-  const corner = (cx: number, cy: number, dx: number, dy: number) => {
-    page.drawLine({ start: { x: cx, y: cy }, end: { x: cx + dx * cl, y: cy }, thickness: ct, color: BLUE_DARK })
-    page.drawLine({ start: { x: cx, y: cy }, end: { x: cx, y: cy + dy * cl }, thickness: ct, color: BLUE_DARK })
-  }
-  corner(ci, PAGE_H - ci, 1, -1)        // top-left
-  corner(PAGE_W - ci, PAGE_H - ci, -1, -1) // top-right
-  corner(ci, ci, 1, 1)                  // bottom-left
-  corner(PAGE_W - ci, ci, -1, 1)        // bottom-right
-
-  // ── Brand badge: XCEL360 with an orange "X" ────────────────────────────────
+  // Borders + corner brackets
+  page.drawRectangle({ x: 14, y: 14, width: PAGE_W - 28, height: PAGE_H - 28, borderColor: BORDER_BLUE, borderWidth: 1.4 })
+  page.drawRectangle({ x: 20, y: 20, width: PAGE_W - 40, height: PAGE_H - 40, borderColor: BORDER_BLUE, borderWidth: 0.6 })
   {
-    const word = 'XCEL360'
-    const fs = 22
-    const textW = sansBold.widthOfTextAtSize(word, fs)
-    const padX = 34, badgeH = 38
-    const badgeW = textW + padX * 2
-    const badgeX = (PAGE_W - badgeW) / 2
-    const badgeY = PAGE_H - 70 - badgeH
-    page.drawRectangle({ x: badgeX, y: badgeY, width: badgeW, height: badgeH, color: LOGO_BLUE })
-    const textY = badgeY + (badgeH - fs) / 2 + 3
-    let tx = badgeX + padX
-    const xW = sansBold.widthOfTextAtSize('X', fs)
-    page.drawText('X', { x: tx, y: textY, size: fs, font: sansBold, color: ORANGE2 })
-    tx += xW
-    page.drawText('CEL360', { x: tx, y: textY, size: fs, font: sansBold, color: rgb(1, 1, 1) })
+    const ci = 14, cl = 24, ct = 2.4
+    const corner = (cx: number, cy: number, dx: number, dy: number) => {
+      page.drawLine({ start: { x: cx, y: cy }, end: { x: cx + dx * cl, y: cy }, thickness: ct, color: CORNER_BLUE })
+      page.drawLine({ start: { x: cx, y: cy }, end: { x: cx, y: cy + dy * cl }, thickness: ct, color: CORNER_BLUE })
+    }
+    corner(ci, PAGE_H - ci, 1, -1); corner(PAGE_W - ci, PAGE_H - ci, -1, -1)
+    corner(ci, ci, 1, 1); corner(PAGE_W - ci, ci, -1, 1)
   }
 
-  // ── Title: CERTIFICATE / OF PARTICIPATION ──────────────────────────────────
+  // ── Brand badge: skewed parallelogram with "XCEL", orange X ────────────────
+  {
+    const word = 'XCEL'
+    const fs = 21
+    const textW = sansBold.widthOfTextAtSize(word, fs)
+    const padX = 26, badgeH = 36, skew = 12
+    const badgeW = textW + padX * 2
+    const topY = PAGE_H - 56
+    const left = (PAGE_W - badgeW) / 2
+    // parallelogram via SVG path (y-down from topY)
+    const path = `M ${skew} 0 L ${badgeW + skew} 0 L ${badgeW} ${badgeH} L 0 ${badgeH} Z`
+    page.drawSvgPath(path, { x: left, y: topY, color: LOGO_BLUE })
+    const textY = topY - badgeH + (badgeH - fs) / 2 + 2
+    let tx = left + padX + skew / 2
+    page.drawText('X', { x: tx, y: textY, size: fs, font: sansBold, color: ORANGE })
+    tx += sansBold.widthOfTextAtSize('X', fs)
+    page.drawText('CEL', { x: tx, y: textY, size: fs, font: sansBold, color: rgb(1, 1, 1) })
+  }
+
+  // ── Title ──────────────────────────────────────────────────────────────────
   const parts = data.certificateType.toUpperCase().split(/\s+/)
   const titleMain = parts[0] || 'CERTIFICATE'
   const titleSub = parts.slice(1).join(' ')
-  drawTracked(page, titleMain, 452, sansBold, 56, 12, PAGE_W - 150, TITLE_BLUE)
-  if (titleSub) drawTracked(page, titleSub, 424, sansBold, 19, 7, PAGE_W - 200, ORANGE)
-
-  // ── Intro ──────────────────────────────────────────────────────────────────
-  drawCentered(page, 'This is proudly presented to', 398, sans, 13, INK)
-
-  // ── Recipient name (Great Vibes) ───────────────────────────────────────────
-  const nameY = 350
-  drawCenteredFit(page, data.fullName, nameY, script, 58, PAGE_W - 220, NAVY)
-  {
-    let s = 58
-    while (s > 12 && script.widthOfTextAtSize(data.fullName, s) > PAGE_W - 220) s -= 1
-    const uw = Math.min(script.widthOfTextAtSize(data.fullName, s) + 90, 520)
-    page.drawLine({ start: { x: (PAGE_W - uw) / 2, y: nameY - 12 }, end: { x: (PAGE_W + uw) / 2, y: nameY - 12 }, thickness: 1.6, color: BLUE })
+  drawTracked(page, titleMain, 452, sansBold, 50, 11, PAGE_W - 150, TITLE_BLUE)
+  if (titleSub) {
+    drawTracked(page, titleSub, 426, sansBold, 16, 6, PAGE_W - 240, ORANGE)
+    drawFlankers(page, sansBold.widthOfTextAtSize(titleSub, 16) + 6 * (titleSub.length - 1), 426, ORANGE)
   }
 
-  // ── Body: intro · orange event line · appreciation ─────────────────────────
-  drawCentered(page, 'for active participation in', 316, sans, 13, INK)
-  let afterEvent = drawWrappedCentered(page, data.eventName, 292, sansBold, 21, PAGE_W - 220, 26, ORANGE)
-  drawCentered(page, `held on ${fmtDate(data.eventDate)}`, afterEvent, sans, 11, MUTED)
-  afterEvent -= 26
+  // ── Recipient ──────────────────────────────────────────────────────────────
+  drawCentered(page, 'This is to certify that', 400, sans, 12.5, GRAY)
+  const nameY = 356
+  drawCenteredFit(page, data.fullName, nameY, script, 50, PAGE_W - 260, NAVY)
+  {
+    let s = 50
+    while (s > 12 && script.widthOfTextAtSize(data.fullName, s) > PAGE_W - 260) s -= 1
+    const uw = Math.min(script.widthOfTextAtSize(data.fullName, s) + 80, 460)
+    page.drawLine({ start: { x: (PAGE_W - uw) / 2, y: nameY - 12 }, end: { x: (PAGE_W + uw) / 2, y: nameY - 12 }, thickness: 1, color: NAVY })
+  }
+
+  // ── Event line + appreciation ──────────────────────────────────────────────
+  drawCentered(page, 'has actively participated in', 318, sans, 12.5, GRAY)
+  let afterEvent = drawWrappedCentered(page, data.eventName, 292, sansBold, 22, PAGE_W - 220, 26, EVENT_BLUE)
+  // small dot-line under the event title
+  page.drawEllipse({ x: PAGE_W / 2, y: afterEvent + 12, xScale: 2, yScale: 2, color: EVENT_BLUE })
+  drawCentered(page, `held on ${fmtDate(data.eventDate)}`, afterEvent - 4, sans, 11.5, MUTED)
+  afterEvent -= 28
   const appreciation = applyPlaceholders(
-    template.bodyText?.trim() || 'We recognize and appreciate your commitment and contribution.',
+    template.bodyText?.trim() ||
+      'Your engagement and commitment to continuous learning and personal growth are highly appreciated.',
     data,
   )
-  drawWrappedCentered(page, appreciation, afterEvent, sans, 13, PAGE_W - 280, 19, INK)
+  drawWrappedCentered(page, appreciation, afterEvent, sans, 12.5, PAGE_W - 320, 18, GRAY)
 
-  // ── Signature (left) & Date (right) — no rule clutter beyond design lines ───
-  const baseY = 96
-  const sigCenterX = 248
-  const dateCenterX = PAGE_W - 270
-
+  // ── Signature (centered, like the reference) ───────────────────────────────
+  const sigCenterX = PAGE_W / 2
+  const baseY = 110
   const sigImg = template.signatureUrl ? await embedRemoteImage(pdf, template.signatureUrl) : null
   if (sigImg) {
-    const maxH = 44
-    const w = Math.min((maxH / sigImg.height) * sigImg.width, 210)
+    const maxH = 42
+    const w = Math.min((maxH / sigImg.height) * sigImg.width, 200)
     const h = w / (sigImg.width / sigImg.height)
-    page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 14, width: w, height: h })
+    page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 6, width: w, height: h })
   } else if (template.signatureName) {
     const t = template.signatureName
-    const w = script.widthOfTextAtSize(t, 30)
-    page.drawText(t, { x: sigCenterX - w / 2, y: baseY + 16, size: 30, font: script, color: INK })
+    const w = script.widthOfTextAtSize(t, 28)
+    page.drawText(t, { x: sigCenterX - w / 2, y: baseY + 8, size: 28, font: script, color: rgb(0.1, 0.1, 0.12) })
   }
-  page.drawLine({ start: { x: sigCenterX - 95, y: baseY + 8 }, end: { x: sigCenterX + 95, y: baseY + 8 }, thickness: 1.4, color: BLUE })
+  page.drawLine({ start: { x: sigCenterX - 110, y: baseY }, end: { x: sigCenterX + 110, y: baseY }, thickness: 1, color: BORDER_BLUE })
   if (template.signatureName) {
     const w = sansBold.widthOfTextAtSize(template.signatureName, 13)
-    page.drawText(template.signatureName, { x: sigCenterX - w / 2, y: baseY - 8, size: 13, font: sansBold, color: BLUE_DARK })
+    page.drawText(template.signatureName, { x: sigCenterX - w / 2, y: baseY - 16, size: 13, font: sansBold, color: EVENT_BLUE })
   }
   if (template.signatureTitle) {
-    const w = sans.widthOfTextAtSize(template.signatureTitle, 10)
-    page.drawText(template.signatureTitle, { x: sigCenterX - w / 2, y: baseY - 22, size: 10, font: sans, color: MUTED })
+    const w = sans.widthOfTextAtSize(template.signatureTitle, 10.5)
+    page.drawText(template.signatureTitle, { x: sigCenterX - w / 2, y: baseY - 30, size: 10.5, font: sans, color: GRAY })
   }
 
-  // Date issued
+  // ── Footer brand line ──────────────────────────────────────────────────────
   {
-    const val = fmtDate(data.issueDate)
-    const vw = sansBold.widthOfTextAtSize(val, 13)
-    page.drawText(val, { x: dateCenterX - vw / 2, y: baseY - 8, size: 13, font: sansBold, color: INK })
-    page.drawLine({ start: { x: dateCenterX - 95, y: baseY + 8 }, end: { x: dateCenterX + 95, y: baseY + 8 }, thickness: 1.4, color: BLUE })
-    const label = 'Date Issued'
-    const lw = sans.widthOfTextAtSize(label, 10)
-    page.drawText(label, { x: dateCenterX - lw / 2, y: baseY - 22, size: 10, font: sans, color: MUTED })
+    const brand = 'Xcel360'
+    const bw = sansBold.widthOfTextAtSize(brand, 14)
+    page.drawText(brand, { x: (PAGE_W - bw) / 2, y: 44, size: 14, font: sansBold, color: ORANGE })
+    drawFlankers(page, bw, 44, ORANGE)
+    const tag = 'Empowering students beyond limits'
+    const tw = sans.widthOfTextAtSize(tag, 9.5)
+    page.drawText(tag, { x: (PAGE_W - tw) / 2, y: 31, size: 9.5, font: sans, color: EVENT_BLUE })
   }
 
-  // ── QR verification (bottom-right corner) ──────────────────────────────────
+  // ── QR + certificate ID (bottom-right corner) ──────────────────────────────
   const qrDataUrl = await QRCode.toDataURL(data.verifyUrl, { margin: 0, width: 300 })
   const qrBytes = Uint8Array.from(Buffer.from(qrDataUrl.split(',')[1], 'base64'))
   const qrImg = await pdf.embedPng(qrBytes)
-  const qrSize = 58
-  const qrX = PAGE_W - 46 - qrSize
-  const qrY = 42
+  const qrSize = 50
+  const qrX = PAGE_W - 44 - qrSize
+  const qrY = 40
   page.drawImage(qrImg, { x: qrX, y: qrY, width: qrSize, height: qrSize })
   {
     const idText = data.certificateId
-    const w = sans.widthOfTextAtSize(idText, 8)
-    page.drawText(idText, { x: qrX + qrSize / 2 - w / 2, y: qrY - 11, size: 8, font: sans, color: MUTED })
-  }
-
-  // ── Footer flourish (orange gradient-style rule + cert id) ─────────────────
-  {
-    const fy = 30
-    page.drawLine({ start: { x: PAGE_W / 2 - 150, y: fy }, end: { x: PAGE_W / 2 - 40, y: fy }, thickness: 1.4, color: ORANGE })
-    page.drawLine({ start: { x: PAGE_W / 2 + 40, y: fy }, end: { x: PAGE_W / 2 + 150, y: fy }, thickness: 1.4, color: ORANGE })
-    const t = 'thexcel360.com'
-    const w = sansBold.widthOfTextAtSize(t, 11)
-    page.drawText(t, { x: (PAGE_W - w) / 2, y: fy - 4, size: 11, font: sansBold, color: BLUE_DARK })
+    const w = sans.widthOfTextAtSize(idText, 7)
+    page.drawText(idText, { x: qrX + qrSize / 2 - w / 2, y: qrY - 9, size: 7, font: sans, color: MUTED })
   }
 
   return await pdf.save()
