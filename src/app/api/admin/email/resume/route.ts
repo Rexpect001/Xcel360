@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
@@ -46,7 +47,10 @@ export async function POST(req: NextRequest) {
       const firstNameMap = await buildFirstNameMap(todayBatch)
       const sent = await sendBatch({ provider, emails: todayBatch, subject: campaign.subject, htmlBody: campaign.htmlBody, textBody: campaign.textBody ?? undefined, firstNameMap, from: FROM, cc, bcc, attachmentMetas, campaignId: campaign.id })
 
-      const processed = Math.min(campaign.dailyLimit, unsent.length)
+      // SendChamp dispatches every unsent recipient this round; Resend is capped
+      // to the daily limit. Advance the counter by what was actually consumed so
+      // a later resume never re-sends the same people.
+      const processed = provider === 'sendchamp' ? unsent.length : Math.min(campaign.dailyLimit, unsent.length)
       const newTotal = campaign.sentCount + processed
       const completed = newTotal >= allRecipients.length
 

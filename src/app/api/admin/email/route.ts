@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60 // allow time to send a large SendChamp batch in one request
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
@@ -104,7 +105,10 @@ export async function POST(req: NextRequest) {
   }
 
   const eligible = await filterUnsubscribed(allRecipients)
-  const limit = sendAll ? eligible.length : Math.min(dailyLimit, maxLimit(provider))
+  // SendChamp has no daily cap → always send the whole list in one request.
+  // Resend free plan is limited per day; the cron continues the remainder.
+  const sendEverything = sendAll || provider === 'sendchamp'
+  const limit = sendEverything ? eligible.length : Math.min(dailyLimit, maxLimit(provider))
   const firstBatch = eligible.slice(0, limit)
 
   const campaign = await db.emailCampaign.create({
@@ -137,10 +141,16 @@ export async function POST(req: NextRequest) {
     campaignId: campaign.id,
   })
 
-  const completed = sent >= allRecipients.length
+  // Complete when we've dispatched the whole eligible list (unsubscribed are
+  // intentionally skipped). Advance sentCount past the full list so neither the
+  // cron nor a manual resume re-sends anyone.
+  const completed = firstBatch.length >= eligible.length
   await db.emailCampaign.update({
     where: { id: campaign.id },
-    data: { sentCount: sent, status: completed ? 'COMPLETED' : sent === 0 ? 'FAILED' : 'SENDING' },
+    data: {
+      sentCount: completed ? allRecipients.length : sent,
+      status: sent === 0 ? 'FAILED' : completed ? 'COMPLETED' : 'SENDING',
+    },
   })
 
   return NextResponse.json({

@@ -210,10 +210,11 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
   const pct = c.totalCount > 0 ? Math.round((c.sentCount / c.totalCount) * 100) : 0
   const audienceLabel: Record<string, string> = { users: 'Registered users', subscribers: 'Subscribers', both: 'Everyone', none: 'Manual list', contacts: 'Master contacts', event: 'Event registrants' }
 
-  const doAction = async (action: 'send' | 'cancel' | 'delete' | 'retry') => {
+  const doAction = async (action: 'send' | 'cancel' | 'delete' | 'retry' | 'resume') => {
     if (action === 'cancel' && !confirm('Cancel this campaign? Remaining emails will not be sent.')) return
     if (action === 'delete' && !confirm('Delete this campaign and its logs?')) return
     if (action === 'retry' && !confirm('Retry this campaign? It will restart from the beginning.')) return
+    if (action === 'resume' && !confirm('Resume sending the remaining recipients?')) return
     setActing(true)
     try {
       if (action === 'delete') {
@@ -227,6 +228,7 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
           toast.success(
             action === 'send' ? `Sending! First batch: ${d.sent}`
             : action === 'retry' ? `Retrying — sent ${d.sent} so far`
+            : action === 'resume' ? `Resumed — sent ${d.sent} more${d.status === 'COMPLETED' ? ', now complete' : ''}`
             : 'Cancelled'
           )
           onAction()
@@ -277,10 +279,16 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
           </button>
         )}
         {c.status === 'SENDING' && (
-          <button onClick={() => doAction('cancel')} disabled={acting}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg text-xs font-semibold hover:bg-orange-200 disabled:opacity-50 transition-colors">
-            {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Ban className="h-3.5 w-3.5" />} Cancel
-          </button>
+          <>
+            <button onClick={() => doAction('resume')} disabled={acting}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 disabled:opacity-50 transition-colors">
+              {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />} Resume Sending
+            </button>
+            <button onClick={() => doAction('cancel')} disabled={acting}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg text-xs font-semibold hover:bg-orange-200 disabled:opacity-50 transition-colors">
+              {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Ban className="h-3.5 w-3.5" />} Cancel
+            </button>
+          </>
         )}
         <button onClick={onView}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-100 transition-colors">
