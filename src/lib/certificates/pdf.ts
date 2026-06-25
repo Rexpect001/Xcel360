@@ -288,8 +288,14 @@ export async function generateCertificatePdf(
     page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 6, width: w, height: h })
   } else if (template.signatureName) {
     const t = template.signatureName
-    const w = script.widthOfTextAtSize(t, 28)
-    page.drawText(t, { x: sigCenterX - w / 2, y: baseY + 8, size: 28, font: script, color: rgb(0.1, 0.1, 0.12) })
+    const fs = 33
+    const w = script.widthOfTextAtSize(t, fs)
+    const sx = sigCenterX - w / 2, sy = baseY + 8
+    const col = rgb(0.06, 0.07, 0.1)
+    // Faux-bold: overdraw at sub-pixel offsets to thicken the thin script strokes
+    for (const [dx, dy] of [[0, 0], [0.6, 0], [0, 0.6], [0.6, 0.6], [0.3, 0.3]]) {
+      page.drawText(t, { x: sx + dx, y: sy + dy, size: fs, font: script, color: col })
+    }
   }
   page.drawLine({ start: { x: sigCenterX - 110, y: baseY }, end: { x: sigCenterX + 110, y: baseY }, thickness: 1, color: BORDER_BLUE })
   if (template.signatureName) {
