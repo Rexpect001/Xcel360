@@ -100,12 +100,13 @@ export async function issueCertificate(opts: {
     // Upload PDF to Vercel Blob (public, unguessable URL)
     const token = process.env.BLOB_READ_WRITE_TOKEN
     if (!token) return { ok: false, error: 'BLOB_READ_WRITE_TOKEN is not configured' }
+    // addRandomSuffix makes the blob URL unguessable so certificate PDFs
+    // can't be enumerated by incrementing the certificate ID.
     const blob = await put(`certificates/${certificateId}.pdf`, Buffer.from(pdfBytes), {
       access: 'public',
       contentType: 'application/pdf',
       token,
-      addRandomSuffix: false,
-      allowOverwrite: true,
+      addRandomSuffix: true,
     })
 
     const data = {
