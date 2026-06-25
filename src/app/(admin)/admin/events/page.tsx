@@ -15,6 +15,7 @@ const emptyForm = {
   date: '',
   host: '',
   link: '',
+  meetingDetails: '',
   coverImage: '',
   published: false,
 }
@@ -121,6 +122,7 @@ export default function AdminEventsPage() {
       date: new Date(e.date).toISOString().slice(0, 16),
       host: e.host ?? '',
       link: (e as any).link ?? '',
+      meetingDetails: (e as any).meetingDetails ?? '',
       coverImage: (e as any).coverImage ?? '',
       published: e.published,
     })
@@ -554,6 +556,17 @@ export default function AdminEventsPage() {
               className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="https://zoom.us/j/..."
             />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Meeting / Joining Details</label>
+            <textarea
+              rows={4}
+              value={form.meetingDetails}
+              onChange={(e) => setForm((f) => ({ ...f, meetingDetails: e.target.value }))}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+              placeholder={"Zoom link, Meeting ID, Passcode, dial-in numbers…\nThis is emailed to anyone who registers."}
+            />
+            <p className="text-xs text-gray-400 mt-1">Included automatically in the registration confirmation email. Links are clickable.</p>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>

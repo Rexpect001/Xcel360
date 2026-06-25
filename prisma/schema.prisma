@@ -194,6 +194,7 @@ model Event {
   link          String?
   host          String?
   coverImage    String?
+  meetingDetails String?            @db.Text // joining info (Zoom link, ID, passcode) emailed to registrants
   published     Boolean             @default(false)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt

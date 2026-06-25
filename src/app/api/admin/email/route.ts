@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const {
-    subject, htmlBody, textBody = '', audience,
+    subject, htmlBody, textBody = '', audience, eventId,
     provider = 'resend',
     dailyLimit = 100, sendAll = false,
     manualRecipients = [], ccRecipients = [], bccRecipients = [],
@@ -62,6 +62,13 @@ export async function POST(req: NextRequest) {
   if (audience === 'contacts') {
     const contacts = await (prisma as any).contact.findMany({ select: { email: true } })
     contacts.forEach((c: any) => emails.add(c.email.toLowerCase().trim()))
+  }
+  if (audience === 'event') {
+    if (!eventId) return NextResponse.json({ error: 'Select an event for this audience' }, { status: 400 })
+    const regs = await (prisma as any).eventRegistration.findMany({
+      where: { eventId }, select: { email: true },
+    })
+    regs.forEach((r: any) => { if (r.email) emails.add(r.email.toLowerCase().trim()) })
   }
   manualRecipients.forEach((e: string) => { const t = e.toLowerCase().trim(); if (t) emails.add(t) })
 

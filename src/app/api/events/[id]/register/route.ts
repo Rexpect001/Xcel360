@@ -72,6 +72,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       fullName: registration.fullName,
       eventTitle: event.title,
       eventDate: event.date,
+      meetingDetails: (event as any).meetingDetails,
     }).catch(() => {})
 
     return NextResponse.json({ ok: true, id: registration.id }, { status: 201 })

@@ -2,20 +2,40 @@ import { sendMail } from '@/lib/mailer'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 
+// Escape HTML then linkify URLs and preserve line breaks for plain-text blocks.
+function renderMeetingDetails(raw: string): string {
+  const esc = raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  return esc
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" style="color:#0369a1;word-break:break-all;">$1</a>')
+    .replace(/\n/g, '<br>')
+}
+
 export async function sendRegistrationConfirmation({
   to,
   fullName,
   eventTitle,
   eventDate,
+  meetingDetails,
 }: {
   to: string
   fullName: string
   eventTitle: string
   eventDate: Date
+  meetingDetails?: string | null
 }) {
   const dateStr = new Date(eventDate).toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
+
+  const meetingBlock = meetingDetails?.trim()
+    ? `<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
+        <p style="margin:0 0 8px 0;font-size:13px;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.05em;">Joining Details</p>
+        <p style="margin:0;font-size:14px;line-height:1.7;color:#374151;">${renderMeetingDetails(meetingDetails.trim())}</p>
+      </div>`
+    : ''
 
   await sendMail({
     to,
@@ -34,8 +54,11 @@ export async function sendRegistrationConfirmation({
         <p style="margin:0;font-size:15px;font-weight:600;color:#0369a1;">${eventTitle}</p>
         <p style="margin:4px 0 0 0;font-size:13px;color:#0284c7;">${dateStr}</p>
       </div>
+      ${meetingBlock}
       <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">
-        Your registration has been received. We'll send joining details closer to the event date.
+        ${meetingBlock
+          ? 'Your registration is confirmed. Save the joining details above — we look forward to seeing you there.'
+          : "Your registration has been received. We'll send joining details closer to the event date."}
       </p>
       <a href="${APP_URL}/events" style="display:inline-block;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">View All Events</a>
     </div>

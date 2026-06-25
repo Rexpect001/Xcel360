@@ -208,7 +208,7 @@ function AttachmentUploader({ attachments, onAdd, onRemove }: { attachments: Att
 function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; onAction: () => void; onView: () => void }) {
   const [acting, setActing] = useState(false)
   const pct = c.totalCount > 0 ? Math.round((c.sentCount / c.totalCount) * 100) : 0
-  const audienceLabel: Record<string, string> = { users: 'Registered users', subscribers: 'Subscribers', both: 'Everyone', none: 'Manual list' }
+  const audienceLabel: Record<string, string> = { users: 'Registered users', subscribers: 'Subscribers', both: 'Everyone', none: 'Manual list', contacts: 'Master contacts', event: 'Event registrants' }
 
   const doAction = async (action: 'send' | 'cancel' | 'delete' | 'retry') => {
     if (action === 'cancel' && !confirm('Cancel this campaign? Remaining emails will not be sent.')) return
@@ -673,6 +673,7 @@ function CampaignPreviewModal({
 
 const AUDIENCE_OPTIONS = [
   { value: 'none',        label: 'Manual only',            desc: 'Send only to addresses entered in To field' },
+  { value: 'event',       label: 'Event registrants',      desc: 'Everyone registered for a specific event' },
   { value: 'contacts',    label: 'Master contacts list',   desc: 'Everyone imported via Contacts page' },
   { value: 'users',       label: 'Registered users',       desc: 'All accounts in the platform' },
   { value: 'subscribers', label: 'Newsletter subscribers', desc: 'Homepage email signups' },
@@ -702,6 +703,8 @@ export default function AdminEmailPage() {
   const [bccChips, setBccChips] = useState<string[]>([])
   const [showCcBcc, setShowCcBcc] = useState(false)
   const [audience, setAudience] = useState('subscribers')
+  const [events, setEvents] = useState<{ id: string; title: string; date: string; count: number }[]>([])
+  const [eventId, setEventId] = useState('')
   const [dailyLimit, setDailyLimit] = useState(100)
   const [sendAll, setSendAll] = useState(false)
   const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
@@ -755,12 +758,16 @@ export default function AdminEmailPage() {
       setResendConfigured(d.resendConfigured ?? false)
       setSendchampConfigured(d.sendchampConfigured ?? false)
     }).catch(() => { setResendConfigured(false); setSendchampConfigured(false) })
+    fetch('/api/admin/events').then(r => r.json()).then(d => {
+      if (Array.isArray(d)) setEvents(d.map((e: any) => ({ id: e.id, title: e.title, date: e.date, count: e._count?.registrations ?? 0 })))
+    }).catch(() => {})
   }, [loadCampaigns, loadTemplates])
   useEffect(() => { if (tab === 'log') loadLog(1) }, [tab, loadLog])
 
   const resetForm = () => {
     setSubject(''); setHtmlBody(''); setTextBody(''); setToChips([]); setCcChips([])
     setBccChips([]); setAttachments([]); setPreview(false); setShowCcBcc(false)
+    setEventId('')
     setEditorKey(k => k + 1)
   }
 
@@ -770,7 +777,7 @@ export default function AdminEmailPage() {
   }
 
   const buildPayload = (isDraft: boolean) => ({
-    subject, htmlBody, textBody, audience, provider, dailyLimit, sendAll,
+    subject, htmlBody, textBody, audience, eventId, provider, dailyLimit, sendAll,
     manualRecipients: toChips, ccRecipients: ccChips,
     bccRecipients: bccChips, attachments, isDraft,
   })
@@ -780,6 +787,7 @@ export default function AdminEmailPage() {
     if (provider === 'sendchamp' && !textBody.trim()) { toast.error('Write your plain text message for SendChamp'); return false }
     if (provider === 'resend' && !htmlBody.trim()) { toast.error('Email body is required'); return false }
     if (audience === 'none' && toChips.length === 0) { toast.error('Add at least one recipient or choose an audience group'); return false }
+    if (audience === 'event' && !eventId) { toast.error('Select an event'); return false }
     return true
   }
 
@@ -798,7 +806,9 @@ export default function AdminEmailPage() {
   const handleSend = async () => {
     if (!validate()) return
     const audienceLabel = AUDIENCE_OPTIONS.find(a => a.value === audience)?.label ?? audience
-    const summary = audience === 'none' ? `${toChips.length} manual recipient${toChips.length > 1 ? 's' : ''}` : audienceLabel + (toChips.length ? ` + ${toChips.length} manual` : '')
+    const evt = events.find(e => e.id === eventId)
+    const audienceText = audience === 'event' && evt ? `${evt.count} registrants of "${evt.title}"` : audienceLabel
+    const summary = audience === 'none' ? `${toChips.length} manual recipient${toChips.length > 1 ? 's' : ''}` : audienceText + (toChips.length ? ` + ${toChips.length} manual` : '')
     if (!confirm(`Send to ${summary}? This cannot be undone.`)) return
     setSending(true)
     try {
@@ -1029,6 +1039,29 @@ export default function AdminEmailPage() {
                   </label>
                 ))}
               </div>
+
+              {audience === 'event' && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Choose event</label>
+                  <select
+                    value={eventId}
+                    onChange={e => setEventId(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="">— Select an event —</option>
+                    {events.map(e => (
+                      <option key={e.id} value={e.id}>
+                        {e.title} · {new Date(e.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} ({e.count} registered)
+                      </option>
+                    ))}
+                  </select>
+                  {eventId && (
+                    <p className="text-xs text-brand-700 font-medium mt-1.5">
+                      {events.find(e => e.id === eventId)?.count ?? 0} recipients from this event
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Send settings */}
