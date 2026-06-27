@@ -51,12 +51,14 @@ export default async function EventDetailPage({ params }: { params: { id: string
   const heroGrad = TYPE_GRAD[event.type] ?? 'from-brand-950 via-brand-900 to-brand-700'
 
   const eventDate = new Date(event.date)
+  // Format in West Africa Time so the date/time match the audience's locale
+  // regardless of the server timezone (UTC on Vercel).
   const dateStr = eventDate.toLocaleDateString('en-GB', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Lagos',
   })
   const timeStr = eventDate.toLocaleTimeString('en-GB', {
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
-  })
+    hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Lagos',
+  }) + ' WAT'
 
   const jsonLd = {
     '@context': 'https://schema.org',
