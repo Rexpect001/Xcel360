@@ -279,32 +279,35 @@ export async function generateCertificatePdf(
 
   // ── Signature (centered, like the reference) ───────────────────────────────
   const sigCenterX = PAGE_W / 2
-  const baseY = 110
+  const baseY = 112
   const sigImg = template.signatureUrl ? await embedRemoteImage(pdf, template.signatureUrl) : null
+  let sigLineW = 200
   if (sigImg) {
-    const maxH = 42
-    const w = Math.min((maxH / sigImg.height) * sigImg.width, 200)
+    const maxH = 64
+    const w = Math.min((maxH / sigImg.height) * sigImg.width, 260)
     const h = w / (sigImg.width / sigImg.height)
-    page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 6, width: w, height: h })
+    page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 8, width: w, height: h })
+    sigLineW = Math.max(200, w + 44)
   } else if (template.signatureName) {
     const t = template.signatureName
-    const fs = 33
+    const fs = 50
     const w = script.widthOfTextAtSize(t, fs)
-    const sx = sigCenterX - w / 2, sy = baseY + 8
+    const sx = sigCenterX - w / 2, sy = baseY + 12
     const col = rgb(0.06, 0.07, 0.1)
     // Faux-bold: overdraw at sub-pixel offsets to thicken the thin script strokes
-    for (const [dx, dy] of [[0, 0], [0.6, 0], [0, 0.6], [0.6, 0.6], [0.3, 0.3]]) {
+    for (const [dx, dy] of [[0, 0], [0.7, 0], [0, 0.7], [0.7, 0.7], [0.35, 0.35]]) {
       page.drawText(t, { x: sx + dx, y: sy + dy, size: fs, font: script, color: col })
     }
+    sigLineW = Math.max(200, w + 56)
   }
-  page.drawLine({ start: { x: sigCenterX - 110, y: baseY }, end: { x: sigCenterX + 110, y: baseY }, thickness: 1, color: BORDER_BLUE })
+  page.drawLine({ start: { x: sigCenterX - sigLineW / 2, y: baseY }, end: { x: sigCenterX + sigLineW / 2, y: baseY }, thickness: 1, color: BORDER_BLUE })
   if (template.signatureName) {
-    const w = sansBold.widthOfTextAtSize(template.signatureName, 13)
-    page.drawText(template.signatureName, { x: sigCenterX - w / 2, y: baseY - 16, size: 13, font: sansBold, color: EVENT_BLUE })
+    const w = sansBold.widthOfTextAtSize(template.signatureName, 14.5)
+    page.drawText(template.signatureName, { x: sigCenterX - w / 2, y: baseY - 18, size: 14.5, font: sansBold, color: EVENT_BLUE })
   }
   if (template.signatureTitle) {
-    const w = sans.widthOfTextAtSize(template.signatureTitle, 10.5)
-    page.drawText(template.signatureTitle, { x: sigCenterX - w / 2, y: baseY - 30, size: 10.5, font: sans, color: GRAY })
+    const w = sans.widthOfTextAtSize(template.signatureTitle, 11.5)
+    page.drawText(template.signatureTitle, { x: sigCenterX - w / 2, y: baseY - 34, size: 11.5, font: sans, color: GRAY })
   }
 
   // ── Footer brand line ──────────────────────────────────────────────────────
