@@ -55,9 +55,25 @@ function fmtDate(d: Date | string): string {
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+/**
+ * Normalize a person's name to Title Case for display. Fixes ALL-CAPS and
+ * all-lowercase entries (capitalize each word, including after - and '),
+ * but leaves genuinely mixed-case names (e.g. "McDonald", "O'Brien") alone.
+ */
+export function toDisplayName(raw: string): string {
+  return (raw ?? '').trim().split(/\s+/).map((word) => {
+    const letters = word.replace(/[^A-Za-z]/g, '')
+    if (!letters) return word
+    const isAllCaps = letters === letters.toUpperCase()
+    const isAllLower = letters === letters.toLowerCase()
+    if (!isAllCaps && !isAllLower) return word // already mixed case — keep
+    return word.toLowerCase().replace(/(^|[-'’])([a-z])/g, (_, p, c) => p + c.toUpperCase())
+  }).join(' ')
+}
+
 export function applyPlaceholders(template: string, data: CertificateData): string {
   return template
-    .replace(/\{\{\s*FULL_NAME\s*\}\}/g, data.fullName)
+    .replace(/\{\{\s*FULL_NAME\s*\}\}/g, toDisplayName(data.fullName))
     .replace(/\{\{\s*EVENT_NAME\s*\}\}/g, data.eventName)
     .replace(/\{\{\s*EVENT_DATE\s*\}\}/g, fmtDate(data.eventDate))
     .replace(/\{\{\s*CERTIFICATE_ID\s*\}\}/g, data.certificateId)
@@ -255,11 +271,12 @@ export async function generateCertificatePdf(
   // ── Recipient ──────────────────────────────────────────────────────────────
   drawCentered(page, 'This is to certify that', 400, sans, 12.5, GRAY)
   const nameY = 356
-  drawCenteredFit(page, data.fullName, nameY, script, 50, PAGE_W - 260, NAVY)
+  const displayName = toDisplayName(data.fullName)
+  drawCenteredFit(page, displayName, nameY, script, 50, PAGE_W - 260, NAVY)
   {
     let s = 50
-    while (s > 12 && script.widthOfTextAtSize(data.fullName, s) > PAGE_W - 260) s -= 1
-    const uw = Math.min(script.widthOfTextAtSize(data.fullName, s) + 80, 460)
+    while (s > 12 && script.widthOfTextAtSize(displayName, s) > PAGE_W - 260) s -= 1
+    const uw = Math.min(script.widthOfTextAtSize(displayName, s) + 80, 460)
     page.drawLine({ start: { x: (PAGE_W - uw) / 2, y: nameY - 12 }, end: { x: (PAGE_W + uw) / 2, y: nameY - 12 }, thickness: 1, color: NAVY })
   }
 
