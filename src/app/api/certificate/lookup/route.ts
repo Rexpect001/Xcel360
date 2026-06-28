@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
       eventDate: c.event?.date ?? null,
       certificateType: c.certificateType,
       issuedAt: c.issuedAt,
-      pdfUrl: c.pdfUrl,
+      // Serve via the app proxy so the raw Blob storage URL is never exposed.
+      pdfUrl: c.pdfUrl ? `/api/certificate/download/${c.certificateId}` : null,
       verifyUrl: `/verify/${c.certificateId}`,
     }))
 

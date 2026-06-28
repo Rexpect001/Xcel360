@@ -134,7 +134,8 @@ export async function issueCertificate(opts: {
           fullName: cert.fullName,
           eventName: event.title,
           certificateType: cert.certificateType,
-          downloadUrl: cert.pdfUrl,
+          // Proxy URL, not the raw Blob URL, so storage links aren't exposed.
+          downloadUrl: `${APP_URL}/api/certificate/download/${certificateId}`,
         })
         await db.certificate.update({ where: { id: cert.id }, data: { emailSentAt: new Date() } })
       } catch (e) {
