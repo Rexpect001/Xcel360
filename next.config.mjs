@@ -17,12 +17,12 @@ const nextConfig = {
         destination: '/certificate',
         permanent: false,
       },
-      // Registration is open — /ai points to the Leveraging AI event page so
-      // attendees can register (e.g. to receive a certificate). To close again,
-      // change destination back to '/registration-closed'.
+      // Event held & registration closed — send /ai to the "Event Successful /
+      // Registration Closed" page (which links to /certificate). To reopen,
+      // change destination back to '/events/cmobns2gx0000u9klishjmwqr'.
       {
         source: '/ai',
-        destination: '/events/cmobns2gx0000u9klishjmwqr',
+        destination: '/registration-closed',
         permanent: false,
       },
       // Branded short link → joins the Leveraging AI Zoom meeting directly
