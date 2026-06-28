@@ -283,11 +283,11 @@ export async function generateCertificatePdf(
   const sigImg = template.signatureUrl ? await embedRemoteImage(pdf, template.signatureUrl) : null
   let sigLineW = 200
   if (sigImg) {
-    const maxH = 64
-    const w = Math.min((maxH / sigImg.height) * sigImg.width, 260)
+    const maxH = 96
+    const w = Math.min((maxH / sigImg.height) * sigImg.width, 280)
     const h = w / (sigImg.width / sigImg.height)
-    page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 8, width: w, height: h })
-    sigLineW = Math.max(200, w + 44)
+    page.drawImage(sigImg, { x: sigCenterX - w / 2, y: baseY + 4, width: w, height: h })
+    sigLineW = Math.max(210, w + 50)
   } else if (template.signatureName) {
     const t = template.signatureName
     const fs = 50
@@ -300,7 +300,7 @@ export async function generateCertificatePdf(
     }
     sigLineW = Math.max(200, w + 56)
   }
-  page.drawLine({ start: { x: sigCenterX - sigLineW / 2, y: baseY }, end: { x: sigCenterX + sigLineW / 2, y: baseY }, thickness: 1, color: BORDER_BLUE })
+  page.drawLine({ start: { x: sigCenterX - sigLineW / 2, y: baseY }, end: { x: sigCenterX + sigLineW / 2, y: baseY }, thickness: 2, color: BORDER_BLUE })
   if (template.signatureName) {
     const w = sansBold.widthOfTextAtSize(template.signatureName, 14.5)
     page.drawText(template.signatureName, { x: sigCenterX - w / 2, y: baseY - 18, size: 14.5, font: sansBold, color: EVENT_BLUE })
