@@ -17,6 +17,7 @@ const navLinks = [
   { href: '/mentorship', label: 'Mentorship' },
   { href: '/resources', label: 'Resources' },
   { href: '/events', label: 'Events & Programs' },
+  { href: '/news', label: 'News' },
   { href: '/success-stories', label: 'Success Stories' },
 ]
 
