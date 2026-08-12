@@ -24,10 +24,6 @@ export async function POST() {
     select: { id: true, category: true },
   })
 
-  if (opps.length === 0) {
-    return NextResponse.json({ updated: 0, message: 'All images are already static CDN URLs.' })
-  }
-
   let updated = 0
   let failed = 0
 
@@ -55,9 +51,38 @@ export async function POST() {
     )
   }
 
+  // Same treatment for events — they were never backfilled before because
+  // this route only handled the Opportunity table.
+  const events = await db.event.findMany({
+    where: {
+      OR: [
+        { coverImage: null },
+        { coverImage: { contains: '/api/og' } },
+      ],
+    },
+    select: { id: true },
+  })
+
+  let eventsUpdated = 0
+  let eventsFailed = 0
+  for (let i = 0; i < events.length; i += BATCH) {
+    const batch = events.slice(i, i + BATCH)
+    await Promise.all(
+      batch.map(async (ev: { id: string }) => {
+        const staticUrl = await generateAndStoreOpImage(ev.id, 'event', APP_URL)
+        if (staticUrl) {
+          await db.event.update({ where: { id: ev.id }, data: { coverImage: staticUrl } })
+          eventsUpdated++
+        } else {
+          eventsFailed++
+        }
+      })
+    )
+  }
+
   return NextResponse.json({
-    updated,
-    failed,
-    message: `${updated} images uploaded to CDN${failed > 0 ? `, ${failed} fell back to dynamic URL` : ''}.`,
+    opportunities: { updated, failed },
+    events: { updated: eventsUpdated, failed: eventsFailed },
+    message: `${updated} opportunity image(s) and ${eventsUpdated} event cover(s) uploaded to CDN.`,
   })
 }

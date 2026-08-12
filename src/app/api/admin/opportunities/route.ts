@@ -7,6 +7,9 @@ import { rateLimitMiddleware } from '@/lib/security/rate-limiter'
 import { opportunitySchema, validateInput } from '@/lib/security/validation'
 import { createSecureResponse, handlePreflight } from '@/lib/security/headers'
 import { logAction } from '@/lib/security/audit'
+import { generateAndStoreOpImage } from '@/lib/generateOpImage'
+
+const APP_URL = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function OPTIONS(req: NextRequest) {
   return handlePreflight(req) || createSecureResponse({}, 200, req)
@@ -139,6 +142,18 @@ export async function POST(req: NextRequest) {
         skills: data.skills ?? [],
       },
     })
+
+    // No image supplied by the admin form — render once now and store a
+    // permanent Blob URL, so later page views/social shares never hit the
+    // dynamic /api/og renderer (that route is the account's #1 CPU cost).
+    if (!opp.imageUrl) {
+      const typeParam = opp.category === 'JOB' ? 'job' : opp.category === 'INTERNSHIP' ? 'internship' : 'scholarship'
+      const staticUrl = await generateAndStoreOpImage(opp.id, typeParam, APP_URL)
+      if (staticUrl) {
+        await db.opportunity.update({ where: { id: opp.id }, data: { imageUrl: staticUrl } })
+        opp.imageUrl = staticUrl
+      }
+    }
 
     // Log successful creation
     await logAction(req, 'OPPORTUNITY_CREATE', {

@@ -24,9 +24,16 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     alternates: { canonical: `/jobs/${job.id}` },
     openGraph: {
       title: job.title, description, url: `${BASE}/jobs/${job.id}`, type: 'article',
-      images: [{ url: `${BASE}/api/og?id=${job.id}&type=job`, width: 1200, height: 630, alt: job.title }],
+      // Use the stored static card if one exists; skip the auto-generated OG
+      // renderer otherwise rather than hitting it on every social unfurl.
+      ...(job.imageUrl ? { images: [{ url: job.imageUrl, width: 1200, height: 630, alt: job.title }] } : {}),
     },
-    twitter: { card: 'summary_large_image', title: job.title, description, images: [`${BASE}/api/og?id=${job.id}&type=job`] },
+    twitter: {
+      card: job.imageUrl ? 'summary_large_image' : 'summary',
+      title: job.title,
+      description,
+      ...(job.imageUrl ? { images: [job.imageUrl] } : {}),
+    },
   }
 }
 

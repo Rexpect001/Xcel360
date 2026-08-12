@@ -20,9 +20,16 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     alternates: { canonical: `/events/${event.id}` },
     openGraph: {
       title: event.title, description, url: `${BASE}/events/${event.id}`, type: 'article',
-      images: [{ url: `${BASE}/api/og?id=${event.id}&type=event`, width: 1200, height: 630, alt: event.title }],
+      // Use the stored static cover if one exists; skip the auto-generated OG
+      // renderer otherwise rather than hitting it on every social unfurl.
+      ...(event.coverImage ? { images: [{ url: event.coverImage, width: 1200, height: 630, alt: event.title }] } : {}),
     },
-    twitter: { card: 'summary_large_image', title: event.title, description, images: [`${BASE}/api/og?id=${event.id}&type=event`] },
+    twitter: {
+      card: event.coverImage ? 'summary_large_image' : 'summary',
+      title: event.title,
+      description,
+      ...(event.coverImage ? { images: [event.coverImage] } : {}),
+    },
   }
 }
 

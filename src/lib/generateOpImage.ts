@@ -9,17 +9,17 @@ import { put } from '@vercel/blob'
  * this twice for the same opportunity simply overwrites the previous file.
  */
 export async function generateAndStoreOpImage(
-  opportunityId: string,
-  type: 'scholarship' | 'job' | 'internship',
+  recordId: string,
+  type: 'scholarship' | 'job' | 'internship' | 'event',
   appUrl: string
 ): Promise<string | null> {
   try {
-    const ogUrl = `${appUrl}/api/og?id=${opportunityId}&type=${type}&simple=true`
+    const ogUrl = `${appUrl}/api/og?id=${recordId}&type=${type}&simple=true`
     const res = await fetch(ogUrl)
     if (!res.ok || !res.body) return null
 
     const blob = await put(
-      `op-images/${opportunityId}.png`,
+      `op-images/${recordId}.png`,
       res.body,
       { access: 'public', contentType: 'image/png', addRandomSuffix: false }
     )
