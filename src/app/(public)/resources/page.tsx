@@ -27,14 +27,29 @@ export const metadata: Metadata = {
 }
 
 async function getPosts() {
-  return await prisma.blogPost.findMany({ where: { published: true }, orderBy: { createdAt: 'desc' } })
+  try {
+    return await prisma.blogPost.findMany({
+      where: { published: true },
+      orderBy: { createdAt: 'desc' },
+      take: 12,
+    })
+  } catch (error) {
+    console.error('[resources/page] Failed to load posts', error)
+    return []
+  }
 }
 
 async function getResources() {
-  return await (prisma as any).resource.findMany({
-    where: { published: true },
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-  })
+  try {
+    return await (prisma as any).resource.findMany({
+      where: { published: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+      take: 120,
+    })
+  } catch (error) {
+    console.error('[resources/page] Failed to load resources', error)
+    return []
+  }
 }
 
 function getFileIcon(fileType?: string) {
@@ -87,7 +102,7 @@ export default async function ResourcesPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-12">
 
-        {/* ── Downloads section ── */}
+        {/* Downloads section */}
         {dbResources.length > 0 ? (
           <div className="mb-14">
             <div className="flex items-center gap-3 mb-2">
@@ -176,7 +191,7 @@ export default async function ResourcesPage() {
           </div>
         )}
 
-        {/* ── Blog / Guides ── */}
+        {/* Blog / Guides */}
         <div>
           <div className="flex items-center justify-between mb-6">
             <div>

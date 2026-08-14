@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const allowedSections = ALL_SECTIONS.filter(section => canAccess(role, section))
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-surface-50">
       <AdminSidebar
         allowedSections={allowedSections}
         email={session.user.email ?? ''}

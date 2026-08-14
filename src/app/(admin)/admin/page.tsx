@@ -8,21 +8,21 @@ import { formatDate } from '@/lib/utils'
 import RevalidateButton from '@/components/admin/RevalidateButton'
 
 const ACTION_BADGE: Record<string, string> = {
-  LOGIN: 'bg-green-100 text-green-700',
-  LOGIN_FAILED: 'bg-red-100 text-red-700',
-  LOGOUT: 'bg-gray-100 text-gray-600',
-  SIGNUP: 'bg-teal-100 text-teal-700',
-  OPPORTUNITY_CREATE: 'bg-blue-100 text-blue-700',
-  OPPORTUNITY_LIST: 'bg-gray-100 text-gray-500',
-  CREATE: 'bg-blue-100 text-blue-700',
-  UPDATE: 'bg-yellow-100 text-yellow-700',
-  DELETE: 'bg-red-100 text-red-700',
-  PUBLISH: 'bg-green-100 text-green-700',
-  UNPUBLISH: 'bg-orange-100 text-orange-700',
-  ASSIGN_ROLE: 'bg-purple-100 text-purple-700',
-  APPLY: 'bg-cyan-100 text-cyan-700',
-  VIEW: 'bg-gray-100 text-gray-400',
-  DOWNLOAD: 'bg-violet-100 text-violet-700',
+  LOGIN: 'bg-success-100 text-success-700',
+  LOGIN_FAILED: 'bg-danger-100 text-danger-700',
+  LOGOUT: 'bg-surface-100 text-surface-700',
+  SIGNUP: 'bg-brand-100 text-brand-700',
+  OPPORTUNITY_CREATE: 'bg-brand-100 text-brand-700',
+  OPPORTUNITY_LIST: 'bg-surface-100 text-surface-700',
+  CREATE: 'bg-brand-100 text-brand-700',
+  UPDATE: 'bg-warning-100 text-warning-700',
+  DELETE: 'bg-danger-100 text-danger-700',
+  PUBLISH: 'bg-success-100 text-success-700',
+  UNPUBLISH: 'bg-warning-100 text-warning-700',
+  ASSIGN_ROLE: 'bg-indigo-100 text-indigo-700',
+  APPLY: 'bg-sky-100 text-sky-700',
+  VIEW: 'bg-surface-100 text-surface-700',
+  DOWNLOAD: 'bg-indigo-100 text-indigo-700',
 }
 
 export default async function AdminPage() {
@@ -49,12 +49,12 @@ export default async function AdminPage() {
   ])
 
   const stats = [
-    { label: 'Total Users',   value: users,        icon: Users,    from: '#3b82f6', to: '#1d4ed8', href: '/admin/users' },
-    { label: 'Scholarships',  value: scholarships,  icon: BookOpen, from: '#8b5cf6', to: '#6d28d9', href: '/admin/opportunities' },
-    { label: 'Jobs',          value: jobs,          icon: Briefcase,from: '#10b981', to: '#059669', href: '/admin/jobs' },
-    { label: 'Internships',   value: internships,   icon: Briefcase,from: '#06b6d4', to: '#0284c7', href: '/admin/jobs' },
-    { label: 'Total Saves',   value: saved,         icon: Bookmark, from: '#f43f5e', to: '#e11d48', href: '/admin/analytics' },
-    { label: 'Applications',  value: applications,  icon: FileText, from: '#f59e0b', to: '#d97706', href: '/admin/analytics' },
+    { label: 'Total Users',   value: users,        icon: Users,     href: '/admin/users',         tone: 'bg-brand-50 text-brand-700 border-brand-100' },
+    { label: 'Scholarships',  value: scholarships, icon: BookOpen,  href: '/admin/opportunities', tone: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
+    { label: 'Jobs',          value: jobs,         icon: Briefcase, href: '/admin/jobs',          tone: 'bg-success-50 text-success-700 border-success-100' },
+    { label: 'Internships',   value: internships,  icon: Briefcase, href: '/admin/jobs',          tone: 'bg-sky-50 text-sky-700 border-sky-100' },
+    { label: 'Total Saves',   value: saved,        icon: Bookmark,  href: '/admin/analytics',     tone: 'bg-rose-50 text-rose-700 border-rose-100' },
+    { label: 'Applications',  value: applications, icon: FileText,  href: '/admin/analytics',     tone: 'bg-warning-50 text-warning-700 border-warning-100' },
   ]
 
   const sections = [
@@ -68,7 +68,7 @@ export default async function AdminPage() {
     {
       href: '/admin/jobs',          icon: Briefcase, label: 'Jobs & Internships',
       desc: 'Post full-time jobs, internships, and remote opportunities.',
-      count: `${jobs} jobs · ${internships} internships`,
+      count: `${jobs} jobs | ${internships} internships`,
       iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50',
       hoverBorder: 'hover:border-emerald-200',
     },
@@ -126,19 +126,16 @@ export default async function AdminPage() {
             <Link
               key={s.label}
               href={s.href}
-              className="relative rounded-2xl p-5 overflow-hidden group hover:-translate-y-1 transition-all duration-200"
-              style={{
-                background: `linear-gradient(135deg, ${s.from}, ${s.to})`,
-                boxShadow: `0 4px 20px ${s.from}40`,
-              }}
+              className="admin-card p-5 group hover:-translate-y-0.5 hover:shadow-premium transition-all duration-200"
             >
-              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/[0.08] transition-all duration-200 rounded-2xl" />
-              <div className="relative">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3 bg-white/20">
-                  <Icon className="text-white" style={{ width: 18, height: 18 }} />
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-3xl font-bold text-slate-900 leading-none">{s.value}</div>
+                  <div className="text-xs font-medium mt-1.5 text-slate-500">{s.label}</div>
                 </div>
-                <div className="text-3xl font-bold text-white leading-none">{s.value}</div>
-                <div className="text-xs font-medium mt-1.5 text-white/75">{s.label}</div>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${s.tone}`}>
+                  <Icon className="h-[18px] w-[18px]" />
+                </div>
               </div>
             </Link>
           )
@@ -147,8 +144,8 @@ export default async function AdminPage() {
 
       {/* Section heading */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-500 to-violet-500" />
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Manage Content</h2>
+        <div className="w-1 h-4 rounded-full bg-brand-600" />
+        <h2 className="admin-section-title">Manage Content</h2>
       </div>
 
       {/* Section cards */}
@@ -159,7 +156,7 @@ export default async function AdminPage() {
             <Link
               key={sec.href}
               href={sec.href}
-              className={`bg-white rounded-2xl p-6 group border border-slate-100 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${sec.hoverBorder}`}
+              className={`admin-card p-6 group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-premium ${sec.hoverBorder}`}
             >
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${sec.iconBg}`}>
@@ -181,12 +178,12 @@ export default async function AdminPage() {
         })}
       </div>
 
-      {/* ── Recent Activity ── */}
+      {/* Recent Activity */}
       <div className="mt-10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-4 rounded-full bg-gradient-to-b from-slate-400 to-slate-600" />
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Recent Activity</h2>
+            <div className="w-1 h-4 rounded-full bg-slate-400" />
+            <h2 className="admin-section-title">Recent Activity</h2>
           </div>
           <Link
             href="/admin/activity"
@@ -196,7 +193,7 @@ export default async function AdminPage() {
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="admin-panel">
           {recentActivity.length === 0 ? (
             <div className="px-5 py-10 text-center text-slate-400 text-sm">
               No activity logged yet  -  events will appear here as users interact with the platform.
@@ -204,7 +201,7 @@ export default async function AdminPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-100">
+                <thead className="admin-table-head">
                   <tr>
                     <th className="text-left px-4 py-3 font-medium text-slate-500 whitespace-nowrap text-xs">Time</th>
                     <th className="text-left px-4 py-3 font-medium text-slate-500 text-xs">User</th>
@@ -230,7 +227,7 @@ export default async function AdminPage() {
                         {log.resource ? (
                           <span>
                             <span className="font-medium text-slate-600">{log.resource}</span>
-                            {log.resourceName && <span className="text-slate-400"> · {log.resourceName}</span>}
+                            {log.resourceName && <span className="text-slate-400"> | {log.resourceName}</span>}
                           </span>
                         ) : (
                           <span className="text-slate-300"> - </span>
@@ -246,7 +243,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Cache Control */}
-      <div className="mt-10 bg-white rounded-2xl border border-slate-100 p-6">
+      <div className="mt-10 admin-card p-6">
         <div className="flex items-center gap-2 mb-1">
           <Activity className="h-4 w-4 text-brand-600" />
           <h2 className="font-semibold text-slate-900 text-sm">Page Cache</h2>

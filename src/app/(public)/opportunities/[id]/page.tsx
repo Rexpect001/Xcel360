@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   if (!opp) return { title: 'Scholarship Not Found' }
 
   const description = opp.description
-    ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? 'â€¦' : '')
+    ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? '...' : '')
     : `${opp.fundingType} scholarship by ${opp.hostOrg} for ${opp.programLevel.join(', ')} students in ${opp.country}. Deadline: ${opp.deadline?.toLocaleDateString('en-GB') ?? 'TBC'}.`
 
   return {
@@ -87,7 +87,7 @@ function Description({ text }: { text: string }) {
       <ul key={key} className="space-y-1.5 my-2 pl-1">
         {bullets.map((item, i) => (
           <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-            <span className="text-brand-500 mt-1 select-none flex-shrink-0 text-xs">â - </span>
+            <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand-500 flex-shrink-0" />
             <span>{renderInline(item)}</span>
           </li>
         ))}
@@ -100,9 +100,13 @@ function Description({ text }: { text: string }) {
     const trimmed = line.trim()
     if (!trimmed) { flushBullets(`ul-${idx}`); return }
 
-    const bulletMatch = trimmed.match(/^[â€¢\-\*]\s*(.+)/)
-    if (bulletMatch) {
-      bullets.push(bulletMatch[1])
+    const bulletText = trimmed.startsWith('- ') || trimmed.startsWith('* ')
+      ? trimmed.slice(2).trim()
+      : trimmed.charCodeAt(0) === 8226
+        ? trimmed.slice(1).trim()
+        : null
+    if (bulletText) {
+      bullets.push(bulletText)
       return
     }
 

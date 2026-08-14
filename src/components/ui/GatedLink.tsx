@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { X, LogIn, UserPlus } from 'lucide-react'
+import { X, LogIn, UserPlus, FileText, BookOpen } from 'lucide-react'
 import Link from 'next/link'
 
 interface GatedLinkProps {
@@ -17,7 +17,7 @@ export default function GatedLink({ href, className, children, type = 'download'
   const [showModal, setShowModal] = useState(false)
 
   const handleClick = (e: React.MouseEvent) => {
-    if (session) return // allow normal navigation
+    if (session) return
     e.preventDefault()
     setShowModal(true)
   }
@@ -47,8 +47,8 @@ export default function GatedLink({ href, className, children, type = 'download'
             </button>
 
             <div className="text-center mb-6">
-              <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
-                {type === 'download' ? 'ðŸ“„' : 'ðŸ“-'}
+              <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-700">
+                {type === 'download' ? <FileText className="h-7 w-7" /> : <BookOpen className="h-7 w-7" />}
               </div>
               <h2 className="text-xl font-bold text-gray-900 mb-2">
                 {type === 'download' ? 'Sign in to download' : 'Sign in to read'}

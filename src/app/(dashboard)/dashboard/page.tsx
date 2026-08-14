@@ -41,7 +41,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {session.user.name?.split(' ')[0]} 👋
+          Welcome back, {session.user.name?.split(' ')[0]}
         </h1>
         <p className="text-gray-500 mt-1">
           {profileComplete
@@ -81,7 +81,7 @@ export default async function DashboardPage() {
           { label: 'Saved', value: savedCount, href: '/dashboard/saved', Icon: Bookmark, color: 'text-blue-600 bg-blue-50' },
           { label: 'Applications', value: applicationCount, href: '/dashboard/applications', Icon: FileText, color: 'text-purple-600 bg-purple-50' },
           { label: 'Notifications', value: unreadNotifications, href: '/dashboard/notifications', Icon: Bell, color: 'text-red-600 bg-red-50' },
-          { label: 'All Scholarships', value: '→', href: '/opportunities', Icon: Search, color: 'text-green-600 bg-green-50' },
+          { label: 'All Scholarships', value: 'View', href: '/opportunities', Icon: Search, color: 'text-green-600 bg-green-50' },
         ].map(({ label, value, href, Icon, color }) => (
           <Link
             key={label}

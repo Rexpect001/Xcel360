@@ -33,8 +33,8 @@ export default function Button({
     {
       'bg-brand-700 text-white hover:bg-brand-800 active:bg-brand-900 shadow-sm hover:shadow-md': variant === 'primary',
       'border-2 border-brand-700 text-brand-700 hover:bg-brand-50': variant === 'secondary',
-      'text-gray-600 hover:bg-gray-100': variant === 'ghost',
-      'bg-red-600 text-white hover:bg-red-700': variant === 'danger',
+      'text-gray-600 hover:bg-surface-100': variant === 'ghost',
+      'bg-danger-600 text-white hover:bg-danger-700': variant === 'danger',
       'px-3 py-1.5 text-xs': size === 'sm',
       'px-5 py-2.5 text-sm': size === 'md',
       'px-8 py-4 text-base': size === 'lg',

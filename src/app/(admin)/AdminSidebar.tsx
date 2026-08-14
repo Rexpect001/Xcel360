@@ -54,13 +54,13 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/[0.07]">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shrink-0 bg-gradient-to-br from-blue-400 to-blue-700">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-sky-300/10">
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shrink-0 bg-gradient-to-br from-sky-300 to-brand-700">
           <GraduationCap className="h-5 w-5 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-bold text-white tracking-tight">Xcel360</div>
-          <div className="text-xs font-medium text-blue-400">Admin Panel</div>
+          <div className="text-xs font-medium text-sky-200">Admin Panel</div>
         </div>
         <button
           onClick={() => setOpen(false)}
@@ -71,13 +71,13 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
       </div>
 
       {/* Role badge */}
-      <div className="mx-4 mt-4 mb-2 px-3 py-2.5 rounded-xl flex items-center gap-2.5 bg-white/[0.05] border border-white/[0.08]">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-indigo-500/20">
-          <ShieldCheck className="h-3.5 w-3.5 text-indigo-300" />
+      <div className="mx-4 mt-4 mb-2 px-3 py-2.5 rounded-xl flex items-center gap-2.5 bg-sky-400/10 border border-sky-300/10">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-sky-300/15">
+          <ShieldCheck className="h-3.5 w-3.5 text-sky-200" />
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-slate-400 truncate">{email}</p>
-          <span className="inline-block text-xs font-semibold px-1.5 py-0.5 rounded-md mt-0.5 bg-indigo-500/25 text-indigo-200">
+          <p className="text-xs text-sky-100/70 truncate">{email}</p>
+          <span className="inline-block text-xs font-semibold px-1.5 py-0.5 rounded-md mt-0.5 bg-white/10 text-sky-100">
             {roleLabel}
           </span>
         </div>
@@ -93,7 +93,7 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
-                ${active ? 'bg-white/[0.12] text-white' : 'text-slate-400 hover:bg-white/[0.07] hover:text-white'}`}
+                ${active ? 'bg-sky-400/15 text-white ring-1 ring-sky-300/15' : 'text-sky-100/70 hover:bg-white/[0.07] hover:text-white'}`}
             >
               <Icon className="h-4 w-4 shrink-0" />
               {item.label}
@@ -103,10 +103,10 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
       </nav>
 
       {/* Footer */}
-      <div className="px-3 py-3 border-t border-white/[0.07]">
+      <div className="px-3 py-3 border-t border-sky-300/10">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-slate-500 hover:text-white hover:bg-white/[0.06] transition-all"
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-sky-100/55 hover:text-white hover:bg-white/[0.06] transition-all"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
@@ -118,7 +118,7 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
   return (
     <>
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-20 flex items-center gap-3 px-4 py-3 bg-[#0f172a] border-b border-white/[0.07]">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-20 flex items-center gap-3 px-4 py-3 bg-brand-950 border-b border-sky-300/10">
         <button
           onClick={() => setOpen(true)}
           className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
@@ -126,7 +126,7 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-700">
+          <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-gradient-to-br from-sky-300 to-brand-700">
             <GraduationCap className="h-3.5 w-3.5 text-white" />
           </div>
           <span className="text-sm font-bold text-white">Xcel360 Admin</span>
@@ -141,7 +141,7 @@ export default function AdminSidebar({ allowedSections, email, roleLabel }: Prop
       {/* Sidebar */}
       <aside
         id="admin-sidebar"
-        className={`fixed inset-y-0 left-0 flex flex-col z-40 w-64 bg-[#0f172a] transition-transform duration-300
+        className={`fixed inset-y-0 left-0 flex flex-col z-40 w-64 bg-brand-950 shadow-2xl shadow-slate-950/20 transition-transform duration-300
           ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <SidebarContent />
