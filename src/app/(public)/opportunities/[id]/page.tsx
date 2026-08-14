@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   if (!opp) return { title: 'Scholarship Not Found' }
 
   const description = opp.description
-    ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? '…' : '')
+    ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? 'â€¦' : '')
     : `${opp.fundingType} scholarship by ${opp.hostOrg} for ${opp.programLevel.join(', ')} students in ${opp.country}. Deadline: ${opp.deadline?.toLocaleDateString('en-GB') ?? 'TBC'}.`
 
   return {
@@ -51,6 +51,7 @@ import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Download } from 'luc
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
+import AdSlot from '@/components/ads/AdSlot'
 import { getAuth } from '@/lib/auth'
 import type { ReactNode } from 'react'
 
@@ -86,7 +87,7 @@ function Description({ text }: { text: string }) {
       <ul key={key} className="space-y-1.5 my-2 pl-1">
         {bullets.map((item, i) => (
           <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-            <span className="text-brand-500 mt-1 select-none flex-shrink-0 text-xs">●</span>
+            <span className="text-brand-500 mt-1 select-none flex-shrink-0 text-xs">â - </span>
             <span>{renderInline(item)}</span>
           </li>
         ))}
@@ -99,7 +100,7 @@ function Description({ text }: { text: string }) {
     const trimmed = line.trim()
     if (!trimmed) { flushBullets(`ul-${idx}`); return }
 
-    const bulletMatch = trimmed.match(/^[•\-\*]\s*(.+)/)
+    const bulletMatch = trimmed.match(/^[â€¢\-\*]\s*(.+)/)
     if (bulletMatch) {
       bullets.push(bulletMatch[1])
       return
@@ -287,6 +288,8 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
 
           {/* Sidebar */}
           <div className="space-y-5">
+            <AdSlot placement="opportunity-detail-sidebar" />
+
             <div className="bg-brand-50 rounded-2xl border border-brand-100 p-5">
               <h3 className="font-semibold text-brand-900 mb-3">Quick Summary</h3>
               <dl className="space-y-2.5 text-sm">

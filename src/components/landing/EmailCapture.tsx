@@ -41,7 +41,7 @@ export default function EmailCapture() {
           <Bell className="h-5 w-5" />
         </div>
 
-        {/* Heading — smaller */}
+        {/* Heading  -  smaller */}
         <h2 className="text-xl md:text-2xl font-bold tracking-tight mb-2" style={{ color: '#0f172a' }}>
           Never miss a scholarship
         </h2>

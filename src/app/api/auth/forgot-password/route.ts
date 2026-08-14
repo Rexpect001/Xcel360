@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     'unknown'
 
   if (isRateLimited(ip)) {
-    // Return generic message — don't reveal rate limiting to avoid abuse
+    // Return generic message  -  don't reveal rate limiting to avoid abuse
     return NextResponse.json({ message: 'If that email is registered, a reset link has been sent.' }, { status: 200 })
   }
 
@@ -47,6 +47,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Always return the same response — prevents email enumeration
+  // Always return the same response  -  prevents email enumeration
   return NextResponse.json({ message: 'If that email is registered, a reset link has been sent.' }, { status: 200 })
 }

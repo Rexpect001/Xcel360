@@ -203,7 +203,7 @@ export default function AdminCertificatesPage() {
             onChange={(e) => setEventId(e.target.value)}
             className="w-full appearance-none border border-gray-200 rounded-xl px-4 py-3 pr-10 text-sm font-medium text-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
           >
-            <option value="">— Choose an event —</option>
+            <option value=""> -  Choose an event  - </option>
             {events.map((e) => (
               <option key={e.id} value={e.id}>
                 {e.title} · {new Date(e.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -287,7 +287,7 @@ export default function AdminCertificatesPage() {
             <div className="flex items-center gap-3">
               <label
                 className="flex items-center gap-2 text-sm cursor-pointer select-none"
-                title="When off, certificates are created silently — no email is sent to participants"
+                title="When off, certificates are created silently  -  no email is sent to participants"
               >
                 <input
                   type="checkbox"
@@ -398,7 +398,7 @@ export default function AdminCertificatesPage() {
           {selectedEvent && (
             <p className="text-xs text-gray-400 mt-3 px-1">
               Certificates remain linked to the original registration &amp; event records. Generating again skips
-              participants who already have one — use Regenerate to refresh a PDF.
+              participants who already have one  -  use Regenerate to refresh a PDF.
             </p>
           )}
         </>

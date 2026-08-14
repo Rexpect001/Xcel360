@@ -1,6 +1,5 @@
 'use client'
 import { useState, useMemo, lazy, Suspense } from 'react'
-import { Opportunity } from '@prisma/client'
 import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, Briefcase, DollarSign, Wifi } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
@@ -9,6 +8,7 @@ import { formatDate, daysUntilDeadline, cn } from '@/lib/utils'
 import { FIELDS, COUNTRIES } from '@/types'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
+import type { OpportunityListItem } from '@/types/opportunity-list'
 
 const ScholarshipMap = lazy(() => import('@/components/opportunities/ScholarshipMap'))
 
@@ -16,7 +16,7 @@ const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Remote']
 const EXPERIENCE_LEVELS = ['Entry Level', 'Mid Level', 'Senior Level', 'Internship']
 
 interface Props {
-  initialJobs: Opportunity[]
+  initialJobs: OpportunityListItem[]
   mode: 'jobs' | 'internships' | 'all'
 }
 

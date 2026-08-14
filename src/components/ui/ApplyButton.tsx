@@ -10,7 +10,7 @@ function sanitizeUrl(href: string | null): string | null {
   if (!url) return null
   // Reject dangerous schemes
   if (/^(javascript|data|vbscript):/i.test(url)) return null
-  // Ensure https:// — upgrade http:// to https://
+  // Ensure https://  -  upgrade http:// to https://
   if (url.startsWith('https://')) return url
   if (url.startsWith('http://')) return url.replace('http://', 'https://')
   return `https://${url}`

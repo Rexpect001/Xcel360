@@ -63,7 +63,7 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
     if (navigator.share) {
       await navigator.share({
         title: eventTitle,
-        text: `Join me at "${eventTitle}" — register here:`,
+        text: `Join me at "${eventTitle}"  -  register here:`,
         url: eventUrl,
       }).catch(() => {})
     } else {
@@ -120,7 +120,7 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
         <p className="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto mb-2">
           Your spot for <span className="font-semibold text-gray-700">{eventTitle}</span> is confirmed.
         </p>
-        <p className="text-sm text-gray-400 mb-8">Check your inbox — we&apos;ll send all the details you need.</p>
+        <p className="text-sm text-gray-400 mb-8">Check your inbox  -  we&apos;ll send all the details you need.</p>
 
         {/* Share invite section */}
         <div className="bg-brand-50 border border-brand-100 rounded-2xl p-5 mb-6 text-left">
@@ -295,7 +295,7 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
               required={q.required}
               className={inputCls}
             >
-              <option value="">— Select an option —</option>
+              <option value=""> -  Select an option  - </option>
               {q.options.map((opt) => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}

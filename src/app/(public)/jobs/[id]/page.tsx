@@ -146,10 +146,10 @@ export default async function JobDetailPage({ params }: { params: { id: string }
               <dl className="space-y-2.5 text-sm">
                 <div><dt className="text-gray-500 text-xs">Company</dt><dd className="font-medium text-gray-900">{job.company ?? job.hostOrg}</dd></div>
                 <div><dt className="text-gray-500 text-xs">Country</dt><dd className="font-medium text-gray-900">{job.country}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Job Type</dt><dd className="font-medium text-gray-900">{job.jobType ?? '—'}</dd></div>
+                <div><dt className="text-gray-500 text-xs">Job Type</dt><dd className="font-medium text-gray-900">{job.jobType ?? ' - '}</dd></div>
                 {job.salary && <div><dt className="text-gray-500 text-xs">Salary</dt><dd className="font-medium text-emerald-700">{job.salary}</dd></div>}
                 <div><dt className="text-gray-500 text-xs">Apply by</dt><dd className="font-medium text-gray-900">{formatDate(job.deadline)}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Experience</dt><dd className="font-medium text-gray-900">{job.experienceLevel ?? '—'}</dd></div>
+                <div><dt className="text-gray-500 text-xs">Experience</dt><dd className="font-medium text-gray-900">{job.experienceLevel ?? ' - '}</dd></div>
               </dl>
             </div>
 

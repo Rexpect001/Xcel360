@@ -168,7 +168,7 @@ export default function AdminProgramsPage() {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Beneficiaries</h2>
-            <p className="text-gray-500 text-sm mt-0.5">First names only — shown publicly in scrolling display</p>
+            <p className="text-gray-500 text-sm mt-0.5">First names only  -  shown publicly in scrolling display</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -197,7 +197,7 @@ export default function AdminProgramsPage() {
               onChange={e => setSelectedProgram(e.target.value)}
               className="w-full px-3 py-2 border border-violet-200 rounded-xl text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-violet-400"
             >
-              <option value="">— No program (general) —</option>
+              <option value=""> -  No program (general)  - </option>
               {programs.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
             </select>
             <textarea
@@ -230,16 +230,16 @@ export default function AdminProgramsPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {beneficiaries.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400">No beneficiaries yet — add some above</td></tr>
+                <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400">No beneficiaries yet  -  add some above</td></tr>
               ) : beneficiaries.map(b => (
                 <tr key={b.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-900">{b.firstName}</td>
-                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{b.department || '—'}</td>
-                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{b.school || '—'}</td>
+                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{b.department || ' - '}</td>
+                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{b.school || ' - '}</td>
                   <td className="px-4 py-3 hidden lg:table-cell">
                     {b.program ? (
                       <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">{b.program.cohortNumber ? `Cohort ${b.program.cohortNumber}` : b.program.title}</span>
-                    ) : <span className="text-gray-400">—</span>}
+                    ) : <span className="text-gray-400"> - </span>}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => handleDeleteBeneficiary(b.id)} className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors">
@@ -259,7 +259,7 @@ export default function AdminProgramsPage() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-600 mb-1">Program Title *</label>
-              <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Cohort 1 — Scholarship Mentorship" />
+              <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Cohort 1  -  Scholarship Mentorship" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Cohort Number</label>
@@ -307,7 +307,7 @@ export default function AdminProgramsPage() {
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Program (optional)</label>
             <select value={bForm.programId} onChange={e => setBForm(f => ({ ...f, programId: e.target.value }))} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-              <option value="">— General / No program —</option>
+              <option value=""> -  General / No program  - </option>
               {programs.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
             </select>
           </div>

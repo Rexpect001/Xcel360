@@ -1,13 +1,13 @@
 export const revalidate = 3600
 import type { Metadata } from 'next'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
-// @ts-ignore — lucide ships Linkedin icon
+// @ts-ignore  -  lucide ships Linkedin icon
 import { Linkedin } from 'lucide-react'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 
 export const metadata: Metadata = {
-  title: 'Find a Mentor — Scholarship & Study Abroad Guidance',
+  title: 'Find a Mentor  -  Scholarship & Study Abroad Guidance',
   description:
     'Connect with experienced mentors who have won scholarships and studied abroad. Get personalised guidance on applications, essays, and interview preparation.',
   keywords: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/mentorship' },
   openGraph: {
-    title: 'Find a Mentor — Xcel360',
+    title: 'Find a Mentor  -  Xcel360',
     description: 'Connect with mentors who have won scholarships and studied abroad. Get guidance on your journey.',
     url: '/mentorship',
   },
@@ -100,7 +100,7 @@ export default async function MentorshipPage() {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900">{mentor.mentor}</div>
-                  <div className="text-xs text-green-600 font-medium">● Available</div>
+                  <div className="text-xs text-green-600 font-medium">� - � Available</div>
                 </div>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">{mentor.title}</h3>

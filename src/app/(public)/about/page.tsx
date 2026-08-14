@@ -3,7 +3,7 @@ import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'About Xcel360 — Our Mission & Story',
+  title: 'About Xcel360  -  Our Mission & Story',
   description:
     'Xcel360 was built to bridge the information gap for African students seeking scholarships and opportunities abroad. Learn about our mission, values, and the team behind the platform.',
   alternates: { canonical: '/about' },
@@ -21,7 +21,7 @@ export default function AboutPage() {
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">About Xcel360</h1>
           <p className="text-blue-200 text-xl leading-relaxed">
-            We believe every talented student deserves access to world-class education — regardless of where they come from or how much their family earns.
+            We believe every talented student deserves access to world-class education  -  regardless of where they come from or how much their family earns.
           </p>
         </div>
       </div>
@@ -34,7 +34,7 @@ export default function AboutPage() {
               Xcel360 exists to close the information gap in scholarship discovery. Too many students miss out on fully-funded opportunities simply because they didn&apos;t know they existed or missed the deadline.
             </p>
             <p className="text-gray-600 leading-relaxed mt-4">
-              We aggregate opportunities, provide tracking tools, connect students with mentors, and send timely reminders — so that talent, not information access, determines who gets funded.
+              We aggregate opportunities, provide tracking tools, connect students with mentors, and send timely reminders  -  so that talent, not information access, determines who gets funded.
             </p>
           </div>
           <div>

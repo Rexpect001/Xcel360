@@ -149,7 +149,7 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
           <div className="w-px h-4 bg-gray-200 mx-1" />
         </>}
         <TB onClick={toggleSource} icon={<Code className="h-3.5 w-3.5" />} title={sourceMode ? 'Apply HTML' : 'Edit raw HTML'} active={sourceMode} />
-        {sourceMode && <span className="text-xs text-brand-600 font-medium ml-1">HTML source — click <Code className="inline h-3 w-3" /> to apply</span>}
+        {sourceMode && <span className="text-xs text-brand-600 font-medium ml-1">HTML source  -  click <Code className="inline h-3 w-3" /> to apply</span>}
       </div>
       <div ref={editorRef} contentEditable={!sourceMode} suppressContentEditableWarning onInput={handleInput}
         className={`min-h-[280px] px-4 py-3 text-sm text-gray-800 outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 ${sourceMode ? 'hidden' : ''}`}
@@ -227,8 +227,8 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
         if (res.ok) {
           toast.success(
             action === 'send' ? `Sending! First batch: ${d.sent}`
-            : action === 'retry' ? `Retrying — sent ${d.sent} so far`
-            : action === 'resume' ? `Resumed — sent ${d.sent} more${d.status === 'COMPLETED' ? ', now complete' : ''}`
+            : action === 'retry' ? `Retrying  -  sent ${d.sent} so far`
+            : action === 'resume' ? `Resumed  -  sent ${d.sent} more${d.status === 'COMPLETED' ? ', now complete' : ''}`
             : 'Cancelled'
           )
           onAction()
@@ -318,8 +318,8 @@ const BASE_TEMPLATES = [
     <h1 style="color:#ffffff;font-size:26px;margin:0;">[Your Headline Here]</h1>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
-    <p style="font-size:16px;line-height:1.7;">[Opening paragraph — introduce the announcement and why it matters to your audience.]</p>
-    <p style="font-size:16px;line-height:1.7;">[Supporting paragraph — add more context, details, or key information here.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Opening paragraph  -  introduce the announcement and why it matters to your audience.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Supporting paragraph  -  add more context, details, or key information here.]</p>
     <div style="text-align:center;margin:36px 0;">
       <a href="https://xcel360.com" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">[Call to Action]</a>
     </div>
@@ -356,11 +356,11 @@ const BASE_TEMPLATES = [
         <p style="font-size:15px;font-weight:700;color:#0c4a6e;margin:0;">[Eligibility]</p>
       </div>
     </div>
-    <p style="font-size:16px;line-height:1.7;">[Describe the scholarship — what it covers, who it is for, and why this is a great opportunity.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Describe the scholarship  -  what it covers, who it is for, and why this is a great opportunity.]</p>
     <div style="text-align:center;margin:36px 0;">
       <a href="https://xcel360.com/opportunities" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">View &amp; Apply Now</a>
     </div>
-    <p style="font-size:14px;color:#6b7280;line-height:1.7;">Don't wait — deadlines fill up fast. Share this with someone who might benefit.</p>
+    <p style="font-size:14px;color:#6b7280;line-height:1.7;">Don't wait  -  deadlines fill up fast. Share this with someone who might benefit.</p>
     <p style="font-size:16px;line-height:1.7;margin-top:24px;">Best of luck,<br/><strong>The Xcel360 Team</strong></p>
   </div>
   <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">
@@ -372,19 +372,19 @@ const BASE_TEMPLATES = [
     name: 'Programme Update',
     desc: 'Cohort announcement with numbered highlights and what to expect.',
     preview: 'programme',
-    subject: 'Xcel360 Programme Update — [Cohort Name]',
+    subject: 'Xcel360 Programme Update  -  [Cohort Name]',
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
   <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
     <h1 style="color:#ffffff;font-size:26px;margin:0;">Programme Update</h1>
     <p style="color:#bae6fd;margin:8px 0 0;font-size:15px;">[Cohort Name] · [Year]</p>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
-    <p style="font-size:16px;line-height:1.7;">[Opening — share the programme news and set the context for readers.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Opening  -  share the programme news and set the context for readers.]</p>
     <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:24px 0;">
       <p style="font-size:14px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.05em;">What to Expect</p>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
         <span style="background:#0284c7;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span>
-        <p style="margin:4px 0 0;font-size:15px;color:#374151;">[Step or highlight one — describe a key benefit or milestone]</p>
+        <p style="margin:4px 0 0;font-size:15px;color:#374151;">[Step or highlight one  -  describe a key benefit or milestone]</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
         <span style="background:#0284c7;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">2</span>
@@ -395,7 +395,7 @@ const BASE_TEMPLATES = [
         <p style="margin:4px 0 0;font-size:15px;color:#374151;">[Step or highlight three]</p>
       </div>
     </div>
-    <p style="font-size:16px;line-height:1.7;">[Closing — next steps, how to get involved, or a call to action.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Closing  -  next steps, how to get involved, or a call to action.]</p>
     <div style="text-align:center;margin:36px 0;">
       <a href="https://xcel360.com/programs" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Learn More</a>
     </div>
@@ -417,13 +417,13 @@ const BASE_TEMPLATES = [
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">Dear Scholar,</p>
-    <p style="font-size:16px;line-height:1.7;">[Opening — express genuine gratitude and what it means to the team.]</p>
-    <p style="font-size:16px;line-height:1.7;">[Supporting paragraph — acknowledge their journey and your commitment to helping them.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Opening  -  express genuine gratitude and what it means to the team.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Supporting paragraph  -  acknowledge their journey and your commitment to helping them.]</p>
     <div style="background:#f0f9ff;border-left:4px solid #0284c7;padding:20px 24px;margin:32px 0;border-radius:0 8px 8px 0;">
-      <p style="font-size:16px;line-height:1.7;margin:0;color:#0c4a6e;font-weight:600;">[Key message — one powerful forward-looking sentence]</p>
-      <p style="font-size:15px;line-height:1.7;margin:8px 0 0;color:#374151;">[Supporting detail — what's coming next, what you're working on for them.]</p>
+      <p style="font-size:16px;line-height:1.7;margin:0;color:#0c4a6e;font-weight:600;">[Key message  -  one powerful forward-looking sentence]</p>
+      <p style="font-size:15px;line-height:1.7;margin:8px 0 0;color:#374151;">[Supporting detail  -  what's coming next, what you're working on for them.]</p>
     </div>
-    <p style="font-size:16px;line-height:1.7;">[Closing — encouraging and warm. Remind them you're with them every step.]</p>
+    <p style="font-size:16px;line-height:1.7;">[Closing  -  encouraging and warm. Remind them you're with them every step.]</p>
     <p style="font-size:16px;line-height:1.7;margin-top:32px;">With gratitude,<br/><strong>The Xcel360 Team</strong></p>
   </div>
   <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">
@@ -433,9 +433,9 @@ const BASE_TEMPLATES = [
   },
   {
     name: 'Event Reconnect',
-    desc: 'Re-engage past event attendees — introduces the platform, teases the next event, and links to WhatsApp.',
+    desc: 'Re-engage past event attendees  -  introduces the platform, teases the next event, and links to WhatsApp.',
     preview: 'reconnect',
-    subject: "A lot has happened since our last event — meet Xcel360",
+    subject: "A lot has happened since our last event  -  meet Xcel360",
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
   <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
     <p style="color:#bae6fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">From the Xcel360 Team</p>
@@ -444,21 +444,21 @@ const BASE_TEMPLATES = [
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">Hi Scholar,</p>
-    <p style="font-size:16px;line-height:1.7;">It's been a minute since we connected at our last event — and it's been a busy one. We've been working tirelessly behind the scenes, and we're excited to finally share what we've built.</p>
-    <p style="font-size:16px;line-height:1.7;">Meet <strong>Xcel360</strong> — a scholarship discovery platform built to help you navigate your scholarship journey, search smarter, and find the right programme for you.</p>
+    <p style="font-size:16px;line-height:1.7;">It's been a minute since we connected at our last event  -  and it's been a busy one. We've been working tirelessly behind the scenes, and we're excited to finally share what we've built.</p>
+    <p style="font-size:16px;line-height:1.7;">Meet <strong>Xcel360</strong>  -  a scholarship discovery platform built to help you navigate your scholarship journey, search smarter, and find the right programme for you.</p>
     <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:28px 0;">
       <p style="font-size:13px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What Xcel360 gives you</p>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
         <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
-        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>A rich scholarship database</strong> — curated opportunities updated regularly to support your journey</p>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>A rich scholarship database</strong>  -  curated opportunities updated regularly to support your journey</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
         <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
-        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline reminders</strong> — save opportunities and get notified before they close</p>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline reminders</strong>  -  save opportunities and get notified before they close</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;">
         <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
-        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>More features on the way</strong> — we're constantly improving the platform to better support your search and applications</p>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>More features on the way</strong>  -  we're constantly improving the platform to better support your search and applications</p>
       </div>
     </div>
     <p style="font-size:16px;line-height:1.7;">We're doing well, and we're genuinely proud of what we've put together for you. Check it out, explore, and let us know what you think.</p>
@@ -467,13 +467,13 @@ const BASE_TEMPLATES = [
     </div>
     <div style="background:#fef9c3;border-left:4px solid #facc15;border-radius:0 8px 8px 0;padding:20px 24px;margin:28px 0;">
       <p style="font-size:15px;font-weight:700;color:#92400e;margin:0 0 6px;">Something big is coming.</p>
-      <p style="font-size:15px;color:#78350f;line-height:1.7;margin:0;">Last year we had a Narrative. This year? Stay tuned — our next event is shaping up to be something you really don't want to miss.</p>
+      <p style="font-size:15px;color:#78350f;line-height:1.7;margin:0;">Last year we had a Narrative. This year? Stay tuned  -  our next event is shaping up to be something you really don't want to miss.</p>
     </div>
     <p style="font-size:16px;line-height:1.7;">In the meantime, join our WhatsApp channel for real-time updates, resources, and opportunities dropped straight to your feed.</p>
     <div style="text-align:center;margin:32px 0;">
       <a href="https://www.whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" style="display:inline-block;background:#25D366;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:15px;">Join the WhatsApp Channel</a>
     </div>
-    <p style="font-size:15px;color:#6b7280;line-height:1.7;text-align:center;">This is for you — let's make the most of this opportunity together.</p>
+    <p style="font-size:15px;color:#6b7280;line-height:1.7;text-align:center;">This is for you  -  let's make the most of this opportunity together.</p>
     <p style="font-size:16px;line-height:1.7;margin-top:32px;">With excitement,<br/><strong>The Xcel360 Team</strong></p>
   </div>
   <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">
@@ -483,31 +483,31 @@ const BASE_TEMPLATES = [
   },
   {
     name: 'Platform Invitation',
-    desc: 'Invite external contacts to join Xcel360 — highlights key benefits and links to sign up.',
+    desc: 'Invite external contacts to join Xcel360  -  highlights key benefits and links to sign up.',
     preview: 'invitation',
-    subject: "You're Invited — Join Xcel360 and Discover Scholarships",
+    subject: "You're Invited  -  Join Xcel360 and Discover Scholarships",
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
   <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
     <p style="color:#bae6fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">You're Invited</p>
     <h1 style="color:#ffffff;font-size:26px;margin:0 0 10px;line-height:1.3;">Discover Scholarships Built for You</h1>
-    <p style="color:#e0f2fe;font-size:15px;margin:0;">Join Xcel360 — Africa's scholarship discovery platform</p>
+    <p style="color:#e0f2fe;font-size:15px;margin:0;">Join Xcel360  -  Africa's scholarship discovery platform</p>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">Hi [First Name],</p>
-    <p style="font-size:16px;line-height:1.7;">We'd love to invite you to join <strong>Xcel360</strong> — a platform built to help students and young professionals across Africa find, track, and apply for scholarships, internships, and funding opportunities.</p>
+    <p style="font-size:16px;line-height:1.7;">We'd love to invite you to join <strong>Xcel360</strong>  -  a platform built to help students and young professionals across Africa find, track, and apply for scholarships, internships, and funding opportunities.</p>
     <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:28px 0;">
       <p style="font-size:13px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What you get on Xcel360</p>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
         <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
-        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Curated opportunities</strong> — scholarships, fellowships, and internships updated regularly</p>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Curated opportunities</strong>  -  scholarships, fellowships, and internships updated regularly</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
         <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
-        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline tracking</strong> — save opportunities and get reminded before they close</p>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline tracking</strong>  -  save opportunities and get reminded before they close</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;">
         <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
-        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Personalised matches</strong> — opportunities matched to your field, level, and goals</p>
+        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Personalised matches</strong>  -  opportunities matched to your field, level, and goals</p>
       </div>
     </div>
     <p style="font-size:16px;line-height:1.7;">It's completely free to join. Create your account in under a minute and start exploring opportunities that could change your future.</p>
@@ -608,7 +608,7 @@ function TemplateGallery({ onSelect, onClose }: { onSelect: (subject: string, ht
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
           <div>
             <h2 className="text-lg font-bold text-gray-900">Choose a Template</h2>
-            <p className="text-sm text-gray-400 mt-0.5">Pick a design — all placeholder text is editable</p>
+            <p className="text-sm text-gray-400 mt-0.5">Pick a design  -  all placeholder text is editable</p>
           </div>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
             <X className="h-5 w-5" />
@@ -781,7 +781,7 @@ export default function AdminEmailPage() {
 
   const loadBaseTemplate = (subj: string, html: string) => {
     setSubject(subj); setHtmlBody(html); setEditorKey(k => k + 1)
-    toast.success('Template loaded — edit the placeholders')
+    toast.success('Template loaded  -  edit the placeholders')
   }
 
   const buildPayload = (isDraft: boolean) => ({
@@ -971,7 +971,7 @@ export default function AdminEmailPage() {
               {provider === 'sendchamp' ? (
                 <div>
                   <p className="text-xs text-gray-400 mb-2">
-                    Plain text only — write your email naturally. Links will be shown as full URLs.
+                    Plain text only  -  write your email naturally. Links will be shown as full URLs.
                     Use <code className="bg-gray-100 px-1 rounded">[First Name]</code> to personalise.
                   </p>
                   <textarea
@@ -1010,7 +1010,7 @@ export default function AdminEmailPage() {
                   Send Test
                 </button>
               </div>
-              <p className="text-xs text-gray-400 mt-1.5">Sends to you only with a [TEST] prefix — not logged as a campaign.</p>
+              <p className="text-xs text-gray-400 mt-1.5">Sends to you only with a [TEST] prefix  -  not logged as a campaign.</p>
             </div>
           </div>
 
@@ -1056,7 +1056,7 @@ export default function AdminEmailPage() {
                     onChange={e => setEventId(e.target.value)}
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="">— Select an event —</option>
+                    <option value=""> -  Select an event  - </option>
                     {events.map(e => (
                       <option key={e.id} value={e.id}>
                         {e.title} · {new Date(e.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} ({e.count} registered)
@@ -1078,7 +1078,7 @@ export default function AdminEmailPage() {
               {provider === 'sendchamp' ? (
                 <div className="flex items-start gap-2 p-3 bg-purple-50 rounded-xl border border-purple-100">
                   <CheckCircle className="h-4 w-4 text-purple-600 shrink-0 mt-0.5" />
-                  <p className="text-xs text-purple-700 font-medium">SendChamp sends all emails at once — no daily limit applies.</p>
+                  <p className="text-xs text-purple-700 font-medium">SendChamp sends all emails at once  -  no daily limit applies.</p>
                 </div>
               ) : (
                 <>
@@ -1179,7 +1179,7 @@ export default function AdminEmailPage() {
                     onClick={async () => {
                       const res = await fetch('/api/admin/email/resume', { method: 'POST' })
                       const d = await res.json()
-                      if (res.ok) { toast.success(`Resumed — sent ${d.results?.reduce((s: number, r: any) => s + r.sent, 0) ?? 0} emails`); loadCampaigns() }
+                      if (res.ok) { toast.success(`Resumed  -  sent ${d.results?.reduce((s: number, r: any) => s + r.sent, 0) ?? 0} emails`); loadCampaigns() }
                       else toast.error(d.error ?? 'Resume failed')
                     }}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 transition-colors">
@@ -1215,7 +1215,7 @@ export default function AdminEmailPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Starter Templates</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Pre-designed layouts — click to load into Compose</p>
+                <p className="text-xs text-gray-400 mt-0.5">Pre-designed layouts  -  click to load into Compose</p>
               </div>
               <button onClick={() => setTab('compose')} className="flex items-center gap-2 px-4 py-2 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
                 <Mail className="h-4 w-4" /> New Email
@@ -1357,7 +1357,7 @@ export default function AdminEmailPage() {
             setHtmlBody(htmlBody)
             setEditorKey(k => k + 1)
             setTab('compose')
-            toast.success('Loaded — edit and resend as a new campaign')
+            toast.success('Loaded  -  edit and resend as a new campaign')
           }}
         />
       )}

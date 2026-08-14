@@ -111,7 +111,7 @@ export default function DeadlinesPage() {
 
                   {isUrgent && (
                     <div className="mt-3 px-3 py-2 bg-red-50 rounded-lg text-xs text-red-700 font-medium">
-                      ⚠️ Deadline in {days} days — make sure everything is ready!
+                      ⚠️ Deadline in {days} days  -  make sure everything is ready!
                     </div>
                   )}
                 </div>

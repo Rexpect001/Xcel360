@@ -75,7 +75,7 @@ import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
-// xlsx is lazy-loaded only when export/import is triggered — avoids 500KB upfront parse
+// xlsx is lazy-loaded only when export/import is triggered  -  avoids 500KB upfront parse
 
 const PAGE_SIZE = 100
 
@@ -246,7 +246,7 @@ export default function AdminOpportunitiesPage() {
     }
   }
 
-  // ── Excel export — fetches all records, not just current page ──
+  // ── Excel export  -  fetches all records, not just current page ──
   const exportExcel = async () => {
     if (total === 0) { toast.error('No opportunities to export'); return }
     toast('Preparing export…', { icon: '⏳' })
@@ -316,7 +316,7 @@ export default function AdminOpportunitiesPage() {
         if (found && String(row[found]).trim()) return String(row[found]).trim()
       }
 
-      // 2. Contains match — column name contains keyword OR keyword contains column name
+      // 2. Contains match  -  column name contains keyword OR keyword contains column name
       for (const kw of keywords) {
         const kwl = kw.toLowerCase()
         const found = rowKeys.find(k => {
@@ -329,7 +329,7 @@ export default function AdminOpportunitiesPage() {
       return ''
     }
 
-    // Determine the title column — fallback to first column
+    // Determine the title column  -  fallback to first column
     const titleKeywords = ['title', 'name', 'scholarship', 'program', 'opportunity', 'award', 'grant']
     const allKeys = columns.map(k => k.toLowerCase().trim())
 
@@ -367,7 +367,7 @@ export default function AdminOpportunitiesPage() {
       const title = titleCol ? String(row[titleCol] ?? '').trim() : ''
       if (!title) { skipped++; continue }
 
-      // Find deadline — search for any date-like column
+      // Find deadline  -  search for any date-like column
       const deadlineKey = Object.keys(row).find(k =>
         /deadline|due.?date|clos|end.?date|expir|apply.?by/i.test(k)
       )
@@ -489,7 +489,7 @@ export default function AdminOpportunitiesPage() {
       })
     } catch (err) {
       console.error(err)
-      toast.error('Failed to read Excel file — check the format and try again')
+      toast.error('Failed to read Excel file  -  check the format and try again')
     } finally {
       setImporting(false)
       setImportProgress('')
@@ -574,7 +574,7 @@ export default function AdminOpportunitiesPage() {
       })
       if (res.ok) {
         setSelected(new Set())
-        toast.success(`Done — ${ids.length} updated`)
+        toast.success(`Done  -  ${ids.length} updated`)
         fetchOpps(search)
       } else {
         toast.error('Bulk action failed')
@@ -641,7 +641,7 @@ export default function AdminOpportunitiesPage() {
     try {
       const preview = await fetch('/api/admin/cleanup-opportunities').then(r => r.json())
       if (!preview.preview || preview.preview === 0) {
-        toast.success('Nothing to clean up — all opportunities have an application method.')
+        toast.success('Nothing to clean up  -  all opportunities have an application method.')
         return
       }
       const titles = (preview.titles as string[]).slice(0, 5).join('\n• ')
@@ -669,7 +669,7 @@ export default function AdminOpportunitiesPage() {
     }
   }
 
-  // opps is already the current page from the server — no client-side filter needed
+  // opps is already the current page from the server  -  no client-side filter needed
   const filtered = opps
 
   return (
@@ -917,7 +917,7 @@ export default function AdminOpportunitiesPage() {
                     </td>
                     <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{opp.country}</td>
                     <td className="px-4 py-3 text-gray-600 hidden lg:table-cell">
-                      {opp.deadline ? formatDate(opp.deadline) : '—'}
+                      {opp.deadline ? formatDate(opp.deadline) : ' - '}
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell">
                       <span
@@ -1106,7 +1106,7 @@ export default function AdminOpportunitiesPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { icon: <Globe className="h-3.5 w-3.5" />, label: 'Country', value: detailOpp.country },
-                { icon: <Calendar className="h-3.5 w-3.5" />, label: 'Deadline', value: detailOpp.deadline ? formatDate(detailOpp.deadline) : '—' },
+                { icon: <Calendar className="h-3.5 w-3.5" />, label: 'Deadline', value: detailOpp.deadline ? formatDate(detailOpp.deadline) : ' - ' },
                 { icon: <BookOpen className="h-3.5 w-3.5" />, label: 'Field', value: detailOpp.field },
                 { icon: <Building2 className="h-3.5 w-3.5" />, label: 'Host', value: detailOpp.hostOrg },
               ].map(({ icon, label, value }) => (
@@ -1129,7 +1129,7 @@ export default function AdminOpportunitiesPage() {
               </div>
             )}
 
-            {/* Eligibility — auto-split into sentence checklist */}
+            {/* Eligibility  -  auto-split into sentence checklist */}
             {detailOpp.eligibility && (
               <div className="bg-green-50 rounded-xl p-4 border border-green-100">
                 <p className="text-xs text-green-700 font-semibold uppercase tracking-wide mb-3">Eligibility</p>
@@ -1137,7 +1137,7 @@ export default function AdminOpportunitiesPage() {
               </div>
             )}
 
-            {/* Description — renders • bullets and **bold** */}
+            {/* Description  -  renders • bullets and **bold** */}
             {detailOpp.description && (
               <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                 <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-3">Description</p>
@@ -1351,7 +1351,7 @@ export default function AdminOpportunitiesPage() {
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-y font-mono"
-                placeholder={'### Benefits\n• Fully funded — tuition, stipend, accommodation\n• Duration: 2 years\n\n### Requirements\n• Open to African nationals\n• Bachelor\'s degree required'}
+                placeholder={'### Benefits\n• Fully funded  -  tuition, stipend, accommodation\n• Duration: 2 years\n\n### Requirements\n• Open to African nationals\n• Bachelor\'s degree required'}
               />
               <p className="text-xs text-gray-400 mt-1">Use <code className="bg-gray-100 px-1 rounded">### Section</code> for headers and <code className="bg-gray-100 px-1 rounded">• </code> for bullets</p>
             </div>

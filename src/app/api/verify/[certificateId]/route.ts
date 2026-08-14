@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = prisma as any
 
-// Public verification endpoint — no auth. Returns the minimum needed to
+// Public verification endpoint  -  no auth. Returns the minimum needed to
 // confirm a certificate's authenticity and status.
 export async function GET(
   _req: Request,

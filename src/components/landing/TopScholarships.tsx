@@ -33,25 +33,25 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
   return (
     <section className="pt-10 pb-14 bg-white w-full">
       {/*
-        No max-w cap on the outer wrapper — padding scales with viewport.
+        No max-w cap on the outer wrapper  -  padding scales with viewport.
         This lets the grid fill available space at any browser zoom level.
       */}
       <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
 
-        {/* Header — capped so headline text doesn't stretch uncomfortably wide */}
+        {/* Header  -  capped so headline text doesn't stretch uncomfortably wide */}
         <div className="max-w-[1800px] mx-auto flex items-end justify-between mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
-                Recently added — Updated daily
+                Recently added  -  Updated daily
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: '#0f172a' }}>
               Open Opportunities
             </h2>
             <p className="text-sm mt-1.5" style={{ color: '#475569' }}>
-              The latest scholarships and opportunities added — apply before they close
+              The latest scholarships and opportunities added  -  apply before they close
             </p>
           </div>
           <Link
@@ -65,7 +65,7 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
 
         {/*
           auto-fill grid: browser calculates how many 240px columns fit
-          at the current viewport width — works at any zoom level.
+          at the current viewport width  -  works at any zoom level.
           Zoomed out → more columns form automatically.
           Zoomed in / mobile → fewer columns, never below 1.
         */}

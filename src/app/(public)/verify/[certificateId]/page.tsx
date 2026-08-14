@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 const db = prisma as any
 
 function fmt(d: Date | string | null) {
-  return d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'
+  return d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ' - '
 }
 
 export default async function VerifyCertificatePage({ params }: { params: { certificateId: string } }) {
@@ -62,7 +62,7 @@ export default async function VerifyCertificatePage({ params }: { params: { cert
             <div className="p-6 space-y-4">
               <Row icon={<User className="h-4 w-4" />} label="Certificate Holder" value={cert.fullName} />
               <Row icon={<BadgeCheck className="h-4 w-4" />} label="Certificate Type" value={cert.certificateType} />
-              <Row icon={<GraduationCap className="h-4 w-4" />} label="Event" value={cert.event?.title ?? '—'} />
+              <Row icon={<GraduationCap className="h-4 w-4" />} label="Event" value={cert.event?.title ?? ' - '} />
               <Row icon={<Calendar className="h-4 w-4" />} label="Issue Date" value={fmt(cert.issuedAt)} />
               {cert.institution && (
                 <Row icon={<Building2 className="h-4 w-4" />} label="Institution" value={cert.institution} />

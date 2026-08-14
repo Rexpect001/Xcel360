@@ -142,7 +142,7 @@ async function fetchPageContent(url: string): Promise<string> {
 // ─── Phase 4: Extract with Gemini Flash ──────────────────────────────────────
 
 const EXTRACT_SYSTEM_PROMPT = `You extract scholarship, fellowship, internship, and job opportunity details from webpage text.
-Return ONLY a valid JSON object with exactly these fields — no markdown, no explanation:
+Return ONLY a valid JSON object with exactly these fields  -  no markdown, no explanation:
 {
   "isOpportunity": true or false,
   "title": "full opportunity name",
@@ -150,20 +150,20 @@ Return ONLY a valid JSON object with exactly these fields — no markdown, no ex
   "country": "country name, or 'Global' for international/multi-country",
   "fundingType": "one of: Fully funded, Partial, Stipend, Tuition waiver, Paid, Unpaid, Other",
   "field": "one of: STEM, Non-STEM",
-  "programLevel": ["subset of: Undergrad, Masters, PhD, Postdoc — or ['Any'] if all levels"],
+  "programLevel": ["subset of: Undergrad, Masters, PhD, Postdoc  -  or ['Any'] if all levels"],
   "deadline": "YYYY-MM-DD string, or null if not found",
-  "eligibility": "who can apply — nationalities, degree, GPA requirements, etc.",
+  "eligibility": "who can apply  -  nationalities, degree, GPA requirements, etc.",
   "description": "2-3 sentence overview of what this opportunity offers",
   "applicationLink": "direct application URL if found, else empty string",
   "requiredDocs": ["list of required documents, e.g. CV, SOP, Transcripts"],
   "fieldTags": ["2-5 relevant subject tags, e.g. Engineering, Medicine, Law"],
   "category": "one of: SCHOLARSHIP, INTERNSHIP, JOB",
-  "jobType": "Full-time, Part-time, Contract, Remote — only for JOB/INTERNSHIP, else null",
-  "company": "company name — only for JOB/INTERNSHIP, else null",
+  "jobType": "Full-time, Part-time, Contract, Remote  -  only for JOB/INTERNSHIP, else null",
+  "company": "company name  -  only for JOB/INTERNSHIP, else null",
   "salary": "salary range or stipend amount if stated, else null",
   "remote": true or false,
-  "skills": ["required skills — only for JOB/INTERNSHIP, else []"],
-  "experienceLevel": "Entry Level, Mid Level, Senior Level, Internship — only for JOB/INTERNSHIP, else null"
+  "skills": ["required skills  -  only for JOB/INTERNSHIP, else []"],
+  "experienceLevel": "Entry Level, Mid Level, Senior Level, Internship  -  only for JOB/INTERNSHIP, else null"
 }
 Set isOpportunity=false if this is not an opportunity listing (e.g. news article, blog post, aggregator page without specifics).`
 

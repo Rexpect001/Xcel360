@@ -24,7 +24,7 @@ const defaultStories = [
     name: 'Fatima Al-Rashid',
     scholarship: 'Gates Cambridge',
     university: 'University of Cambridge, UK',
-    quote: "I found Gates Cambridge on Xcel360 and used the document checklist to make sure I had everything. Now I'm at Cambridge — a dream come true!",
+    quote: "I found Gates Cambridge on Xcel360 and used the document checklist to make sure I had everything. Now I'm at Cambridge  -  a dream come true!",
     image: null,
     year: 2024,
     published: true,
@@ -37,7 +37,7 @@ const defaultStories = [
     name: 'Chen Wei',
     scholarship: 'DAAD Scholarship',
     university: 'TU Munich, Germany',
-    quote: "The mentorship feature connected me with someone who'd already been through DAAD. That guidance was invaluable — I couldn't have done it without Xcel360.",
+    quote: "The mentorship feature connected me with someone who'd already been through DAAD. That guidance was invaluable  -  I couldn't have done it without Xcel360.",
     image: null,
     year: 2023,
     published: true,
@@ -172,7 +172,7 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
             href="/signup"
             className="inline-flex items-center gap-2 bg-white text-brand-800 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-lg hover:scale-105 transform"
           >
-            Start for Free — It Takes 2 Minutes
+            Start for Free  -  It Takes 2 Minutes
           </a>
         </motion.div>
       </div>

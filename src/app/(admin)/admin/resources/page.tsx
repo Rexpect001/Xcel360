@@ -89,7 +89,7 @@ export default function AdminResourcesPage() {
 
   const handleFileSelect = async (file: File) => {
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('File too large — maximum 10 MB')
+      toast.error('File too large  -  maximum 10 MB')
       return
     }
     const allowed = ['application/pdf', 'application/msword',
@@ -246,7 +246,7 @@ export default function AdminResourcesPage() {
 
       <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-blue-700 mb-6 flex items-start gap-2">
         <CloudUpload className="h-4 w-4 flex-shrink-0 mt-0.5" />
-        <span>Upload PDF, Word, Excel, or PowerPoint files directly (max 10 MB) — or paste an external link. Files are served from Vercel Blob CDN.</span>
+        <span>Upload PDF, Word, Excel, or PowerPoint files directly (max 10 MB)  -  or paste an external link. Files are served from Vercel Blob CDN.</span>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -268,7 +268,7 @@ export default function AdminResourcesPage() {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {resources.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-400">No resources yet — click Add Resource to start</td></tr>
+              <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-400">No resources yet  -  click Add Resource to start</td></tr>
             ) : resources.map(r => {
               const { label, color } = getFileLabel(r.fileType)
               const size = formatFileSize(r.fileSize)
@@ -402,7 +402,7 @@ export default function AdminResourcesPage() {
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Created</p>
                 <p className="text-sm text-gray-700">
-                  {detailRes.createdAt ? new Date(detailRes.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  {detailRes.createdAt ? new Date(detailRes.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ' - '}
                 </p>
               </div>
             </div>
@@ -424,7 +424,7 @@ export default function AdminResourcesPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Title *</label>
-            <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Sample CV — STEM" />
+            <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Sample CV  -  STEM" />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
@@ -480,7 +480,7 @@ export default function AdminResourcesPage() {
                   <CloudUpload className="h-8 w-8 mx-auto text-gray-300 mb-2" />
                   <p className="text-sm font-medium text-gray-700">Drop file here or <span className="text-brand-700">browse</span></p>
                   <p className="text-xs text-gray-400 mt-1">PDF, Word, Excel, PowerPoint, TXT · Max 10 MB</p>
-                  {uploadProgress === 'error' && <p className="text-xs text-red-500 mt-2">Upload failed — please try again</p>}
+                  {uploadProgress === 'error' && <p className="text-xs text-red-500 mt-2">Upload failed  -  please try again</p>}
                 </div>
               ) : uploadProgress === 'uploading' ? (
                 <div className="border-2 border-brand-200 rounded-xl p-6 bg-brand-50 flex items-center gap-4">
@@ -519,7 +519,7 @@ export default function AdminResourcesPage() {
             </div>
           )}
 
-          {/* Filename override — only show for link mode or when editing */}
+          {/* Filename override  -  only show for link mode or when editing */}
           {(uploadMode === 'link' || editRes) && (
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Suggested Filename <span className="text-gray-400">(optional)</span></label>

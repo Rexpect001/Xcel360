@@ -6,7 +6,7 @@ import { Resend } from 'resend'
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <onboarding@resend.dev>'
 
 /**
- * Daily cron — continues any campaigns that still have unsent recipients.
+ * Daily cron  -  continues any campaigns that still have unsent recipients.
  * Called by Vercel Cron at 7am UTC. Protected by CRON_SECRET.
  */
 export async function GET(req: Request) {

@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // Block suspended or disabled accounts (status may be null for legacy rows — treat as ACTIVE)
+        // Block suspended or disabled accounts (status may be null for legacy rows  -  treat as ACTIVE)
         if (user.status === 'SUSPENDED') {
           throw new Error('Your account has been suspended. Please contact support.')
         }
@@ -80,7 +80,7 @@ export const authOptions: NextAuthOptions = {
         const mockReq = { ip, headers: { get: (h: string) => headers?.[h.toLowerCase()] } } as any
         await resetLoginAttempts(mockReq)
 
-        // Track last login time (non-blocking — may fail if Prisma client not yet regenerated)
+        // Track last login time (non-blocking  -  may fail if Prisma client not yet regenerated)
         db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }).catch(() => {})
 
         return {
@@ -121,7 +121,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       // Allow OAuth sign-ins without email verification
       if (account?.provider !== 'credentials') {
-        // Mark email verified for OAuth users (non-blocking — never reject sign-in)
+        // Mark email verified for OAuth users (non-blocking  -  never reject sign-in)
         if (!user.emailVerified && user.id) {
           prisma.user.update({
             where: { id: user.id },

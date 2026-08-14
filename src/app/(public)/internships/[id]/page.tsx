@@ -148,7 +148,7 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
                 <div><dt className="text-gray-500 text-xs">Country</dt><dd className="font-medium text-gray-900">{job.country}</dd></div>
                 {job.salary && <div><dt className="text-gray-500 text-xs">Stipend / Pay</dt><dd className="font-medium text-purple-700">{job.salary}</dd></div>}
                 <div><dt className="text-gray-500 text-xs">Apply by</dt><dd className="font-medium text-gray-900">{formatDate(job.deadline)}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Level</dt><dd className="font-medium text-gray-900">{job.experienceLevel ?? '—'}</dd></div>
+                <div><dt className="text-gray-500 text-xs">Level</dt><dd className="font-medium text-gray-900">{job.experienceLevel ?? ' - '}</dd></div>
               </dl>
             </div>
 

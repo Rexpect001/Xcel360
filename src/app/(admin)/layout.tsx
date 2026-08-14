@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const role = session.user.role
   const roleInfo = ROLE_LABELS[role as UserRole]
 
-  // Pass only plain strings — React components (icons) live in the client component
+  // Pass only plain strings  -  React components (icons) live in the client component
   const allowedSections = ALL_SECTIONS.filter(section => canAccess(role, section))
 
   return (

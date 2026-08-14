@@ -1,5 +1,5 @@
 /**
- * Seeds the "Xcel360 2026 – AI Event & Poster Challenge" email template
+ * Seeds the "Xcel360 2026  -  AI Event & Poster Challenge" email template
  * into the EmailTemplate table so it appears in the admin Email → Templates panel.
  *
  * Run once:
@@ -9,9 +9,9 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const TEMPLATE_NAME = 'Xcel360 2026 – AI Event & Poster Challenge'
+const TEMPLATE_NAME = 'Xcel360 2026  -  AI Event & Poster Challenge'
 
-const SUBJECT = "You're Invited! Join Xcel360 2026 – AI Event & Poster Challenge"
+const SUBJECT = "You're Invited! Join Xcel360 2026  -  AI Event & Poster Challenge"
 
 const HTML_BODY = /* html */`
 <!DOCTYPE html>
@@ -19,7 +19,7 @@ const HTML_BODY = /* html */`
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Xcel360 2026 – AI Event</title>
+  <title>Xcel360 2026  -  AI Event</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
 
@@ -32,7 +32,7 @@ const HTML_BODY = /* html */`
         <tr>
           <td style="background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 40%,#0284c7 70%,#0ea5e9 100%);padding:48px 40px 40px;text-align:center;">
             <p style="margin:0 0 16px;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#bae6fd;">Xcel360 · 2026</p>
-            <h1 style="margin:0 0 12px;font-size:28px;font-weight:800;color:#ffffff;line-height:1.25;">Don't Miss Out –<br/>Leverage AI at Xcel360 2026</h1>
+            <h1 style="margin:0 0 12px;font-size:28px;font-weight:800;color:#ffffff;line-height:1.25;">Don't Miss Out  - <br/>Leverage AI at Xcel360 2026</h1>
             <p style="margin:0;font-size:15px;color:#e0f2fe;line-height:1.5;">Learning · Innovation · Opportunity</p>
           </td>
         </tr>
@@ -43,7 +43,7 @@ const HTML_BODY = /* html */`
             <p style="margin:0 0 16px;font-size:16px;color:#1f2937;line-height:1.7;">Hello <strong>[First Name]</strong>,</p>
             <p style="margin:0;font-size:16px;color:#374151;line-height:1.7;">
               Thank you for being part of the <strong>Xcel360 community!</strong> We're excited to invite you to
-              <strong> Xcel360 2026 – Leveraging AI in Today's World</strong>, an event packed with learning,
+              <strong> Xcel360 2026  -  Leveraging AI in Today's World</strong>, an event packed with learning,
               innovation, and opportunities to showcase your ideas.
             </p>
           </td>
@@ -141,7 +141,7 @@ const HTML_BODY = /* html */`
                   <p style="margin:0;font-size:14px;color:#1f2937;line-height:1.6;">
                     <strong>Event Registration:</strong>
                     <a href="https://thexcel360.com/ai" style="color:#0284c7;text-decoration:none;">thexcel360.com/ai</a>
-                    – simply log in and secure your spot.
+                     -  simply log in and secure your spot.
                   </p>
                 </td>
               </tr>
@@ -157,7 +157,7 @@ const HTML_BODY = /* html */`
                   <p style="margin:0;font-size:14px;color:#1f2937;line-height:1.6;">
                     <strong>Poster Presentation Challenge:</strong>
                     <a href="https://edifier.thexcel360.com" style="color:#0284c7;text-decoration:none;">edifier.thexcel360.com</a>
-                    – enroll and submit your project.
+                     -  enroll and submit your project.
                   </p>
                 </td>
               </tr>
@@ -173,7 +173,7 @@ const HTML_BODY = /* html */`
                   <p style="margin:0;font-size:14px;color:#1f2937;line-height:1.6;">
                     <strong>Volunteer Opportunities:</strong>
                     <a href="https://thexcel360.com/volunteer" style="color:#0284c7;text-decoration:none;">thexcel360.com/volunteer</a>
-                    – support the event as a judge or team member.
+                     -  support the event as a judge or team member.
                   </p>
                 </td>
               </tr>

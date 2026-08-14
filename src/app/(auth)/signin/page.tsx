@@ -124,7 +124,7 @@ function SignInContent() {
           </div>
         )}
 
-        {/* Forgot password — shown after 2 failed attempts */}
+        {/* Forgot password  -  shown after 2 failed attempts */}
         {showForgotPrompt ? (
           <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
             <p className="text-sm text-amber-800 font-medium mb-1">

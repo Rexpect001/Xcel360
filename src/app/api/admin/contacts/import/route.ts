@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma'
 
 interface ContactRow { email: string; name?: string }
 
-// POST — bulk upsert contacts (from Excel import or any source)
+// POST  -  bulk upsert contacts (from Excel import or any source)
 export async function POST(req: NextRequest) {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 

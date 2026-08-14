@@ -10,14 +10,14 @@ const nextConfig = {
 
   async redirects() {
     return [
-      // Public certificate page lives at /certificate — forward the common
+      // Public certificate page lives at /certificate  -  forward the common
       // plural so users who type /certificates don't hit a 404.
       {
         source: '/certificates',
         destination: '/certificate',
         permanent: false,
       },
-      // Event held & registration closed — send /ai to the "Event Successful /
+      // Event held & registration closed  -  send /ai to the "Event Successful /
       // Registration Closed" page (which links to /certificate). To reopen,
       // change destination back to '/events/cmobns2gx0000u9klishjmwqr'.
       {

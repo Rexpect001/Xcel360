@@ -90,7 +90,7 @@ export default function AdminEventsPage() {
       if (action === 'delete') setEvents(p => p.filter(e => !selected.has(e.id)))
       else setEvents(p => p.map(e => selected.has(e.id) ? { ...e, published: action === 'publish' } : e))
       setSelected(new Set())
-      toast.success(`Done — ${ids.length} event(s) updated`)
+      toast.success(`Done  -  ${ids.length} event(s) updated`)
     } else toast.error('Action failed')
   }
 
@@ -476,7 +476,7 @@ export default function AdminEventsPage() {
             />
           </div>
 
-          {/* Flyer upload — first so it's always visible */}
+          {/* Flyer upload  -  first so it's always visible */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Event Flyer / Cover Image</label>
             <input
@@ -509,7 +509,7 @@ export default function AdminEventsPage() {
                 {uploading ? (
                   <><Loader2 className="h-6 w-6 animate-spin text-brand-500" /><span>Uploading…</span></>
                 ) : (
-                  <><Upload className="h-5 w-5 text-gray-300" /><span>Click to upload flyer <span className="text-gray-400 text-xs">(JPG, PNG, WebP — max 5 MB)</span></span></>
+                  <><Upload className="h-5 w-5 text-gray-300" /><span>Click to upload flyer <span className="text-gray-400 text-xs">(JPG, PNG, WebP  -  max 5 MB)</span></span></>
                 )}
               </button>
             )}
@@ -609,7 +609,7 @@ export default function AdminEventsPage() {
       <Modal open={qModalOpen} onClose={() => setQModalOpen(false)} title={`Registration Questions`}>
         <div className="space-y-4">
           <p className="text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded-lg">
-            <strong className="text-gray-700">{qEventTitle}</strong> — These questions appear on the registration form in addition to Name, Email, and Phone.
+            <strong className="text-gray-700">{qEventTitle}</strong>  -  These questions appear on the registration form in addition to Name, Email, and Phone.
           </p>
 
           {questions.length === 0 && (

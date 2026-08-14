@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { runDiscovery } from '@/lib/agent/discover'
 
 /**
- * Auto-Discovery Cron — runs every 8 hours via Vercel Cron
+ * Auto-Discovery Cron  -  runs every 8 hours via Vercel Cron
  * Searches the web for new scholarships/internships, validates them,
  * and saves them directly to the DB.
  *
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const report = await runDiscovery()
     const duration = ((Date.now() - start) / 1000).toFixed(1)
 
-    console.log(`[AUTO-DISCOVER] ✓ ${report.saved} saved, ${report.skipped} skipped, ${report.errors} errors — ${duration}s`)
+    console.log(`[AUTO-DISCOVER] ✓ ${report.saved} saved, ${report.skipped} skipped, ${report.errors} errors  -  ${duration}s`)
     if (report.missingKeys.length) {
       console.warn('[AUTO-DISCOVER] Missing env vars:', report.missingKeys.join(', '))
     }

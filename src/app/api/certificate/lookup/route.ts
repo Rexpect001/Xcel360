@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = prisma as any
 
-// Return all issued certificates for an email — no OTP (frictionless access).
+// Return all issued certificates for an email  -  no OTP (frictionless access).
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json()

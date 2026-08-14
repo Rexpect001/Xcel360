@@ -73,12 +73,12 @@ async function main() {
     // Check existing registrations
     const existing = await db.eventRegistration.count({ where: { eventId: event.id } })
     if (existing >= 20) {
-      console.log(`  ⏭  ${event.title} — already has ${existing} registrations, skipping`)
+      console.log(`  ⏭  ${event.title}  -  already has ${existing} registrations, skipping`)
       continue
     }
 
     const toCreate = 20 - existing
-    console.log(`  ➕ ${event.title} — creating ${toCreate} registrations`)
+    console.log(`  ➕ ${event.title}  -  creating ${toCreate} registrations`)
 
     // Fetch questions for this event
     const questions = await db.eventQuestion.findMany({ where: { eventId: event.id } })

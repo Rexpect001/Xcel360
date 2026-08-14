@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     })
 
     // Proxy the file so the blob URL is never exposed to the browser.
-    // Must buffer as ArrayBuffer — streaming upstream.body through a serverless
+    // Must buffer as ArrayBuffer  -  streaming upstream.body through a serverless
     // function can corrupt binary files (docx, pdf, etc.)
     const upstream = await fetch(resource.fileUrl)
     if (!upstream.ok) {

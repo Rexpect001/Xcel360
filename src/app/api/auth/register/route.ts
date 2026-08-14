@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         name,
         email,
         password: hashed,
-        emailVerified: new Date(), // auto-verify — no email confirmation needed
+        emailVerified: new Date(), // auto-verify  -  no email confirmation needed
         profile: { create: {} },
       },
       select: { id: true, email: true, name: true },

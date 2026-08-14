@@ -7,7 +7,7 @@ import { formatDate } from '@/lib/utils'
 import ResourceDownloadButton from '@/components/resources/ResourceDownloadButton'
 
 export const metadata: Metadata = {
-  title: 'Free Resources — Templates, Guides & SOP Samples',
+  title: 'Free Resources  -  Templates, Guides & SOP Samples',
   description:
     'Download free scholarship application templates, statement of purpose samples, CV guides, and interview preparation resources for students applying abroad.',
   keywords: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/resources' },
   openGraph: {
-    title: 'Free Resources — Xcel360',
+    title: 'Free Resources  -  Xcel360',
     description: 'Download free templates, SOP samples, and guides to strengthen your scholarship applications.',
     url: '/resources',
   },
@@ -97,7 +97,7 @@ export default async function ResourcesPage() {
               <h2 className="text-2xl font-bold text-gray-900">Free Downloads</h2>
             </div>
             <p className="text-gray-500 mb-8 ml-11">
-              Click to download any of these resources directly — no sign-up required.
+              Click to download any of these resources directly  -  no sign-up required.
             </p>
 
             {categories.length > 0 ? (
@@ -172,7 +172,7 @@ export default async function ResourcesPage() {
           <div className="mb-14 text-center py-16 bg-white rounded-2xl border border-gray-100">
             <Download className="h-12 w-12 mx-auto text-gray-200 mb-3" />
             <p className="text-gray-500 font-medium">No resources uploaded yet</p>
-            <p className="text-sm text-gray-400 mt-1">Check back soon — templates and guides are coming.</p>
+            <p className="text-sm text-gray-400 mt-1">Check back soon  -  templates and guides are coming.</p>
           </div>
         )}
 

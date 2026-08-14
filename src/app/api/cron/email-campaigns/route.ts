@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { runCampaignSend } from '@/lib/email-utils'
 
-// Daily cron — advance every in-progress campaign (Resend + SendChamp).
+// Daily cron  -  advance every in-progress campaign (Resend + SendChamp).
 // Each run processes as far as its time budget allows and persists progress,
 // so multi-day / very large sends finish reliably with no duplicates.
 export async function GET(req: NextRequest) {

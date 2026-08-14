@@ -1,13 +1,13 @@
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { runCampaignSend } from '@/lib/email-utils'
 
-// POST — manually resume all SENDING campaigns (same logic as cron).
+// POST  -  manually resume all SENDING campaigns (same logic as cron).
 export async function POST(req: NextRequest) {
-  try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  try { await requireRole('ADMIN') } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const db = prisma as any
   const campaigns = await db.emailCampaign.findMany({ where: { status: 'SENDING' } })

@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma'
 
 const EMAIL_RE = /[^\s@]+@[^\s@]+\.[^\s@]+/
 
-// GET — preview how many would be removed
+// GET  -  preview how many would be removed
 export async function GET() {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
@@ -23,7 +23,7 @@ export async function GET() {
   })
 }
 
-// POST — actually delete them
+// POST  -  actually delete them
 export async function POST() {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 

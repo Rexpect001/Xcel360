@@ -138,7 +138,7 @@ export async function logEmailBatch(
 // The single source of truth for delivering a campaign. It walks `recipients`
 // from a durable position cursor (campaign.sentCount), sending in chunks and
 // persisting the cursor after EVERY chunk. If the serverless function times out
-// mid-send, progress is saved — a later Resume or cron run continues exactly
+// mid-send, progress is saved  -  a later Resume or cron run continues exactly
 // where it stopped, so no recipient is ever sent to twice and none are skipped.
 
 const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'

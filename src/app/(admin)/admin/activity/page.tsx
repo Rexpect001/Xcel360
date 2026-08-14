@@ -83,7 +83,7 @@ export default async function ActivityLogPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Activity Log</h1>
-        <p className="text-gray-500 mt-1">Last 200 platform events — all admin and user actions.</p>
+        <p className="text-gray-500 mt-1">Last 200 platform events  -  all admin and user actions.</p>
       </div>
 
       {/* Stats cards */}
@@ -152,7 +152,7 @@ export default async function ActivityLogPage() {
                           {log.userRole}
                         </span>
                       ) : (
-                        <span className="text-xs text-gray-300">—</span>
+                        <span className="text-xs text-gray-300"> - </span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -173,14 +173,14 @@ export default async function ActivityLogPage() {
                           )}
                         </span>
                       ) : (
-                        <span className="text-gray-300">—</span>
+                        <span className="text-gray-300"> - </span>
                       )}
                     </td>
                     <td className="px-4 py-3 hidden xl:table-cell text-xs text-gray-500 max-w-[200px] truncate">
-                      {log.details ?? <span className="text-gray-300">—</span>}
+                      {log.details ?? <span className="text-gray-300"> - </span>}
                     </td>
                     <td className="px-4 py-3 hidden xl:table-cell text-xs text-gray-400 font-mono">
-                      {log.ipAddress ?? '—'}
+                      {log.ipAddress ?? ' - '}
                     </td>
                   </tr>
                 ))

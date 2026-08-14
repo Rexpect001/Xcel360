@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       bodyText: body.bodyText?.trim() || null,
     }
 
-    // Manual upsert — eventId is a nullable @unique field, which Prisma cannot
+    // Manual upsert  -  eventId is a nullable @unique field, which Prisma cannot
     // target with upsert/findUnique, so we find-then-create/update by hand.
     const existing = await db.certificateTemplate.findFirst({ where: { eventId } })
     const template = existing

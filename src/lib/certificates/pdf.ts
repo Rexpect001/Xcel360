@@ -34,12 +34,12 @@ export interface CertificateTemplateData {
 }
 
 // ── Palette (sampled from the Xcel360 reference design) ────────────────────────
-const TITLE_BLUE = rgb(0.231, 0.51, 0.84)  // #3b82d6 — CERTIFICATE
-const EVENT_BLUE = rgb(0.114, 0.435, 0.816) // #1d6fd0 — event line + sig name
-const BORDER_BLUE = rgb(0.36, 0.56, 0.84)  // #5c8fd6 — borders
+const TITLE_BLUE = rgb(0.231, 0.51, 0.84)  // #3b82d6  -  CERTIFICATE
+const EVENT_BLUE = rgb(0.114, 0.435, 0.816) // #1d6fd0  -  event line + sig name
+const BORDER_BLUE = rgb(0.36, 0.56, 0.84)  // #5c8fd6  -  borders
 const CORNER_BLUE = rgb(0.114, 0.384, 0.78) // corner brackets
-const ORANGE = rgb(0.96, 0.51, 0.12)       // #f5821f — accents / "X"
-const NAVY = rgb(0.1, 0.16, 0.42)          // #1a296b — recipient name
+const ORANGE = rgb(0.96, 0.51, 0.12)       // #f5821f  -  accents / "X"
+const NAVY = rgb(0.1, 0.16, 0.42)          // #1a296b  -  recipient name
 const GRAY = rgb(0.33, 0.34, 0.38)         // body text
 const MUTED = rgb(0.5, 0.53, 0.58)
 const LOGO_BLUE = rgb(0.114, 0.42, 0.78)   // badge fill
@@ -66,7 +66,7 @@ export function toDisplayName(raw: string): string {
     if (!letters) return word
     const isAllCaps = letters === letters.toUpperCase()
     const isAllLower = letters === letters.toLowerCase()
-    if (!isAllCaps && !isAllLower) return word // already mixed case — keep
+    if (!isAllCaps && !isAllLower) return word // already mixed case  -  keep
     return word.toLowerCase().replace(/(^|[-'’])([a-z])/g, (_, p, c) => p + c.toUpperCase())
   }).join(' ')
 }
@@ -187,7 +187,7 @@ function drawCircuit(page: PDFPage, baseX: number, baseY: number) {
   }
 }
 
-/** Dash-dot accent flanking a centered label: •—— LABEL ——• */
+/** Dash-dot accent flanking a centered label: • -  -  LABEL  -  - • */
 function drawFlankers(page: PDFPage, labelWidth: number, y: number, color: RGB) {
   const gap = labelWidth / 2 + 18
   const lineLen = 46

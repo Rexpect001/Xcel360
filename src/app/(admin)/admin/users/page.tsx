@@ -170,7 +170,7 @@ export default function AdminUsersPage() {
         setUsers(p => p.map(u => selected.has(u.id) ? { ...u, status: newStatus } : u))
       }
       setSelected(new Set())
-      toast.success(`Done — ${ids.length} user(s) updated`)
+      toast.success(`Done  -  ${ids.length} user(s) updated`)
     } else toast.error('Action failed')
   }
 
@@ -450,7 +450,7 @@ export default function AdminUsersPage() {
                             <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${statusMeta.dot}`} />
                           </div>
                           <div>
-                            <div className="font-medium text-gray-900 group-hover:text-brand-700 transition-colors">{user.name ?? '—'}</div>
+                            <div className="font-medium text-gray-900 group-hover:text-brand-700 transition-colors">{user.name ?? ' - '}</div>
                             <div className="text-xs text-gray-500">{user.email}</div>
                           </div>
                         </button>
@@ -584,7 +584,7 @@ export default function AdminUsersPage() {
                       {detailData.activityLog.map((log: any) => (
                         <div key={log.id} className="flex items-start gap-3 py-2.5 border-b border-gray-50 last:border-0">
                           <span className={`text-xs px-2 py-0.5 rounded-full font-semibold shrink-0 mt-0.5 ${ACTION_COLORS[log.action] ?? 'bg-gray-100 text-gray-600'}`}>{log.action}</span>
-                          <div className="flex-1 min-w-0"><p className="text-sm text-gray-700">{log.resource && <span className="text-gray-400">{log.resource}: </span>}<span className="font-medium">{log.resourceName ?? log.details ?? '—'}</span></p></div>
+                          <div className="flex-1 min-w-0"><p className="text-sm text-gray-700">{log.resource && <span className="text-gray-400">{log.resource}: </span>}<span className="font-medium">{log.resourceName ?? log.details ?? ' - '}</span></p></div>
                           <p className="text-xs text-gray-400 shrink-0">{new Date(log.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>
                         </div>
                       ))}

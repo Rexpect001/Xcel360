@@ -291,7 +291,7 @@ model EmailSubscriber {
   createdAt DateTime @default(now())
 }
 
-// Master contacts list — aggregates all contact sources
+// Master contacts list  -  aggregates all contact sources
 model Contact {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -302,17 +302,17 @@ model Contact {
   updatedAt DateTime @updatedAt
 }
 
-// Admin email campaigns — supports batched sending across multiple days
+// Admin email campaigns  -  supports batched sending across multiple days
 model EmailCampaign {
   id               String   @id @default(cuid())
   subject          String
   htmlBody         String   @db.Text
-  textBody         String?  @db.Text          // plain text body — used when provider is sendchamp
+  textBody         String?  @db.Text          // plain text body  -  used when provider is sendchamp
   audience         String   // 'users' | 'subscribers' | 'both' | 'none'
   provider         String   @default("resend") // 'resend' | 'sendchamp'
   status           String   @default("DRAFT") // DRAFT | SENDING | COMPLETED | FAILED
   recipients       String   @db.Text          // JSON array of all To addresses (merged at send time)
-  manualRecipients String   @default("[]") @db.Text // JSON array — raw manual To chips
+  manualRecipients String   @default("[]") @db.Text // JSON array  -  raw manual To chips
   ccRecipients     String   @default("[]") @db.Text // JSON array of CC addresses
   bccRecipients    String   @default("[]") @db.Text // JSON array of BCC addresses
   attachments      String   @default("[]") @db.Text // JSON array of {filename,url,contentType,size}
@@ -370,7 +370,7 @@ model Resource {
 // Cohort mentorship programs run by Xcel360
 model Program {
   id           String        @id @default(cuid())
-  title        String        // e.g. "Cohort 1 — Mentorship Program"
+  title        String        // e.g. "Cohort 1  -  Mentorship Program"
   cohortNumber Int?          // 1, 2, 3 ...
   description  String        @db.Text
   focus        String        // e.g. "Scholarship Applications & SOP Writing"
@@ -383,7 +383,7 @@ model Program {
   beneficiaries Beneficiary[]
 }
 
-// Participants in cohort programs — first name only shown publicly
+// Participants in cohort programs  -  first name only shown publicly
 model Beneficiary {
   id         String   @id @default(cuid())
   firstName  String

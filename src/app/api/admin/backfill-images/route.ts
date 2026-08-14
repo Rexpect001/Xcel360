@@ -42,7 +42,7 @@ export async function POST() {
           await db.opportunity.update({ where: { id: opp.id }, data: { imageUrl: staticUrl } })
           updated++
         } else {
-          // Fall back to the dynamic URL — better than nothing
+          // Fall back to the dynamic URL  -  better than nothing
           const fallback = `${APP_URL}/api/og?id=${opp.id}&type=${typeParam}&simple=true`
           await db.opportunity.update({ where: { id: opp.id }, data: { imageUrl: fallback } })
           failed++
@@ -51,7 +51,7 @@ export async function POST() {
     )
   }
 
-  // Same treatment for events — they were never backfilled before because
+  // Same treatment for events  -  they were never backfilled before because
   // this route only handled the Opportunity table.
   const events = await db.event.findMany({
     where: {

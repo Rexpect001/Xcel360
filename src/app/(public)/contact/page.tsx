@@ -4,7 +4,7 @@ import ContactForm from './ContactForm'
 export const metadata: Metadata = {
   title: 'Contact Us',
   description:
-    'Have a question about scholarships, mentorship, or the platform? Reach out to the Xcel360 team — we respond within 24 hours.',
+    'Have a question about scholarships, mentorship, or the platform? Reach out to the Xcel360 team  -  we respond within 24 hours.',
   alternates: { canonical: '/contact' },
 }
 

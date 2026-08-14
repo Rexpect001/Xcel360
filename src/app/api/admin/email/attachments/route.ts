@@ -1,13 +1,13 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import { put } from '@vercel/blob'
 
-const MAX_SIZE = 10 * 1024 * 1024 // 10 MB — Resend attachment limit
+const MAX_SIZE = 10 * 1024 * 1024 // 10 MB  -  Resend attachment limit
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAdmin()
+    await requireRole('ADMIN')
 
     const formData = await req.formData()
     const file = formData.get('file') as File | null

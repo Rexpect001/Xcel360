@@ -83,7 +83,7 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
       <p style="color:#0369a1;font-size:12px;word-break:break-all;margin:0 0 28px 0;">${resetUrl}</p>
       <hr style="border:none;border-top:1px solid #f3f4f6;margin:0 0 20px 0;">
       <p style="color:#9ca3af;font-size:12px;margin:0;">
-        This link expires in <strong>1 hour</strong>. If you didn't request a password reset, you can safely ignore this email — your password will not change.
+        This link expires in <strong>1 hour</strong>. If you didn't request a password reset, you can safely ignore this email  -  your password will not change.
       </p>
     </div>
   </div>

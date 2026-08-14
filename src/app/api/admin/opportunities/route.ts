@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // No image supplied by the admin form — render once now and store a
+    // No image supplied by the admin form  -  render once now and store a
     // permanent Blob URL, so later page views/social shares never hit the
     // dynamic /api/og renderer (that route is the account's #1 CPU cost).
     if (!opp.imageUrl) {

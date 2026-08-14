@@ -8,10 +8,10 @@ import { Newspaper, ArrowRight, Calendar } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'News & Media',
   description:
-    'Event recaps, announcements and highlights from Xcel360 — including our webinars, workshops and community programs.',
+    'Event recaps, announcements and highlights from Xcel360  -  including our webinars, workshops and community programs.',
   alternates: { canonical: '/news' },
   openGraph: {
-    title: 'News & Media — Xcel360',
+    title: 'News & Media  -  Xcel360',
     description: 'Event recaps, announcements and highlights from Xcel360.',
     url: '/news',
   },
@@ -51,7 +51,7 @@ export default async function NewsPage() {
       <div className="max-w-5xl mx-auto px-4 py-12 -mt-10">
         {posts.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center text-gray-500">
-            No stories published yet — check back soon.
+            No stories published yet  -  check back soon.
           </div>
         ) : (
           <>

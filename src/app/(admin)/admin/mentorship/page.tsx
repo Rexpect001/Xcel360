@@ -281,7 +281,7 @@ export default function AdminMentorshipPage() {
                       </button>
                     </td>
 
-                    {/* Mentor name — clickable */}
+                    {/* Mentor name  -  clickable */}
                     <td className="px-4 py-3">
                       <button
                         onClick={() => openDetail(m)}
@@ -594,7 +594,7 @@ export default function AdminMentorshipPage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
-              Booking Link <span className="text-gray-400">(optional — Calendly, etc.)</span>
+              Booking Link <span className="text-gray-400">(optional  -  Calendly, etc.)</span>
             </label>
             <input
               value={form.link}

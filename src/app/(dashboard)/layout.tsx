@@ -31,7 +31,7 @@ const quickLinks = [
   { href: '/mentorship',    label: 'Find a Mentor',  icon: Users2 },
 ]
 
-// All admin sections — matched to ROLE_ACCESS sections
+// All admin sections  -  matched to ROLE_ACCESS sections
 const adminSections = [
   { section: '/opportunities', href: '/admin/opportunities', label: 'Scholarships',     icon: BookMarked },
   { section: '/jobs',          href: '/admin/jobs',          label: 'Jobs & Internships', icon: Briefcase },

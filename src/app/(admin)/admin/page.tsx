@@ -199,7 +199,7 @@ export default async function AdminPage() {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {recentActivity.length === 0 ? (
             <div className="px-5 py-10 text-center text-slate-400 text-sm">
-              No activity logged yet — events will appear here as users interact with the platform.
+              No activity logged yet  -  events will appear here as users interact with the platform.
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -233,7 +233,7 @@ export default async function AdminPage() {
                             {log.resourceName && <span className="text-slate-400"> · {log.resourceName}</span>}
                           </span>
                         ) : (
-                          <span className="text-slate-300">—</span>
+                          <span className="text-slate-300"> - </span>
                         )}
                       </td>
                     </tr>

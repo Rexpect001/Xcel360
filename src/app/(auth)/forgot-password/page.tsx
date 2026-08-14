@@ -40,7 +40,7 @@ function ForgotPasswordContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-      // Always move to "sent" regardless — no email enumeration
+      // Always move to "sent" regardless  -  no email enumeration
       setStep('sent')
     } catch {
       toast.error('Something went wrong. Please try again.')
@@ -56,8 +56,8 @@ function ForgotPasswordContent() {
       toast.error('Passwords do not match')
       return
     }
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters')
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters')
       return
     }
     if (!token) {
@@ -107,7 +107,7 @@ function ForgotPasswordContent() {
     )
   }
 
-  // Email sent — waiting for user to click link
+  // Email sent  -  waiting for user to click link
   if (step === 'sent') {
     return (
       <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
@@ -121,7 +121,7 @@ function ForgotPasswordContent() {
         <p className="text-gray-400 text-xs mb-6">The link expires in 1 hour. Check your spam folder if you don't see it.</p>
         <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700 text-left mb-6 flex items-start gap-2">
           <ShieldCheck className="h-4 w-4 flex-shrink-0 mt-0.5" />
-          <span>For your security, passwords can only be changed via the link sent to your email — not directly on this page.</span>
+          <span>For your security, passwords can only be changed through the link sent to your email.</span>
         </div>
         <div className="space-y-3">
           <button
@@ -168,7 +168,7 @@ function ForgotPasswordContent() {
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Min. 6 characters"
+                placeholder="Min. 8 characters"
                 className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -196,7 +196,7 @@ function ForgotPasswordContent() {
 
           <button
             type="submit"
-            disabled={loading || newPassword.length < 6 || newPassword !== confirmPassword}
+            disabled={loading || newPassword.length < 8 || newPassword !== confirmPassword}
             className="w-full bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors disabled:opacity-60"
           >
             {loading ? 'Updating...' : 'Update Password'}
@@ -211,7 +211,7 @@ function ForgotPasswordContent() {
     <div className="bg-white rounded-2xl shadow-2xl p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Reset password</h1>
-        <p className="text-gray-500 text-sm mt-1">Enter your email — we'll send a secure reset link</p>
+        <p className="text-gray-500 text-sm mt-1">Enter your email and we will send a secure reset link.</p>
       </div>
 
       <form onSubmit={handleEmailStep} className="space-y-4">

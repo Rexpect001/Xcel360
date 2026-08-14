@@ -27,14 +27,14 @@ export default function MentorApplyPage() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
-          subject: `Mentor Application — ${form.expertise}`,
+          subject: `Mentor Application  -  ${form.expertise}`,
           message: `Country: ${form.country}\nExpertise: ${form.expertise}\nScholarship Type: ${form.scholarshipType}\nLinkedIn: ${form.linkedin || 'N/A'}\n\nExperience:\n${form.experience}\n\nWhy I want to mentor:\n${form.bio}`,
         }),
       })
       if (!res.ok) throw new Error()
       setSubmitted(true)
     } catch {
-      // Still show success — email may not be configured yet
+      // Still show success  -  email may not be configured yet
       setSubmitted(true)
       toast.success('Application received!')
     } finally {
@@ -152,7 +152,7 @@ export default function MentorApplyPage() {
                   value={form.experience}
                   onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-                  placeholder="Briefly describe your scholarship journey — which scholarships you received, when, and where you studied."
+                  placeholder="Briefly describe your scholarship journey  -  which scholarships you received, when, and where you studied."
                 />
               </div>
 

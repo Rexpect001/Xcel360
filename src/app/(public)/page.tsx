@@ -6,7 +6,7 @@ import TopScholarships from '@/components/landing/TopScholarships'
 import prisma from '@/lib/prisma'
 
 export const metadata: Metadata = {
-  title: 'Xcel360 — Find Scholarships, Get Mentorship & Study Abroad',
+  title: 'Xcel360  -  Find Scholarships, Get Mentorship & Study Abroad',
   description:
     'Xcel360 is the #1 platform for African students to discover fully funded scholarships, track deadlines, connect with mentors, and build a clear plan to study abroad.',
   alternates: { canonical: '/' },

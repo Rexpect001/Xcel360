@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
-// GET — paginated contacts list with optional search & source filter
+// GET  -  paginated contacts list with optional search & source filter
 export async function GET(req: NextRequest) {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ contacts, total, page, pages: Math.ceil(total / limit), breakdown })
 }
 
-// DELETE — remove one contact
+// DELETE  -  remove one contact
 export async function DELETE(req: NextRequest) {
   try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
   const { id } = await req.json()

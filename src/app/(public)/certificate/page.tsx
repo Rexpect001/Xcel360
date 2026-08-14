@@ -45,7 +45,7 @@ export default function CertificatePage() {
   }
 
   const fmt = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'
+    d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ' - '
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 px-4">

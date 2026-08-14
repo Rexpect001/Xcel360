@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Join free webinars, workshops, and Q&A sessions on scholarships, study abroad, and career development. Register for upcoming Xcel360 events.',
   alternates: { canonical: '/events' },
   openGraph: {
-    title: 'Events & Webinars — Xcel360',
+    title: 'Events & Webinars  -  Xcel360',
     description: 'Join free webinars, workshops, and Q&A sessions on scholarships and study abroad.',
     url: '/events',
   },
@@ -83,7 +83,7 @@ export default async function EventsPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Events &amp; Programs</h1>
           <p className="text-blue-200 text-lg max-w-xl">
-            Webinars, workshops, info sessions, and our cohort mentorship programs — all free for students.
+            Webinars, workshops, info sessions, and our cohort mentorship programs  -  all free for students.
           </p>
           {upcoming.length > 0 && (
             <div className="mt-8 flex flex-wrap gap-4">
@@ -202,7 +202,7 @@ export default async function EventsPage() {
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
             <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-200" />
             <p className="text-gray-500 font-medium">No events scheduled yet.</p>
-            <p className="text-sm text-gray-400 mt-1">Check back soon — new events are added regularly.</p>
+            <p className="text-sm text-gray-400 mt-1">Check back soon  -  new events are added regularly.</p>
           </div>
         )}
 
@@ -239,7 +239,7 @@ export default async function EventsPage() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Calendar className="h-3.5 w-3.5 text-brand-500" />
-                        <span>{formatDate(prog.startDate)}{prog.endDate ? ` — ${formatDate(prog.endDate)}` : ''}</span>
+                        <span>{formatDate(prog.startDate)}{prog.endDate ? `  -  ${formatDate(prog.endDate)}` : ''}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Users className="h-3.5 w-3.5 text-brand-500" />

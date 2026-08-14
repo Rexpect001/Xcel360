@@ -18,8 +18,8 @@ export default function SignUpPage() {
       toast.error('Passwords do not match')
       return
     }
-    if (form.password.length < 6) {
-      toast.error('Password must be at least 6 characters')
+    if (form.password.length < 8) {
+      toast.error('Password must be at least 8 characters')
       return
     }
     setLoading(true)
@@ -93,13 +93,13 @@ export default function SignUpPage() {
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input type={showPassword ? 'text' : 'password'} required value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              placeholder="Min. 6 characters"
+              placeholder="Min. 8 characters"
               className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          <p className="mt-1.5 text-xs text-gray-500">At least 6 characters</p>
+          <p className="mt-1.5 text-xs text-gray-500">At least 8 characters</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>

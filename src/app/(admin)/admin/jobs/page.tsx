@@ -168,7 +168,7 @@ export default function AdminJobsPage() {
     if (!file) return
     if (!file.type.startsWith('image/')) { toast.error('Please upload an image file'); return }
     if (file.size > 10 * 1024 * 1024) { toast.error('Image must be under 10MB'); return }
-    // Resize + compress via canvas — prevents browser freeze on large images
+    // Resize + compress via canvas  -  prevents browser freeze on large images
     const img = new Image()
     const objectUrl = URL.createObjectURL(file)
     img.onload = () => {
@@ -265,7 +265,7 @@ export default function AdminJobsPage() {
   // ── Excel template ──
   const downloadTemplate = () => {
     const sample = [{
-      Title: 'Software Engineer – Remote',
+      Title: 'Software Engineer  -  Remote',
       Category: 'JOB',
       Company: 'Acme Corp',
       Country: 'Nigeria',
@@ -557,11 +557,11 @@ export default function AdminJobsPage() {
           <dl className="space-y-3 text-sm">
             <div className="grid grid-cols-2 gap-3">
               <div><dt className="text-xs text-gray-500">Category</dt><dd className="font-medium">{detailJob.category}</dd></div>
-              <div><dt className="text-xs text-gray-500">Job Type</dt><dd className="font-medium">{detailJob.jobType ?? '—'}</dd></div>
+              <div><dt className="text-xs text-gray-500">Job Type</dt><dd className="font-medium">{detailJob.jobType ?? ' - '}</dd></div>
               <div><dt className="text-xs text-gray-500">Company</dt><dd className="font-medium">{detailJob.company ?? detailJob.hostOrg}</dd></div>
               <div><dt className="text-xs text-gray-500">Country</dt><dd className="font-medium">{detailJob.country}</dd></div>
-              <div><dt className="text-xs text-gray-500">Salary</dt><dd className="font-medium text-emerald-700">{detailJob.salary ?? '—'}</dd></div>
-              <div><dt className="text-xs text-gray-500">Experience</dt><dd className="font-medium">{detailJob.experienceLevel ?? '—'}</dd></div>
+              <div><dt className="text-xs text-gray-500">Salary</dt><dd className="font-medium text-emerald-700">{detailJob.salary ?? ' - '}</dd></div>
+              <div><dt className="text-xs text-gray-500">Experience</dt><dd className="font-medium">{detailJob.experienceLevel ?? ' - '}</dd></div>
               <div><dt className="text-xs text-gray-500">Remote</dt><dd className="font-medium">{detailJob.remote ? 'Yes' : 'No'}</dd></div>
               <div><dt className="text-xs text-gray-500">Deadline</dt><dd className="font-medium">{formatDate(detailJob.deadline)}</dd></div>
             </div>
@@ -702,7 +702,7 @@ export default function AdminJobsPage() {
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Salary / Stipend</label>
               <input value={form.salary} onChange={(e) => setForm((f) => ({ ...f, salary: e.target.value }))}
-                placeholder="e.g. $50,000 – $70,000/yr"
+                placeholder="e.g. $50,000  -  $70,000/yr"
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>

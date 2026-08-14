@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import { Bookmark, FileText, Bell, ArrowRight, Sparkles, UserCircle, Search, Globe } from 'lucide-react'
 import { daysUntilDeadline } from '@/lib/utils'
-import type { Opportunity, Profile } from '@prisma/client'
+import { profileCompleteness, rankOpportunities } from '@/lib/matching'
 
 async function getDashboardData(userId: string) {
   const [profile, savedCount, applicationCount, unreadNotifications, openOpportunities] = await Promise.all([
@@ -22,19 +22,6 @@ async function getDashboardData(userId: string) {
   return { profile, savedCount, applicationCount, unreadNotifications, openOpportunities }
 }
 
-function computeMatchScore(opp: Opportunity, profile: Profile | null): number {
-  if (!profile) return 0
-  let score = 0
-  if (profile.level && opp.programLevel.includes(profile.level)) score += 2
-  if (profile.targetCountries.length > 0 && (
-    profile.targetCountries.includes(opp.country) || opp.country === 'Global'
-  )) score += 2
-  if (profile.targetFields.length > 0 && profile.targetFields.some((f) =>
-    opp.fieldTags.includes(f) || opp.field === f
-  )) score += 1
-  return score
-}
-
 export default async function DashboardPage() {
   const session = await getAuth()
   if (!session) redirect('/signin')
@@ -42,13 +29,11 @@ export default async function DashboardPage() {
   const { profile, savedCount, applicationCount, unreadNotifications, openOpportunities } =
     await getDashboardData(session.user.id)
 
-  const profileComplete = !!(profile && profile.level && profile.targetCountries.length > 0)
+  const completion = profileCompleteness(profile)
+  const profileComplete = completion >= 100
+  const taggedOpps = rankOpportunities(openOpportunities, profile, 30)
 
-  const taggedOpps = openOpportunities
-    .map((opp) => ({ ...opp, matchScore: computeMatchScore(opp, profile) }))
-    .sort((a, b) => b.matchScore - a.matchScore || (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-
-  const matchedCount = taggedOpps.filter((o) => o.matchScore > 0).length
+  const matchedCount = taggedOpps.filter((o) => o.score >= 50).length
   const displayOpps = taggedOpps.slice(0, 9)
 
   return (
@@ -138,7 +123,7 @@ export default async function DashboardPage() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
             <Globe className="h-12 w-12 text-gray-200 mx-auto mb-3" />
             <p className="text-gray-500 font-medium">No open scholarships right now</p>
-            <p className="text-sm text-gray-400 mt-1">Check back soon — new opportunities are added regularly.</p>
+            <p className="text-sm text-gray-400 mt-1">Check back soon  -  new opportunities are added regularly.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -158,18 +143,23 @@ export default async function DashboardPage() {
                 >
                   <div className="h-1 bg-gradient-to-r from-brand-600 to-brand-400" />
                   <div className="p-5">
-                    {opp.matchScore > 0 && (
+                    {opp.score >= 50 && (
                       <div className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 border border-green-100 px-2.5 py-1 rounded-full font-medium mb-2.5">
                         <Sparkles className="h-3 w-3" />
-                        Match for you
+                        {opp.score}% match
                       </div>
                     )}
                     <h3 className="font-semibold text-gray-900 text-sm group-hover:text-brand-700 transition-colors line-clamp-2 mb-1 leading-snug">
                       {opp.title}
                     </h3>
                     <p className="text-xs text-gray-500 mb-3 truncate">
-                      {opp.hostOrg} · {opp.country}
+                      {opp.hostOrg} - {opp.country}
                     </p>
+                    {opp.reasons.length > 0 && (
+                      <p className="text-[11px] text-gray-400 mb-3 line-clamp-1">
+                        {opp.reasons.join(', ')}
+                      </p>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-xs bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full font-medium">
                         {opp.fundingType}

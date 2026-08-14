@@ -18,10 +18,10 @@ export function isAdminRole(role: string): boolean {
 }
 
 export const ROLE_LABELS: Record<UserRole, { label: string; color: string; description: string }> = {
-  USER:      { label: 'User',      color: 'bg-gray-100 text-gray-700',   description: 'Standard user — can browse, save, and apply to scholarships' },
+  USER:      { label: 'User',      color: 'bg-gray-100 text-gray-700',   description: 'Standard user  -  can browse, save, and apply to scholarships' },
   EDITOR:    { label: 'Editor',    color: 'bg-yellow-100 text-yellow-700', description: 'Can manage scholarships, jobs, resources, blog posts, and events' },
   MODERATOR: { label: 'Moderator', color: 'bg-orange-100 text-orange-700', description: 'Can manage events' },
   MENTOR:    { label: 'Mentor',    color: 'bg-purple-100 text-purple-700', description: 'Can manage resources, blog, mentorship listings, and events' },
   MANAGER:   { label: 'Manager',   color: 'bg-blue-100 text-blue-700',   description: 'Can manage scholarships, jobs, programs, resources, blog, and events' },
-  ADMIN:     { label: 'Admin',     color: 'bg-red-100 text-red-700',     description: 'Super admin — full access including users, roles, and activity logs' },
+  ADMIN:     { label: 'Admin',     color: 'bg-red-100 text-red-700',     description: 'Super admin  -  full access including users, roles, and activity logs' },
 }

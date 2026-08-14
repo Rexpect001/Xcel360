@@ -1,8 +1,8 @@
 import { Lock, CheckCircle2, Calendar, Clock, Award, Trophy } from 'lucide-react'
 
 export const metadata = {
-  title: 'Registration Closed — Leveraging AI in Today\'s World',
-  description: 'Registration is closed. The event held successfully — thank you for the incredible response.',
+  title: 'Registration Closed  -  Leveraging AI in Today\'s World',
+  description: 'Registration is closed. The event held successfully  -  thank you for the incredible response.',
   robots: { index: false, follow: false },
 }
 
@@ -72,12 +72,12 @@ export default function RegistrationClosedPage() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <Award className="h-6 w-6 text-brand-600 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">Certificate of Participation</h3>
-            <p className="text-sm text-gray-500">Issued to verified attendees — look it up with your registered email.</p>
+            <p className="text-sm text-gray-500">Issued to verified attendees  -  look it up with your registered email.</p>
           </div>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <Trophy className="h-6 w-6 text-amber-500 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">AI Poster Competition</h3>
-            <p className="text-sm text-gray-500">Theme: <em>What Can You Do With AI?</em> — compete for a ₦300,000 prize pool.</p>
+            <p className="text-sm text-gray-500">Theme: <em>What Can You Do With AI?</em>  -  compete for a ₦300,000 prize pool.</p>
           </div>
         </div>
       </div>

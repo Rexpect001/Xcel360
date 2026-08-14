@@ -93,7 +93,7 @@ export default function EdifierAdPopup() {
             </div>
 
             <p className="text-sm text-white/80 leading-relaxed">
-              Scientific Poster Presentation &amp; Judging Competition — now open for student submissions and judge volunteers.
+              Scientific Poster Presentation &amp; Judging Competition  -  now open for student submissions and judge volunteers.
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export default function EdifierAdPopup() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Volunteer as a Judge</p>
-                  <p className="text-xs text-gray-500">Academics and professionals — apply to review and score poster presentations.</p>
+                  <p className="text-xs text-gray-500">Academics and professionals  -  apply to review and score poster presentations.</p>
                 </div>
               </div>
             </div>

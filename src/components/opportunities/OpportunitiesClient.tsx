@@ -1,6 +1,5 @@
 'use client'
 import { useState, useMemo, lazy, Suspense } from 'react'
-import { Opportunity } from '@prisma/client'
 import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, GraduationCap, Briefcase, Building2 } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
@@ -9,11 +8,12 @@ import { formatDate, daysUntilDeadline, deadlineLabel, getFundingBadgeColor, cn 
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
+import type { OpportunityListItem } from '@/types/opportunity-list'
 
 const ScholarshipMap = lazy(() => import('./ScholarshipMap'))
 
 interface Props {
-  initialOpportunities: Opportunity[]
+  initialOpportunities: OpportunityListItem[]
 }
 
 export default function OpportunitiesClient({ initialOpportunities }: Props) {

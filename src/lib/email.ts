@@ -57,7 +57,7 @@ export async function sendRegistrationConfirmation({
       ${meetingBlock}
       <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">
         ${meetingBlock
-          ? 'Your registration is confirmed. Save the joining details above — we look forward to seeing you there.'
+          ? 'Your registration is confirmed. Save the joining details above  -  we look forward to seeing you there.'
           : "Your registration has been received. We'll send joining details closer to the event date."}
       </p>
       <a href="${APP_URL}/events" style="display:inline-block;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">View All Events</a>
@@ -103,7 +103,7 @@ export async function sendDeadlineReminderEmail({
         <p style="margin:0;font-size:15px;font-weight:600;color:#111827;">${opportunityTitle}</p>
         <p style="margin:6px 0 0 0;font-size:14px;font-weight:700;color:${urgency};">Deadline closes ${label}</p>
       </div>
-      <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">You saved this opportunity — make sure you submit before it closes.</p>
+      <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">You saved this opportunity  -  make sure you submit before it closes.</p>
       <a href="${APP_URL}/opportunities/${opportunityId}" style="display:inline-block;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">View Opportunity</a>
     </div>
     <div style="background:#f8fafc;padding:20px 40px;border-top:1px solid #f1f5f9;">

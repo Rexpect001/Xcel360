@@ -33,7 +33,7 @@ export async function POST() {
   }
 }
 
-// GET — preview how many would be deleted (dry run)
+// GET  -  preview how many would be deleted (dry run)
 export async function GET() {
   try {
     await requireRole("ADMIN")

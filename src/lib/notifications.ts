@@ -39,7 +39,7 @@ export async function scheduleDeadlineReminders(userId: string, opportunityId: s
   for (const day of reminderDays) {
     if (daysLeft > day) {
       // In production, schedule these with a job queue (e.g., Inngest, cron)
-      // For now, we log them — they'll be triggered by a cron API route
+      // For now, we log them  -  they'll be triggered by a cron API route
       console.log(`Schedule reminder for ${userId} at ${day} days before deadline`)
     }
   }
@@ -113,7 +113,7 @@ export async function sendDeadlineReminders() {
         userId: saved.userId,
         type: 'DEADLINE_REMINDER',
         title: `Deadline in ${daysLeft} days`,
-        message: `"${saved.opportunity.title}" closes in ${daysLeft} days — don't miss it!`,
+        message: `"${saved.opportunity.title}" closes in ${daysLeft} days  -  don't miss it!`,
         link: `/opportunities/${saved.opportunityId}`,
       })
       if (saved.user.profile?.notifyEmail !== false && saved.user.email) {
@@ -152,7 +152,7 @@ export async function notifyMatchingUsers(opportunityId: string) {
       userId: user.id,
       type: 'NEW_OPPORTUNITY',
       title: 'New opportunity matches your profile',
-      message: `"${opportunity.title}" just posted — matches your interests.`,
+      message: `"${opportunity.title}" just posted  -  matches your interests.`,
       link: `/opportunities/${opportunityId}`,
     })
 

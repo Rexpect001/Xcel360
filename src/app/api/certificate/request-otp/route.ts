@@ -9,7 +9,7 @@ const db = prisma as any
 const OTP_TTL_MS = 10 * 60 * 1000 // 10 minutes
 const THROTTLE_MS = 60 * 1000 // one code per email per minute
 
-// Send a one-time access code to a participant's email — only if they have
+// Send a one-time access code to a participant's email  -  only if they have
 // at least one issued certificate. Always returns a generic response so the
 // endpoint never reveals whether an email exists.
 export async function POST(req: NextRequest) {

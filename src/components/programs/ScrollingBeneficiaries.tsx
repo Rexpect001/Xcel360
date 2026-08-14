@@ -13,8 +13,8 @@ interface Props {
 }
 
 function maskName(firstName: string) {
-  // Show first name + long dashes — never reveals full identity
-  return `${firstName} ${'—'.repeat(4)}`
+  // Show first name + long dashes  -  never reveals full identity
+  return `${firstName} ${' - '.repeat(4)}`
 }
 
 function BeneficiaryCard({ b }: { b: Beneficiary }) {
@@ -62,7 +62,7 @@ export default function ScrollingBeneficiaries({ beneficiaries }: Props) {
 
       <div className="overflow-hidden h-[480px]">
         <div className="grid md:grid-cols-2 gap-4 h-full">
-          {/* Column 1 — scrolls up */}
+          {/* Column 1  -  scrolls up */}
           <div className="overflow-hidden">
             <div
               ref={col1Ref}
@@ -75,7 +75,7 @@ export default function ScrollingBeneficiaries({ beneficiaries }: Props) {
             </div>
           </div>
 
-          {/* Column 2 — scrolls up (offset delay so they don't sync) */}
+          {/* Column 2  -  scrolls up (offset delay so they don't sync) */}
           {col2.length > 0 && (
             <div className="overflow-hidden hidden md:block">
               <div

@@ -1,8 +1,8 @@
 'use client'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
-import { Opportunity } from '@prisma/client'
 import { daysUntilDeadline } from '@/lib/utils'
+import type { OpportunityListItem } from '@/types/opportunity-list'
 
 const COUNTRY_COORDS: Record<string, [number, number]> = {
   'United Kingdom': [51.5, -0.12],
@@ -63,7 +63,7 @@ function getCoords(country: string): [number, number] | null {
   return key ? COUNTRY_COORDS[key] : null
 }
 
-function getMinDays(opps: Opportunity[]): number {
+function getMinDays(opps: OpportunityListItem[]): number {
   return opps.reduce((min, o) => {
     const d = daysUntilDeadline(o.deadline)
     return d > 0 && d < min ? d : min
@@ -78,7 +78,7 @@ function getPinColor(minDays: number): string {
 }
 
 interface Props {
-  opportunities: Opportunity[]
+  opportunities: OpportunityListItem[]
 }
 
 export default function ScholarshipMap({ opportunities }: Props) {
@@ -110,7 +110,7 @@ export default function ScholarshipMap({ opportunities }: Props) {
       }).addTo(map)
 
       // Group by country
-      const groups: Record<string, Opportunity[]> = {}
+      const groups: Record<string, OpportunityListItem[]> = {}
       opportunities.forEach((opp) => {
         const key = opp.country || 'Global'
         if (!groups[key]) groups[key] = []
@@ -172,7 +172,7 @@ export default function ScholarshipMap({ opportunities }: Props) {
         const popup = L.popup({ maxWidth: 280, maxHeight: 360 }).setContent(`
           <div style="font-family:system-ui,sans-serif;">
             <div style="font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #dbeafe;">
-              ${country} — ${count} scholarship${count > 1 ? 's' : ''}
+              ${country}  -  ${count} scholarship${count > 1 ? 's' : ''}
             </div>
             ${listItems}
             ${moreText}

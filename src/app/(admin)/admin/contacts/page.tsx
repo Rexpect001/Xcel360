@@ -57,7 +57,7 @@ function PreviewModal({
             <tbody>
               {preview.map((r, i) => (
                 <tr key={i} className="border-b border-gray-50">
-                  <td className="py-2 text-gray-700 pr-4">{r.name || <span className="text-gray-300 italic">—</span>}</td>
+                  <td className="py-2 text-gray-700 pr-4">{r.name || <span className="text-gray-300 italic"> - </span>}</td>
                   <td className="py-2 text-gray-500 text-xs">{r.email}</td>
                 </tr>
               ))}
@@ -150,7 +150,7 @@ export default function AdminContactsPage() {
         setPreviewRows(rows)
         setPreviewFile(file.name)
       } catch {
-        toast.error('Could not read file — make sure it is a valid .xlsx or .xls file')
+        toast.error('Could not read file  -  make sure it is a valid .xlsx or .xls file')
       }
     }
     reader.readAsArrayBuffer(file)
@@ -209,7 +209,7 @@ export default function AdminContactsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
-          <p className="text-gray-500 mt-1">Master email list — {total.toLocaleString()} total</p>
+          <p className="text-gray-500 mt-1">Master email list  -  {total.toLocaleString()} total</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleExport} className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">

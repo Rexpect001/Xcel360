@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   if (!event) return { title: 'Event Not Found' }
   const description = event.description
     ? event.description.slice(0, 155).trim()
-    : `Join the ${event.type} — ${event.title} hosted by Xcel360.`
+    : `Join the ${event.type}  -  ${event.title} hosted by Xcel360.`
   return {
     title: event.title,
     description,

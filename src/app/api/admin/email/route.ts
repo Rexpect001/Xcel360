@@ -1,16 +1,16 @@
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // allow time to send a large SendChamp batch in one request
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { runCampaignSend } from '@/lib/email-utils'
 
 // Resend free plan caps at 100/day; SendChamp is paid with no hard cap
 function maxLimit(provider: string) { return provider === 'sendchamp' ? 5000 : 100 }
 
-// GET — campaigns list or email log
+// GET  -  campaigns list or email log
 export async function GET(req: NextRequest) {
-  try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  try { await requireRole('ADMIN') } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const db = prisma as any
   const { searchParams } = new URL(req.url)
@@ -30,9 +30,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(campaigns)
 }
 
-// POST — create and optionally send a campaign
+// POST  -  create and optionally send a campaign
 export async function POST(req: NextRequest) {
-  try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  try { await requireRole('ADMIN') } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const {
     subject, htmlBody, textBody = '', audience, eventId,

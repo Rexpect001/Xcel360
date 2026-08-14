@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const db = prisma as any
     const event = await db.event.create({ data: body })
 
-    // No cover image supplied — render once now and store a permanent Blob
+    // No cover image supplied  -  render once now and store a permanent Blob
     // URL, so social shares don't hit the dynamic /api/og renderer forever.
     if (!event.coverImage) {
       const staticUrl = await generateAndStoreOpImage(event.id, 'event', APP_URL)

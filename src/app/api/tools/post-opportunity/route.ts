@@ -31,7 +31,7 @@ function checkAuth(req: NextRequest): boolean {
   return !!(secret && auth === `Bearer ${secret}`)
 }
 
-// ── GET — health / stats ──────────────────────────────────────────────────────
+// ── GET  -  health / stats ──────────────────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
   if (!checkAuth(req)) {
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ── POST — create opportunity ─────────────────────────────────────────────────
+// ── POST  -  create opportunity ─────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   if (!checkAuth(req)) {
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  // ── Sanitise every field — no raw pass-through to DB ──
+  // ── Sanitise every field  -  no raw pass-through to DB ──
   const title           = str(body.title,           500)
   const hostOrg         = str(body.hostOrg,         300)
   const company         = str(body.company,         300)
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     ? (rawStatus as typeof ALLOWED_STATUSES[number])
     : 'OPEN'
 
-  // applicationLink must be an https URL or a valid email — nothing else
+  // applicationLink must be an https URL or a valid email  -  nothing else
   const rawAppLink = str(body.applicationLink, 2048)
   if (rawAppLink && !isValidAppLink(rawAppLink)) {
     return NextResponse.json(
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
   }
   const imageUrl = rawImageUrl || null
 
-  // Arrays — only accept string elements, cap each item and array length
+  // Arrays  -  only accept string elements, cap each item and array length
   const toStrArray = (v: unknown, itemMax: number, listMax: number): string[] =>
     Array.isArray(v)
       ? v.filter((x): x is string => typeof x === 'string')
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[post-opportunity] DB create failed:', msg)
-    return NextResponse.json({ error: 'DB error — check server logs' }, { status: 500 })
+    return NextResponse.json({ error: 'DB error  -  check server logs' }, { status: 500 })
   }
 
   console.log('[post-opportunity] Created:', opportunity.id, opportunity.title)

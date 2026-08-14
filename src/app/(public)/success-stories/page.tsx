@@ -3,12 +3,12 @@ import prisma from '@/lib/prisma'
 import { Quote } from 'lucide-react'
 
 export const metadata = {
-  title: 'Success Stories — Real Students, Real Scholarships',
+  title: 'Success Stories  -  Real Students, Real Scholarships',
   description:
     'Read real success stories from African students who won fully funded scholarships and studied abroad with support from Xcel360.',
   alternates: { canonical: '/success-stories' },
   openGraph: {
-    title: 'Success Stories — Xcel360',
+    title: 'Success Stories  -  Xcel360',
     description: 'Real students, real scholarships. See how Xcel360 members won fully funded opportunities abroad.',
     url: '/success-stories',
   },

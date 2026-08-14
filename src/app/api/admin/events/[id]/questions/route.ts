@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
-// GET — fetch questions for an event
+// GET  -  fetch questions for an event
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await requireAdmin()
@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   }
 }
 
-// PUT — replace all questions for an event (full sync)
+// PUT  -  replace all questions for an event (full sync)
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await requireAdmin()

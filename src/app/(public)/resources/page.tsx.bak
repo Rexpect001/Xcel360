@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { BookOpen, Calendar, Tag, Download, FileText, ArrowRight, ExternalLink } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 
-export const metadata = { title: 'Resources — Xcel360' }
+export const metadata = { title: 'Resources  -  Xcel360' }
 
 async function getPosts() {
   try {
@@ -84,7 +84,7 @@ const defaultPosts = [
 const downloadTemplates = [
   {
     id: 'cv-general',
-    title: 'Sample CV — General',
+    title: 'Sample CV  -  General',
     description: 'A clean, professional CV template for non-STEM applications. Covers education, experience, publications, and awards.',
     category: 'CV Template',
     categoryColor: 'bg-blue-50 text-blue-700',
@@ -93,7 +93,7 @@ const downloadTemplates = [
   },
   {
     id: 'cv-stem',
-    title: 'Sample CV — STEM',
+    title: 'Sample CV  -  STEM',
     description: 'A research-focused CV template tailored for STEM applicants. Includes sections for publications, technical skills, and research experience.',
     category: 'CV Template',
     categoryColor: 'bg-blue-50 text-blue-700',
@@ -102,7 +102,7 @@ const downloadTemplates = [
   },
   {
     id: 'sop-general',
-    title: 'Sample SOP — General',
+    title: 'Sample SOP  -  General',
     description: 'A structured Statement of Purpose template for humanities, social sciences, and non-STEM programs. With paragraph-by-paragraph guidance.',
     category: 'SOP Template',
     categoryColor: 'bg-purple-50 text-purple-700',
@@ -111,7 +111,7 @@ const downloadTemplates = [
   },
   {
     id: 'sop-stem',
-    title: 'Sample SOP — STEM',
+    title: 'Sample SOP  -  STEM',
     description: 'A research-driven SOP template for STEM graduate programs. Focused on technical credibility, research problems, and faculty alignment.',
     category: 'SOP Template',
     categoryColor: 'bg-purple-50 text-purple-700',

@@ -1,14 +1,14 @@
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireRole } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { runCampaignSend } from '@/lib/email-utils'
 
-// PATCH — send a DRAFT, resume/cancel a SENDING, or retry a FAILED campaign.
+// PATCH  -  send a DRAFT, resume/cancel a SENDING, or retry a FAILED campaign.
 // All sending delegates to the centralized, resumable runCampaignSend.
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  try { await requireRole('ADMIN') } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const { action } = await req.json()
   const db = prisma as any
@@ -46,9 +46,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-// GET — fetch logs for a specific campaign
+// GET  -  fetch logs for a specific campaign
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  try { await requireRole('ADMIN') } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const db = prisma as any
   const { searchParams } = new URL(req.url)
@@ -62,9 +62,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({ logs, total, page, pages: Math.ceil(total / limit) })
 }
 
-// DELETE — delete a campaign and its logs
+// DELETE  -  delete a campaign and its logs
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  try { await requireAdmin() } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  try { await requireRole('ADMIN') } catch { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
 
   const db = prisma as any
   const campaign = await db.emailCampaign.findUnique({ where: { id: params.id } })

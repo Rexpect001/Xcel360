@@ -48,7 +48,7 @@ export default function GatedLink({ href, className, children, type = 'download'
 
             <div className="text-center mb-6">
               <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
-                {type === 'download' ? '📄' : '📖'}
+                {type === 'download' ? 'ðŸ“„' : 'ðŸ“-'}
               </div>
               <h2 className="text-xl font-bold text-gray-900 mb-2">
                 {type === 'download' ? 'Sign in to download' : 'Sign in to read'}

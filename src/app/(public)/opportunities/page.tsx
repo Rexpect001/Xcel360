@@ -1,8 +1,11 @@
 export const revalidate = 3600
+
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import OpportunitiesClient from '@/components/opportunities/OpportunitiesClient'
+import AdSlot from '@/components/ads/AdSlot'
 import prisma from '@/lib/prisma'
+import { opportunityListSelect } from '@/types/opportunity-list'
 
 export const metadata: Metadata = {
   title: 'Scholarships & Funding Opportunities',
@@ -11,7 +14,7 @@ export const metadata: Metadata = {
   keywords: [
     'fully funded scholarships',
     'scholarships for Africans',
-    'study abroad 2025',
+    'study abroad scholarships',
     'undergraduate scholarships',
     'postgraduate scholarships',
     'PhD scholarships',
@@ -20,47 +23,92 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/opportunities' },
   openGraph: {
-    title: 'Scholarships & Funding Opportunities — Xcel360',
+    title: 'Scholarships & Funding Opportunities - Xcel360',
     description: 'Browse hundreds of fully funded scholarships, grants, and fellowships for African students.',
     url: '/opportunities',
   },
 }
 
-
 async function getOpportunities() {
-  const all = await (prisma as any).opportunity.findMany({
-    where: { status: 'OPEN' },
-    orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
-  })
-  // Deduplicate by normalised title — keep first occurrence (featured/soonest deadline first)
-  const seen = new Set<string>()
-  return all.filter((o: any) => {
-    const key = o.title.toLowerCase().trim()
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
-  })
-}
+  try {
+    const all = await prisma.opportunity.findMany({
+      where: { status: 'OPEN' },
+      orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
+      take: 300,
+      select: opportunityListSelect,
+    })
 
+    const seen = new Set<string>()
+    return all.filter((o) => {
+      const key = o.title.toLowerCase().trim()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  } catch (error) {
+    console.error('[opportunities/page] Failed to load opportunities', error)
+    return []
+  }
+}
 
 export default async function OpportunitiesPage() {
   const opportunities = await getOpportunities()
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Scholarships and funding opportunities for African students',
+    description: metadata.description,
+    url: '/opportunities',
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: opportunities.slice(0, 25).map((opp, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `/opportunities/${opp.id}`,
+        name: opp.title,
+      })),
+    },
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-            Opportunities
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Opportunities</h1>
           <p className="text-blue-200 text-lg">
-            {opportunities.length} opportunities across 50+ countries
+            Search scholarships, grants, fellowships, jobs, and internships from trusted sources.
           </p>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <AdSlot placement="opportunities-top" compact />
       </div>
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <OpportunitiesClient initialOpportunities={opportunities} />
       </Suspense>
+      <section className="bg-white border-t border-gray-100 px-4 py-10">
+        <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-3">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Find scholarships faster</h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600">
+              Filter by study level, country, funding type, and field so you can focus on scholarships that fit your plan.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Track deadlines clearly</h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600">
+              Save opportunities to your dashboard and get reminders before important application dates pass.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Get better matches</h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600">
+              Complete your profile to help Xcel360 recommend scholarships for your level, target countries, and field.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
