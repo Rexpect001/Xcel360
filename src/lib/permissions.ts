@@ -2,7 +2,7 @@ export type UserRole = 'USER' | 'EDITOR' | 'MODERATOR' | 'MENTOR' | 'MANAGER' | 
 
 // Which admin panel sections each role can access (path suffix after /admin)
 export const ROLE_ACCESS: Record<string, string[]> = {
-  ADMIN:     ['/', '/opportunities', '/jobs', '/programs', '/resources', '/blog', '/mentorship', '/events', '/certificates', '/users', '/analytics', '/activity', '/email'],
+  ADMIN:     ['/', '/opportunities', '/jobs', '/programs', '/resources', '/blog', '/mentorship', '/events', '/certificates', '/users', '/analytics', '/activity', '/contacts', '/email', '/settings'],
   MANAGER:   ['/', '/opportunities', '/jobs', '/programs', '/resources', '/blog', '/events', '/certificates'],
   EDITOR:    ['/', '/opportunities', '/jobs', '/resources', '/blog', '/events'],
   MENTOR:    ['/', '/resources', '/blog', '/mentorship', '/events'],

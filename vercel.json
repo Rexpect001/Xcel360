@@ -1,20 +1,12 @@
 {
   "crons": [
     {
-      "path": "/api/cron/deadline-reminders",
-      "schedule": "0 8 * * *"
+      "path": "/api/cron/daily",
+      "schedule": "17 6 * * *"
     },
     {
       "path": "/api/cron/auto-discover",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/email-campaigns",
-      "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/weekly-digest",
-      "schedule": "30 8 * * *"
+      "schedule": "43 5 * * *"
     }
   ]
 }

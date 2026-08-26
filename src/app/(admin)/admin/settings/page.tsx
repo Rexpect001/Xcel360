@@ -1,64 +1,117 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Megaphone, ExternalLink, Loader2, CheckCircle2, ToggleLeft, ToggleRight } from 'lucide-react'
+import {
+  Megaphone, ExternalLink, Loader2, CheckCircle2, ToggleLeft, ToggleRight,
+  Settings2, Mail, Save, Eye,
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 
-interface Setting {
-  key: string
-  label: string
-  description: string
-  link?: string
-  value: boolean
-}
-
-const SETTINGS_META: Omit<Setting, 'value'>[] = [
-  {
-    key: 'edifier_ad_enabled',
-    label: 'EDIFIER Popup Ad',
-    description: 'Show the EDIFIER judging event popup once per day to visitors on the Xcel360 public pages. Disable this when the event registration closes.',
-    link: 'https://edifier.xcel360.com',
-  },
-]
-
 export default function SiteSettingsPage() {
-  const [settings, setSettings] = useState<Setting[]>([])
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState<string | null>(null)
+
+  // Feature toggles
+  const [edifierEnabled, setEdifierEnabled] = useState(false)
+  const [toggling, setToggling] = useState<string | null>(null)
+
+  // Announcement bar
+  const [announcementEnabled, setAnnouncementEnabled] = useState(false)
+  const [announcementText, setAnnouncementText] = useState('')
+  const [announcementLink, setAnnouncementLink] = useState('')
+  const [announcementLinkLabel, setAnnouncementLinkLabel] = useState('Learn more')
+  const [savingAnnouncement, setSavingAnnouncement] = useState(false)
+
+  // Contact
+  const [contactEmail, setContactEmail] = useState('')
+  const [savingContact, setSavingContact] = useState(false)
 
   useEffect(() => {
-    fetch('/api/settings/edifier-ad')
-      .then((r) => r.json())
-      .then((d) => {
-        setSettings(
-          SETTINGS_META.map((m) => ({
-            ...m,
-            value: m.key === 'edifier_ad_enabled' ? d.enabled : false,
-          }))
-        )
+    Promise.all([
+      fetch('/api/settings/edifier-ad').then((r) => r.json()).catch(() => ({})),
+      fetch('/api/settings/public').then((r) => r.json()).catch(() => ({})),
+    ])
+      .then(([edifier, pub]) => {
+        setEdifierEnabled(!!edifier.enabled)
+        const a = pub.announcement
+        if (a) {
+          setAnnouncementEnabled(!!a.enabled)
+          setAnnouncementText(a.text ?? '')
+          setAnnouncementLink(a.link ?? '')
+          setAnnouncementLinkLabel(a.linkLabel ?? 'Learn more')
+        }
+        if (pub.contactEmail) setContactEmail(pub.contactEmail)
       })
       .catch(() => toast.error('Failed to load settings'))
       .finally(() => setLoading(false))
   }, [])
 
-  async function toggle(key: string, newValue: boolean) {
-    setSaving(key)
+  async function saveSetting(key: string, value: string): Promise<boolean> {
+    const res = await fetch('/api/admin/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value }),
+    })
+    return res.ok
+  }
+
+  async function toggleEdifier(newValue: boolean) {
+    setToggling('edifier')
     try {
-      const res = await fetch('/api/admin/settings', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, value: String(newValue) }),
-      })
-      if (!res.ok) throw new Error()
-      setSettings((prev) =>
-        prev.map((s) => (s.key === key ? { ...s, value: newValue } : s))
-      )
+      if (!(await saveSetting('edifier_ad_enabled', String(newValue)))) throw new Error()
+      setEdifierEnabled(newValue)
       toast.success(newValue ? 'Popup enabled' : 'Popup disabled')
     } catch {
       toast.error('Failed to save setting')
     } finally {
-      setSaving(null)
+      setToggling(null)
     }
+  }
+
+  async function saveAnnouncement() {
+    if (announcementEnabled && !announcementText.trim()) {
+      toast.error('Add an announcement message or turn the bar off')
+      return
+    }
+    setSavingAnnouncement(true)
+    try {
+      const results = await Promise.all([
+        saveSetting('announcement_enabled', String(announcementEnabled)),
+        saveSetting('announcement_text', announcementText.trim()),
+        saveSetting('announcement_link', announcementLink.trim()),
+        saveSetting('announcement_link_label', announcementLinkLabel.trim() || 'Learn more'),
+      ])
+      if (results.some((ok) => !ok)) throw new Error()
+      toast.success('Announcement bar saved')
+    } catch {
+      toast.error('Failed to save announcement')
+    } finally {
+      setSavingAnnouncement(false)
+    }
+  }
+
+  async function saveContact() {
+    if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+      toast.error('Enter a valid email address')
+      return
+    }
+    setSavingContact(true)
+    try {
+      if (!(await saveSetting('contact_email', contactEmail.trim()))) throw new Error()
+      toast.success('Contact email saved')
+    } catch {
+      toast.error('Failed to save contact email')
+    } finally {
+      setSavingContact(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-slate-400 py-24 max-w-2xl">
+        <Loader2 size={18} className="animate-spin" />
+        <span className="text-sm">Loading settings…</span>
+      </div>
+    )
   }
 
   return (
@@ -69,67 +122,187 @@ export default function SiteSettingsPage() {
         <p className="mt-1 text-slate-500">Control site-wide features without touching code.</p>
       </div>
 
-      {loading ? (
-        <div className="flex items-center gap-2 text-slate-400 py-12">
-          <Loader2 size={18} className="animate-spin" />
-          <span className="text-sm">Loading settings…</span>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {settings.map((s) => (
-            <div
-              key={s.key}
-              className="bg-white rounded-2xl border border-slate-100 p-6 flex items-start justify-between gap-6 hover:shadow-sm transition-shadow"
-            >
-              <div className="flex items-start gap-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${s.value ? 'bg-blue-50' : 'bg-slate-100'}`}>
-                  <Megaphone size={18} className={s.value ? 'text-blue-600' : 'text-slate-400'} />
+      <div className="space-y-4">
+        {/* ── Announcement Bar ── */}
+        <section className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-start justify-between gap-6 mb-4">
+            <div className="flex items-start gap-4">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${announcementEnabled ? 'bg-blue-50' : 'bg-slate-100'}`}>
+                <Megaphone size={18} className={announcementEnabled ? 'text-blue-600' : 'text-slate-400'} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-slate-900">Announcement Bar</h3>
+                  {announcementEnabled ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 size={10} /> Active
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Off</span>
+                  )}
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-slate-900">{s.label}</h3>
-                    {s.value ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                        <CheckCircle2 size={10} /> Active
-                      </span>
-                    ) : (
-                      <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                        Off
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-slate-500 leading-relaxed">{s.description}</p>
-                  {s.link && (
-                    <a
-                      href={s.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1.5"
-                    >
-                      <ExternalLink size={11} /> {s.link}
-                    </a>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  A slim banner shown at the very top of every public page. Perfect for new cohorts,
+                  deadlines, or event promotions. Visitors can dismiss it; it reappears when you
+                  change the message.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setAnnouncementEnabled((v) => !v)}
+              className="shrink-0 mt-1"
+              aria-label={announcementEnabled ? 'Disable announcement' : 'Enable announcement'}
+            >
+              {announcementEnabled
+                ? <ToggleRight size={36} className="text-blue-600" />
+                : <ToggleLeft size={36} className="text-slate-300" />}
+            </button>
+          </div>
+
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">Message</label>
+              <input
+                type="text"
+                value={announcementText}
+                onChange={(e) => setAnnouncementText(e.target.value)}
+                placeholder="e.g. Applications for Cohort 3 are now open!"
+                maxLength={140}
+                className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Link URL <span className="text-slate-400">(optional)</span></label>
+                <input
+                  type="text"
+                  value={announcementLink}
+                  onChange={(e) => setAnnouncementLink(e.target.value)}
+                  placeholder="/programs"
+                  className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Link label</label>
+                <input
+                  type="text"
+                  value={announcementLinkLabel}
+                  onChange={(e) => setAnnouncementLinkLabel(e.target.value)}
+                  placeholder="Learn more"
+                  maxLength={30}
+                  className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Live preview */}
+            {announcementText.trim() && (
+              <div>
+                <p className="text-xs font-medium text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <Eye size={12} /> Preview
+                </p>
+                <div className="bg-gradient-to-r from-brand-800 via-brand-700 to-brand-600 text-white rounded-xl px-4 py-2.5 flex items-center justify-center gap-3 text-sm">
+                  <Megaphone className="h-4 w-4 shrink-0 text-brand-200" />
+                  <p className="font-medium truncate">{announcementText}</p>
+                  {announcementLink && (
+                    <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold bg-white/15 rounded-full px-3 py-1 shrink-0">
+                      {announcementLinkLabel || 'Learn more'}
+                    </span>
                   )}
                 </div>
               </div>
+            )}
 
-              <button
-                onClick={() => toggle(s.key, !s.value)}
-                disabled={saving === s.key}
-                className="shrink-0 mt-1 disabled:opacity-50"
-                aria-label={s.value ? 'Disable' : 'Enable'}
-              >
-                {saving === s.key ? (
-                  <Loader2 size={28} className="animate-spin text-slate-400" />
-                ) : s.value ? (
-                  <ToggleRight size={36} className="text-blue-600" />
-                ) : (
-                  <ToggleLeft size={36} className="text-slate-300" />
-                )}
-              </button>
+            <button
+              onClick={saveAnnouncement}
+              disabled={savingAnnouncement}
+              className="inline-flex items-center gap-2 bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 disabled:opacity-60 transition-colors"
+            >
+              {savingAnnouncement ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+              {savingAnnouncement ? 'Saving…' : 'Save Announcement'}
+            </button>
+          </div>
+        </section>
+
+        {/* ── Contact email ── */}
+        <section className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+              <Mail size={18} className="text-blue-600" />
             </div>
-          ))}
-        </div>
-      )}
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Public Contact Email</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                The email address shown to visitors on policy pages and public surfaces.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <input
+              type="email"
+              value={contactEmail}
+              onChange={(e) => setContactEmail(e.target.value)}
+              placeholder="hello@thexcel360.com"
+              className="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            />
+            <button
+              onClick={saveContact}
+              disabled={savingContact}
+              className="inline-flex items-center gap-2 bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 disabled:opacity-60 transition-colors shrink-0"
+            >
+              {savingContact ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+              Save
+            </button>
+          </div>
+        </section>
+
+        {/* ── EDIFIER popup toggle (existing) ── */}
+        <section className="bg-white rounded-2xl border border-slate-100 p-6 flex items-start justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${edifierEnabled ? 'bg-blue-50' : 'bg-slate-100'}`}>
+              <Settings2 size={18} className={edifierEnabled ? 'text-blue-600' : 'text-slate-400'} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-slate-900">EDIFIER Popup Ad</h3>
+                {edifierEnabled ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                    <CheckCircle2 size={10} /> Active
+                  </span>
+                ) : (
+                  <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Off</span>
+                )}
+              </div>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Show the EDIFIER judging event popup once per day to visitors on the public pages.
+                Disable this when the event registration closes.
+              </p>
+              <a
+                href="https://edifier.xcel360.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1.5"
+              >
+                <ExternalLink size={11} /> https://edifier.xcel360.com
+              </a>
+            </div>
+          </div>
+          <button
+            onClick={() => toggleEdifier(!edifierEnabled)}
+            disabled={toggling === 'edifier'}
+            className="shrink-0 mt-1 disabled:opacity-50"
+            aria-label={edifierEnabled ? 'Disable popup' : 'Enable popup'}
+          >
+            {toggling === 'edifier' ? (
+              <Loader2 size={28} className="animate-spin text-slate-400" />
+            ) : edifierEnabled ? (
+              <ToggleRight size={36} className="text-blue-600" />
+            ) : (
+              <ToggleLeft size={36} className="text-slate-300" />
+            )}
+          </button>
+        </section>
+      </div>
     </div>
   )
 }

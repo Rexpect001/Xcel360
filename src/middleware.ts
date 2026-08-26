@@ -49,6 +49,8 @@ export default withAuth(
 
 export const config = {
   // Protect dashboard and admin routes at the edge  -  before any page renders
-  // NOTE: /api/auth/ must be excluded so NextAuth sign-in callbacks can complete
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|tools/|unsubscribe$|subscribe$|og|events/|certificate/|verify/).*)'],
+  // NOTE: /api/auth/ must be excluded so NextAuth sign-in callbacks can complete.
+  // settings/ is excluded because the announcement bar and popup read public
+  // (non-sensitive) site settings for anonymous visitors.
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|tools/|settings/|unsubscribe$|subscribe$|og|events/|certificate/|verify/).*)'],
 }

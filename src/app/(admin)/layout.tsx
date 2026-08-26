@@ -1,34 +1,33 @@
 import { getAuth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import { canAccess, isAdminRole, ROLE_LABELS } from '@/lib/permissions'
+import { isAdminRole, ROLE_ACCESS, ROLE_LABELS } from '@/lib/permissions'
 import type { UserRole } from '@/lib/permissions'
-import AdminSidebar from './AdminSidebar'
-
-const ALL_SECTIONS = [
-  '/', '/opportunities', '/jobs', '/programs', '/resources',
-  '/blog', '/mentorship', '/events', '/certificates', '/users', '/analytics', '/activity', '/email',
-]
+import AppShell from '@/components/layout/AppShell'
+import { adminNavForRole } from '@/lib/nav'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getAuth()
   if (!session || !isAdminRole(session.user.role)) redirect('/')
 
-  const role = session.user.role
-  const roleInfo = ROLE_LABELS[role as UserRole]
-
-  // Pass only plain strings  -  React components (icons) live in the client component
-  const allowedSections = ALL_SECTIONS.filter(section => canAccess(role, section))
+  const role = session.user.role as UserRole
+  const roleInfo = ROLE_LABELS[role]
+  const allowedSections = ROLE_ACCESS[role] ?? []
 
   return (
-    <div className="min-h-screen bg-surface-50">
-      <AdminSidebar
-        allowedSections={allowedSections}
-        email={session.user.email ?? ''}
-        roleLabel={roleInfo?.label ?? role}
-      />
-      <main className="lg:ml-64 pt-14 lg:pt-0 min-h-screen p-4 lg:p-8">
-        {children}
-      </main>
-    </div>
+    <AppShell
+      brandTag="Admin Panel"
+      navGroups={[{ title: 'Manage', items: adminNavForRole(allowedSections) }]}
+      user={{
+        name: session.user.name ?? session.user.email ?? 'Admin',
+        email: session.user.email ?? '',
+        badgeLabel: roleInfo?.label ?? role,
+        badgeClass: roleInfo?.color,
+        admin: true,
+      }}
+      backLink={{ href: '/dashboard', label: 'Back to Dashboard' }}
+      showSignOut
+    >
+      {children}
+    </AppShell>
   )
 }

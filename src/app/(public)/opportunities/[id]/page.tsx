@@ -47,12 +47,16 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 import { formatDate, daysUntilDeadline, getFundingBadgeColor } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import ShareButtons from '@/components/ui/ShareButtons'
-import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Download } from 'lucide-react'
+import {
+  Calendar, MapPin, BookOpen, FileText, CheckCircle, Download,
+  ArrowLeft, Sparkles, Globe, Building2, GraduationCap, Clock,
+} from 'lucide-react'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
 import AdSlot from '@/components/ads/AdSlot'
 import { getAuth } from '@/lib/auth'
+import { scoreOpportunity } from '@/lib/matching'
 import type { ReactNode } from 'react'
 
 // Renders inline **bold** markers safely
@@ -131,6 +135,13 @@ function Description({ text }: { text: string }) {
   return <div className="space-y-1">{nodes}</div>
 }
 
+function deadlineTone(days: number, closed: boolean) {
+  if (closed) return { chip: 'bg-red-100 text-red-700', label: 'Closed' }
+  if (days <= 7) return { chip: 'bg-red-100 text-red-700', label: `${days}d left` }
+  if (days <= 30) return { chip: 'bg-orange-100 text-orange-700', label: `${days} days left` }
+  return { chip: 'bg-green-100 text-green-700', label: `${days} days left` }
+}
+
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
   const [opp, session] = await Promise.all([
     prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null),
@@ -138,9 +149,37 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
   ])
   if (!opp) notFound()
 
+  const isClosed = opp.status === 'CLOSED' || (opp.deadline !== null && opp.deadline.getTime() < Date.now())
   const days = daysUntilDeadline(opp.deadline)
+  const tone = deadlineTone(days, isClosed)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
   const pageUrl = `${appUrl}/opportunities/${opp.id}`
+
+  // Personalised match score for signed-in users
+  let match: { score: number; reasons: string[] } | null = null
+  if (session?.user?.id) {
+    const profile = await prisma.profile.findUnique({ where: { userId: session.user.id } }).catch(() => null)
+    if (profile) {
+      const scored = scoreOpportunity(opp, profile)
+      if (scored.score >= 40) match = scored
+    }
+  }
+
+  // Related opportunities — same field or destination, still open
+  const related = await prisma.opportunity.findMany({
+    where: {
+      id: { not: opp.id },
+      status: 'OPEN',
+      deadline: { gt: new Date() },
+      OR: [{ field: opp.field }, { country: opp.country }],
+    },
+    orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
+    take: 3,
+    select: {
+      id: true, title: true, hostOrg: true, country: true,
+      fundingType: true, deadline: true, field: true,
+    },
+  }).catch(() => [])
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -171,153 +210,243 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    <div className="min-h-screen bg-gray-50 pt-20">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-4 py-10">
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getFundingBadgeColor(opp.fundingType)}`}>
-              {opp.fundingType}
-            </span>
-            {opp.programLevel.map((l) => <Badge key={l} variant="blue">{l}</Badge>)}
-            <Badge variant="gray">{opp.field}</Badge>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{opp.title}</h1>
-          <p className="text-lg text-gray-600 mb-6">{opp.hostOrg}</p>
+      <div className="min-h-screen bg-gray-50 pt-16">
+        {/* ── Hero band ── */}
+        <div className="bg-hero-gradient text-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+            <Link
+              href="/opportunities"
+              className="inline-flex items-center gap-1.5 text-sm text-brand-100 hover:text-white transition-colors mb-6"
+            >
+              <ArrowLeft className="h-4 w-4" /> Browse all opportunities
+            </Link>
 
-          <div className="flex flex-wrap gap-6 text-sm text-gray-600">
-            <span className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-brand-600" />
-              {opp.country}{opp.region ? `, ${opp.region}` : ''}
-            </span>
-            <span className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-brand-600" />
-              Deadline: <strong>{formatDate(opp.deadline)}</strong>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${days <= 7 ? 'bg-red-100 text-red-700' : days <= 30 ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
-                {days > 0 ? `${days} days left` : 'Closed'}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur text-white">
+                {opp.fundingType}
               </span>
-            </span>
-          </div>
-
-          <div className="flex flex-wrap gap-3 mt-6 items-center">
-            <ApplyButton href={opp.applicationLink} title={opp.title} />
-            <SaveButton opportunityId={opp.id} />
-            {(opp as any).pdfUrl && (
-              <a
-                href={(opp as any).pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <Download className="h-4 w-4 text-brand-600" /> Download PDF
-              </a>
-            )}
-          </div>
-
-          {/* Share buttons */}
-          <div className="mt-5 pt-5 border-t border-gray-100">
-            <ShareButtons
-              title={opp.title}
-              url={pageUrl}
-              applicationLink={opp.applicationLink || undefined}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Poster image */}
-      {opp.imageUrl && (
-        <div className="max-w-4xl mx-auto px-4 pt-8">
-          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={opp.imageUrl}
-              alt={`${opp.title} poster`}
-              className="w-full max-h-[520px] object-contain"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Body */}
-      <div className="max-w-4xl mx-auto px-4 py-10">
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Main */}
-          <div className="md:col-span-2 space-y-8">
-            {/* Email application notice */}
-            {opp.applicationLink && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(opp.applicationLink.trim()) && (
-              <section className="bg-brand-50 border-2 border-brand-200 rounded-2xl p-6">
-                <h2 className="text-lg font-bold text-brand-900 mb-2 flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-brand-600" /> How to Apply
-                </h2>
-                <p className="text-sm text-brand-800 font-semibold leading-relaxed">
-                  Send your application directly via email to:{' '}
-                  <a href={`mailto:${opp.applicationLink.trim()}`} className="underline text-brand-700 break-all">
-                    {opp.applicationLink.trim()}
-                  </a>
-                </p>
-              </section>
-            )}
-
-            {opp.description && (
-              <section className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-brand-600" /> About this scholarship
-                </h2>
-                <Description text={opp.description} />
-              </section>
-            )}
-
-            <section className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility</h2>
-              <div className="text-gray-700 text-sm leading-relaxed">
-                <Description text={opp.eligibility ?? ''} />
-              </div>
-            </section>
-
-            <section className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <FileText className="h-5 w-5 text-brand-600" /> Required Documents
-              </h2>
-              <ul className="space-y-2">
-                {opp.requiredDocs.map((doc) => (
-                  <li key={doc} className="flex items-center gap-2 text-sm text-gray-700">
-                    <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    {doc}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-5">
-            <AdSlot placement="opportunity-detail-sidebar" />
-
-            <div className="bg-brand-50 rounded-2xl border border-brand-100 p-5">
-              <h3 className="font-semibold text-brand-900 mb-3">Quick Summary</h3>
-              <dl className="space-y-2.5 text-sm">
-                <div><dt className="text-gray-500 text-xs">Host</dt><dd className="font-medium text-gray-900">{opp.hostOrg}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Country</dt><dd className="font-medium text-gray-900">{opp.country}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Funding</dt><dd className="font-medium text-gray-900">{opp.fundingType}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Deadline</dt><dd className="font-medium text-gray-900">{formatDate(opp.deadline)}</dd></div>
-                <div><dt className="text-gray-500 text-xs">Levels</dt><dd className="font-medium text-gray-900">{opp.programLevel.join(', ')}</dd></div>
-              </dl>
+              {opp.programLevel.map((l) => (
+                <span key={l} className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-brand-50">
+                  {l}
+                </span>
+              ))}
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-brand-50">
+                {opp.field}
+              </span>
+              {isClosed && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-500/90 text-white">
+                  Applications Closed
+                </span>
+              )}
             </div>
 
-            {!session && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="font-semibold text-gray-900 mb-3">Track this scholarship</h3>
-                <p className="text-sm text-gray-500 mb-4">Save it to your dashboard and get deadline reminders automatically.</p>
-                <Link href="/signup" className="block w-full text-center bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors">
-                  Create Free Account
-                </Link>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-3">{opp.title}</h1>
+            <p className="text-brand-100 flex items-center gap-2 text-sm sm:text-base">
+              <Building2 className="h-4 w-4 shrink-0" /> {opp.hostOrg}
+            </p>
+
+            {/* Match badge for signed-in users */}
+            {match && (
+              <div className="mt-5 inline-flex flex-wrap items-center gap-2 bg-white/12 backdrop-blur rounded-xl px-4 py-2.5 border border-white/15">
+                <Sparkles className="h-4 w-4 text-amber-300" />
+                <span className="text-sm font-semibold">{match.score}% match for you</span>
+                {match.reasons.length > 0 && (
+                  <span className="text-xs text-brand-100">· {match.reasons.join(', ')}</span>
+                )}
               </div>
             )}
           </div>
         </div>
+
+        {/* ── Key facts strip ── */}
+        <div className="bg-white border-b border-gray-100">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { icon: MapPin, label: 'Destination', value: `${opp.country}${opp.region ? `, ${opp.region}` : ''}` },
+              { icon: Calendar, label: 'Deadline', value: formatDate(opp.deadline) },
+              { icon: GraduationCap, label: 'Levels', value: opp.programLevel.join(', ') || 'All levels' },
+              { icon: Clock, label: 'Time left', value: isClosed ? 'Closed' : tone.label, chip: tone.chip },
+            ].map(({ icon: FactIcon, label, value, chip }) => (
+              <div key={label} className="flex items-start gap-2.5">
+                <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center shrink-0">
+                  <FactIcon className="h-4 w-4 text-brand-700" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">{label}</div>
+                  {chip ? (
+                    <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mt-0.5 ${chip}`}>{value}</span>
+                  ) : (
+                    <div className="text-sm font-semibold text-gray-900 truncate">{value}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+          {/* Poster image */}
+          {opp.imageUrl && (
+            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white mb-8">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={opp.imageUrl}
+                alt={`${opp.title} poster`}
+                className="w-full max-h-[520px] object-contain"
+              />
+            </div>
+          )}
+
+          <div className="grid lg:grid-cols-3 gap-8 items-start">
+            {/* ── Main column ── */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Email application notice */}
+              {opp.applicationLink && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(opp.applicationLink.trim()) && (
+                <section className="bg-brand-50 border-2 border-brand-200 rounded-2xl p-6">
+                  <h2 className="text-lg font-bold text-brand-900 mb-2 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-brand-600" /> How to Apply
+                  </h2>
+                  <p className="text-sm text-brand-800 font-semibold leading-relaxed">
+                    Send your application directly via email to:{' '}
+                    <a href={`mailto:${opp.applicationLink.trim()}`} className="underline text-brand-700 break-all">
+                      {opp.applicationLink.trim()}
+                    </a>
+                  </p>
+                </section>
+              )}
+
+              {opp.description && (
+                <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-brand-600" /> About this {opp.category === 'JOB' ? 'role' : opp.category === 'INTERNSHIP' ? 'internship' : 'scholarship'}
+                  </h2>
+                  <Description text={opp.description} />
+                </section>
+              )}
+
+              <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
+                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-brand-600" /> Eligibility
+                </h2>
+                <div className="text-gray-700 text-sm leading-relaxed">
+                  <Description text={opp.eligibility ?? ''} />
+                </div>
+              </section>
+
+              {opp.requiredDocs.length > 0 && (
+                <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-brand-600" /> Required Documents
+                  </h2>
+                  <ul className="grid sm:grid-cols-2 gap-2.5">
+                    {opp.requiredDocs.map((doc) => (
+                      <li key={doc} className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2.5">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        {doc}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {/* Share */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <ShareButtons
+                  title={opp.title}
+                  url={pageUrl}
+                  applicationLink={opp.applicationLink || undefined}
+                />
+              </div>
+            </div>
+
+            {/* ── Sticky action sidebar ── */}
+            <div className="space-y-5 lg:sticky lg:top-24">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900">Ready to apply?</h3>
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tone.chip}`}>
+                    {isClosed ? 'Closed' : tone.label}
+                  </span>
+                </div>
+                <div className="space-y-2.5">
+                  <ApplyButton href={opp.applicationLink} title={opp.title} />
+                  <SaveButton opportunityId={opp.id} />
+                  {(opp as any).pdfUrl && (
+                    <a
+                      href={(opp as any).pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <Download className="h-4 w-4 text-brand-600" /> Download PDF
+                    </a>
+                  )}
+                </div>
+                {!session && (
+                  <p className="text-xs text-gray-500 mt-4 leading-relaxed">
+                    <Link href="/signup" className="text-brand-700 font-semibold hover:underline">Create a free account</Link>{' '}
+                    to save this opportunity and get automatic deadline reminders.
+                  </p>
+                )}
+              </div>
+
+              {/* Quick summary */}
+              <div className="bg-brand-50 rounded-2xl border border-brand-100 p-5">
+                <h3 className="font-semibold text-brand-900 mb-3">Quick Summary</h3>
+                <dl className="space-y-2.5 text-sm">
+                  <div><dt className="text-gray-500 text-xs">Host</dt><dd className="font-medium text-gray-900">{opp.hostOrg}</dd></div>
+                  <div><dt className="text-gray-500 text-xs">Country</dt><dd className="font-medium text-gray-900">{opp.country}</dd></div>
+                  <div><dt className="text-gray-500 text-xs">Funding</dt><dd className="font-medium text-gray-900">{opp.fundingType}</dd></div>
+                  <div><dt className="text-gray-500 text-xs">Deadline</dt><dd className="font-medium text-gray-900">{formatDate(opp.deadline)}</dd></div>
+                  <div><dt className="text-gray-500 text-xs">Levels</dt><dd className="font-medium text-gray-900">{opp.programLevel.join(', ')}</dd></div>
+                </dl>
+              </div>
+
+              <AdSlot placement="opportunity-detail-sidebar" />
+            </div>
+          </div>
+
+          {/* ── Related opportunities ── */}
+          {related.length > 0 && (
+            <section className="mt-12">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-brand-600" /> Similar opportunities
+                </h2>
+                <Link href="/opportunities" className="text-sm text-brand-600 font-medium hover:text-brand-800 transition-colors">
+                  View all →
+                </Link>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {related.map((rel) => {
+                  const relDays = daysUntilDeadline(rel.deadline)
+                  return (
+                    <Link
+                      key={rel.id}
+                      href={`/opportunities/${rel.id}`}
+                      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all overflow-hidden group"
+                    >
+                      <div className="h-1 bg-gradient-to-r from-brand-600 to-brand-400" />
+                      <div className="p-5">
+                        <h3 className="font-semibold text-gray-900 text-sm group-hover:text-brand-700 transition-colors line-clamp-2 mb-1.5 leading-snug">
+                          {rel.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mb-3 truncate">{rel.hostOrg} · {rel.country}</p>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="blue">{rel.fundingType}</Badge>
+                          <span className={`text-xs font-medium ${relDays <= 7 ? 'text-red-600' : 'text-gray-400'}`}>
+                            {relDays > 0 ? `${relDays}d left` : 'Closing soon'}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+        </div>
       </div>
-    </div>
     </>
   )
 }

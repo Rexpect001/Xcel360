@@ -41,12 +41,17 @@ const nextConfig = {
   },
 
   images: {
+    // Serve modern formats — dramatically smaller images for supported browsers
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
+
+  // Don't advertise the framework in response headers
+  poweredByHeader: false,
   
   // Security headers for all routes
   async headers() {

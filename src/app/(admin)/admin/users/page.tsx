@@ -6,13 +6,21 @@ import {
   UserCheck, UserX, AlertTriangle, Clock, CheckSquare2, Pencil,
   TrendingUp, Users, UserPlus, CalendarDays,
 } from 'lucide-react'
-import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts'
+import dynamic from 'next/dynamic'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { ROLE_LABELS, type UserRole } from '@/lib/permissions'
 import Modal from '@/components/ui/Modal'
+
+// recharts is heavy — split into a separate chunk loaded on demand
+const GrowthChart = dynamic(() => import('./GrowthChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[200px] flex items-center justify-center">
+      <Loader2 className="h-6 w-6 animate-spin text-gray-300" />
+    </div>
+  ),
+})
 
 const ALL_ROLES: UserRole[] = ['USER', 'EDITOR', 'MODERATOR', 'MENTOR', 'MANAGER', 'ADMIN']
 
@@ -54,19 +62,6 @@ function StatCard({ label, value, sub, icon: Icon, color }: {
         <p className="text-sm text-gray-500 mt-0.5">{label}</p>
         {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
       </div>
-    </div>
-  )
-}
-
-function CustomTooltip({ active, payload, label, mode }: any) {
-  if (!active || !payload?.length) return null
-  const displayLabel = mode === 'monthly'
-    ? new Date(label + '-01').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
-    : new Date(label).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-  return (
-    <div className="bg-white border border-gray-100 rounded-xl shadow-lg px-3 py-2.5 text-sm">
-      <p className="text-gray-500 text-xs mb-1">{displayLabel}</p>
-      <p className="font-semibold text-brand-700">{payload[0].value} new user{payload[0].value !== 1 ? 's' : ''}</p>
     </div>
   )
 }
@@ -329,23 +324,7 @@ export default function AdminUsersPage() {
               ))}
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0284c7" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#0284c7" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false}
-                interval={chartMode === 'daily' ? 4 : 0} />
-              <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip content={<CustomTooltip mode={chartMode} />} />
-              <Area type="monotone" dataKey="users" stroke="#0284c7" strokeWidth={2}
-                fill="url(#userGradient)" dot={false} activeDot={{ r: 4, fill: '#0284c7' }} />
-            </AreaChart>
-          </ResponsiveContainer>
+          <GrowthChart data={chartData} mode={chartMode} />
         </div>
       )}
 

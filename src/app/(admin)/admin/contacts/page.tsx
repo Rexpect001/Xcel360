@@ -2,7 +2,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Upload, Search, Trash2, Users, X, Loader2, ChevronLeft, ChevronRight, Download, RefreshCw } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import * as XLSX from 'xlsx'
+
+// xlsx is heavy (~400KB) — loaded on demand inside import/export handlers
+// instead of shipping with the page bundle.
+type XLSXModule = typeof import('xlsx')
 
 type Contact = { id: string; email: string; name?: string; source: string; createdAt: string }
 type Breakdown = { source: string; _count: { _all: number } }
@@ -122,8 +125,9 @@ export default function AdminContactsPage() {
   // ── Parse Excel file in browser ───────────────────────────────────────────
   const handleFile = (file: File) => {
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
+        const XLSX: XLSXModule = await import('xlsx')
         const data = new Uint8Array(e.target?.result as ArrayBuffer)
         const wb   = XLSX.read(data, { type: 'array' })
         const ws   = wb.Sheets[wb.SheetNames[0]]
@@ -186,6 +190,7 @@ export default function AdminContactsPage() {
 
   // ── Export to CSV ─────────────────────────────────────────────────────────
   const handleExport = async () => {
+    const XLSX: XLSXModule = await import('xlsx')
     const res = await fetch('/api/admin/contacts?page=1')
     // Fetch all pages
     const first = await res.json()

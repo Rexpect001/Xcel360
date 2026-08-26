@@ -8,7 +8,10 @@ import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
 import { FIELDS, COUNTRIES } from '@/types'
-import * as XLSX from 'xlsx'
+
+// xlsx is heavy (~400KB) — loaded on demand inside import/export handlers
+// instead of shipping with the page bundle.
+type XLSXModule = typeof import('xlsx')
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Remote']
 const EXPERIENCE_LEVELS = ['Entry Level', 'Mid Level', 'Senior Level', 'Internship']
@@ -235,8 +238,9 @@ export default function AdminJobsPage() {
   }
 
   // ── Excel export ──
-  const exportExcel = () => {
+  const exportExcel = async () => {
     if (filtered.length === 0) { toast.error('No postings to export'); return }
+    const XLSX: XLSXModule = await import('xlsx')
     const rows = filtered.map((j) => ({
       Title: j.title,
       Category: j.category,
@@ -263,7 +267,8 @@ export default function AdminJobsPage() {
   }
 
   // ── Excel template ──
-  const downloadTemplate = () => {
+  const downloadTemplate = async () => {
+    const XLSX: XLSXModule = await import('xlsx')
     const sample = [{
       Title: 'Software Engineer  -  Remote',
       Category: 'JOB',
@@ -373,6 +378,7 @@ export default function AdminJobsPage() {
     setImporting(true)
     setImportProgress('Reading file...')
     try {
+      const XLSX: XLSXModule = await import('xlsx')
       const buf = await file.arrayBuffer()
       const wb = XLSX.read(buf, { type: 'array', cellDates: true })
       const ws = wb.Sheets[wb.SheetNames[0]]
