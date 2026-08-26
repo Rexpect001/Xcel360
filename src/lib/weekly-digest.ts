@@ -121,7 +121,17 @@ export async function sendWeeklyDigestBatch(limit = DAILY_LIMIT) {
       id: true,
       email: true,
       name: true,
-      profile: { select: { level: true, targetCountries: true, targetFields: true } },
+      profile: {
+        select: {
+          level: true,
+          targetCountries: true,
+          targetFields: true,
+          courseOfStudy: true,
+          department: true,
+          degree: true,
+          graduationYear: true,
+        },
+      },
     },
   })
 

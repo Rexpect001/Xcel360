@@ -26,6 +26,15 @@ export const profileUpdateSchema = z.object({
   targetCountries: z.array(z.string()).max(20, 'Too many countries selected').optional(),
   targetFields: z.array(z.string()).max(20, 'Too many fields selected').optional(),
   bio: z.string().max(1000, 'Bio is too long').nullable().optional(),
+  courseOfStudy: z.string().min(2).max(200).nullable().optional(),
+  degree: z.string().min(2).max(100).nullable().optional(),
+  graduationYear: z
+    .number()
+    .int()
+    .min(1950)
+    .max(new Date().getFullYear() + 10)
+    .nullable()
+    .optional(),
   whatsappNumber: z
     .string()
     .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,4}[-\s.]?[0-9]{1,9}$/, 'Invalid phone number format')

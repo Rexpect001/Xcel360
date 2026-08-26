@@ -69,7 +69,7 @@ export async function PATCH(req: NextRequest) {
       )
     }
 
-    const { level, targetCountries, targetFields, bio, whatsappNumber, school, department, notifyEmail, notifyInApp, reminderDays } = validation.data
+    const { level, targetCountries, targetFields, bio, whatsappNumber, school, department, notifyEmail, notifyInApp, reminderDays, courseOfStudy, degree, graduationYear } = validation.data
 
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },
@@ -78,6 +78,9 @@ export async function PATCH(req: NextRequest) {
         ...(targetCountries !== undefined && { targetCountries }),
         ...(targetFields !== undefined && { targetFields }),
         ...(bio !== undefined && { bio }),
+        ...(courseOfStudy !== undefined && { courseOfStudy }),
+        ...(degree !== undefined && { degree }),
+        ...(graduationYear !== undefined && { graduationYear }),
         ...(whatsappNumber !== undefined && { whatsappNumber }),
         ...(school !== undefined && { school }),
         ...(department !== undefined && { department }),
@@ -91,6 +94,9 @@ export async function PATCH(req: NextRequest) {
         targetCountries: targetCountries ?? [],
         targetFields: targetFields ?? [],
         bio: bio ?? null,
+        courseOfStudy: courseOfStudy ?? null,
+        degree: degree ?? null,
+        graduationYear: graduationYear ?? null,
         whatsappNumber: whatsappNumber ?? null,
         school: school ?? null,
         department: department ?? null,

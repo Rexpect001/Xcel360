@@ -1,6 +1,7 @@
 import prisma from './prisma'
 import { NotificationType } from '@prisma/client'
 import { daysUntilDeadline } from './utils'
+import { scoreOpportunity } from './matching'
 import { sendDeadlineReminderEmail, sendNewOpportunityEmail } from './email'
 
 export async function createNotification({
@@ -135,24 +136,41 @@ export async function notifyMatchingUsers(opportunityId: string) {
   })
   if (!opportunity) return
 
-  const matchingUsers = await prisma.user.findMany({
-    where: {
+  // Pull every user with a profile, then score each one with the matching
+  // engine. Only genuinely strong matches (score >= threshold) get alerted —
+  // this replaces the old naive field-OR-country broadcast.
+  const MATCH_THRESHOLD = 50
+
+  const users = await prisma.user.findMany({
+    where: { status: 'ACTIVE', profile: { isNot: null } },
+    select: {
+      id: true,
+      email: true,
+      name: true,
       profile: {
-        OR: [
-          { targetFields: { has: opportunity.field } },
-          { targetCountries: { has: opportunity.country } },
-        ],
+        select: {
+          level: true,
+          targetCountries: true,
+          targetFields: true,
+          courseOfStudy: true,
+          department: true,
+          degree: true,
+          graduationYear: true,
+          notifyEmail: true,
+        },
       },
     },
-    select: { id: true, email: true, name: true, profile: { select: { notifyEmail: true } } },
   })
 
-  for (const user of matchingUsers) {
+  for (const user of users) {
+    const { score, reasons } = scoreOpportunity(opportunity, user.profile)
+    if (score < MATCH_THRESHOLD) continue
+
     await createNotification({
       userId: user.id,
       type: 'NEW_OPPORTUNITY',
-      title: 'New opportunity matches your profile',
-      message: `"${opportunity.title}" just posted  -  matches your interests.`,
+      title: `New ${score}% match for you`,
+      message: `"${opportunity.title}" just posted — ${reasons.join(', ')}.`,
       link: `/opportunities/${opportunityId}`,
     })
 
@@ -164,6 +182,8 @@ export async function notifyMatchingUsers(opportunityId: string) {
         opportunityId,
         hostOrg: opportunity.hostOrg,
         country: opportunity.country,
+        matchScore: score,
+        matchReasons: reasons,
       }).catch(console.error)
     }
   }

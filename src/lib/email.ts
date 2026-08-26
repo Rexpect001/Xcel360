@@ -121,6 +121,8 @@ export async function sendNewOpportunityEmail({
   opportunityId,
   hostOrg,
   country,
+  matchScore,
+  matchReasons,
 }: {
   to: string
   name: string
@@ -128,10 +130,17 @@ export async function sendNewOpportunityEmail({
   opportunityId: string
   hostOrg: string
   country: string
+  matchScore?: number
+  matchReasons?: string[]
 }) {
+  const matchBlock =
+    matchScore !== undefined
+      ? `<p style="margin:12px 0 0 0;font-size:13px;color:#047857;"><strong>${matchScore}% match</strong>${matchReasons && matchReasons.length > 0 ? ` · ${matchReasons.join(', ')}` : ''}</p>`
+      : ''
+
   await sendMail({
     to,
-    subject: `New opportunity matches your profile: ${opportunityTitle}`,
+    subject: `${matchScore !== undefined ? `${matchScore}% match — ` : ''}New opportunity matches your profile: ${opportunityTitle}`,
     html: `<!DOCTYPE html>
 <html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">
@@ -144,7 +153,7 @@ export async function sendNewOpportunityEmail({
       <h2 style="color:#111827;margin:0 0 24px 0;font-size:22px;font-weight:700;">Hi ${name}, this one's for you</h2>
       <div style="background:#eff6ff;border-left:4px solid #0369a1;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
         <p style="margin:0;font-size:15px;font-weight:600;color:#0369a1;">${opportunityTitle}</p>
-        <p style="margin:4px 0 0 0;font-size:13px;color:#6b7280;">${hostOrg} · ${country}</p>
+        <p style="margin:4px 0 0 0;font-size:13px;color:#6b7280;">${hostOrg} · ${country}</p>${matchBlock}
       </div>
       <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">A new opportunity matching your profile just posted. Check the details and apply before the deadline.</p>
       <a href="${APP_URL}/opportunities/${opportunityId}" style="display:inline-block;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">View Opportunity</a>
