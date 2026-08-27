@@ -8,6 +8,7 @@ import HowItWorks from '@/components/landing/HowItWorks'
 import SuccessStories from '@/components/landing/SuccessStories'
 import GuidesPreview from '@/components/landing/GuidesPreview'
 import EmailCapture from '@/components/landing/EmailCapture'
+import SponsoredBanner from '@/components/ads/SponsoredBanner'
 import prisma from '@/lib/prisma'
 
 export const metadata: Metadata = {
@@ -103,9 +104,11 @@ export default async function LandingPage() {
       <div className="overflow-x-hidden">
         <Hero stats={stats} />
         <ChooseYourPath />
+        <SponsoredBanner />
         <TopScholarships scholarships={scholarships} />
         <CategoryBrowse />
         <HowItWorks />
+        <SponsoredBanner />
         <SuccessStories stories={stories} />
         <GuidesPreview posts={posts} />
         <EmailCapture />

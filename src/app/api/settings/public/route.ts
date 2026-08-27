@@ -11,6 +11,12 @@ const PUBLIC_KEYS = [
   'announcement_link',
   'announcement_link_label',
   'contact_email',
+  'ad_home_enabled',
+  'ad_home_title',
+  'ad_home_text',
+  'ad_home_link',
+  'ad_home_cta',
+  'ad_home_image',
 ] as const
 
 export async function GET() {
@@ -30,6 +36,14 @@ export async function GET() {
         text: map.announcement_text ?? '',
         link: map.announcement_link ?? '',
         linkLabel: map.announcement_link_label ?? 'Learn more',
+      },
+      homeAd: {
+        enabled: map.ad_home_enabled === 'true',
+        title: map.ad_home_title ?? '',
+        text: map.ad_home_text ?? '',
+        link: map.ad_home_link ?? '',
+        cta: map.ad_home_cta ?? 'Learn more',
+        image: map.ad_home_image ?? '',
       },
       contactEmail: map.contact_email || 'hello@thexcel360.com',
     },

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import {
   Megaphone, ExternalLink, Loader2, CheckCircle2, ToggleLeft, ToggleRight,
-  Settings2, Mail, Save, Eye,
+  Settings2, Mail, Save, Eye, BadgePercent,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -25,6 +25,15 @@ export default function SiteSettingsPage() {
   const [contactEmail, setContactEmail] = useState('')
   const [savingContact, setSavingContact] = useState(false)
 
+  // Homepage advert
+  const [adEnabled, setAdEnabled] = useState(false)
+  const [adTitle, setAdTitle] = useState('')
+  const [adText, setAdText] = useState('')
+  const [adLink, setAdLink] = useState('')
+  const [adCta, setAdCta] = useState('Learn more')
+  const [adImage, setAdImage] = useState('')
+  const [savingAd, setSavingAd] = useState(false)
+
   useEffect(() => {
     Promise.all([
       fetch('/api/settings/edifier-ad').then((r) => r.json()).catch(() => ({})),
@@ -40,6 +49,15 @@ export default function SiteSettingsPage() {
           setAnnouncementLinkLabel(a.linkLabel ?? 'Learn more')
         }
         if (pub.contactEmail) setContactEmail(pub.contactEmail)
+        const ad = pub.homeAd
+        if (ad) {
+          setAdEnabled(!!ad.enabled)
+          setAdTitle(ad.title ?? '')
+          setAdText(ad.text ?? '')
+          setAdLink(ad.link ?? '')
+          setAdCta(ad.cta ?? 'Learn more')
+          setAdImage(ad.image ?? '')
+        }
       })
       .catch(() => toast.error('Failed to load settings'))
       .finally(() => setLoading(false))
@@ -102,6 +120,30 @@ export default function SiteSettingsPage() {
       toast.error('Failed to save contact email')
     } finally {
       setSavingContact(false)
+    }
+  }
+
+  async function saveAd() {
+    if (adEnabled && !adTitle.trim()) {
+      toast.error('Add an advert title or turn the advert off')
+      return
+    }
+    setSavingAd(true)
+    try {
+      const results = await Promise.all([
+        saveSetting('ad_home_enabled', String(adEnabled)),
+        saveSetting('ad_home_title', adTitle.trim()),
+        saveSetting('ad_home_text', adText.trim()),
+        saveSetting('ad_home_link', adLink.trim()),
+        saveSetting('ad_home_cta', adCta.trim() || 'Learn more'),
+        saveSetting('ad_home_image', adImage.trim()),
+      ])
+      if (results.some((ok) => !ok)) throw new Error()
+      toast.success('Advert saved')
+    } catch {
+      toast.error('Failed to save advert')
+    } finally {
+      setSavingAd(false)
     }
   }
 
@@ -220,6 +262,136 @@ export default function SiteSettingsPage() {
             >
               {savingAnnouncement ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {savingAnnouncement ? 'Saving…' : 'Save Announcement'}
+            </button>
+          </div>
+        </section>
+
+        {/* ── Homepage Advert ── */}
+        <section className="bg-white rounded-2xl border border-slate-100 p-6">
+          <div className="flex items-start justify-between gap-6 mb-4">
+            <div className="flex items-start gap-4">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${adEnabled ? 'bg-amber-50' : 'bg-slate-100'}`}>
+                <BadgePercent size={18} className={adEnabled ? 'text-amber-600' : 'text-slate-400'} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-slate-900">Homepage Advert</h3>
+                  {adEnabled ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 size={10} /> Active
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Off</span>
+                  )}
+                </div>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  A slim sponsored banner shown twice on the homepage — between the level cards and
+                  the latest listings, and again before success stories. Clearly labelled
+                  "Sponsored" and styled to fit the site.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setAdEnabled((v) => !v)}
+              className="shrink-0 mt-1"
+              aria-label={adEnabled ? 'Disable advert' : 'Enable advert'}
+            >
+              {adEnabled
+                ? <ToggleRight size={36} className="text-blue-600" />
+                : <ToggleLeft size={36} className="text-slate-300" />}
+            </button>
+          </div>
+
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Title</label>
+                <input
+                  type="text"
+                  value={adTitle}
+                  onChange={(e) => setAdTitle(e.target.value)}
+                  placeholder="e.g. Ace your GRE with PrepMaster"
+                  maxLength={80}
+                  className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Button label</label>
+                <input
+                  type="text"
+                  value={adCta}
+                  onChange={(e) => setAdCta(e.target.value)}
+                  placeholder="Learn more"
+                  maxLength={24}
+                  className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">Short description <span className="text-slate-400">(optional)</span></label>
+              <input
+                type="text"
+                value={adText}
+                onChange={(e) => setAdText(e.target.value)}
+                placeholder="One line of supporting text"
+                maxLength={120}
+                className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Link URL <span className="text-slate-400">(optional)</span></label>
+                <input
+                  type="text"
+                  value={adLink}
+                  onChange={(e) => setAdLink(e.target.value)}
+                  placeholder="https://sponsor.com/offer"
+                  className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Image URL <span className="text-slate-400">(optional)</span></label>
+                <input
+                  type="text"
+                  value={adImage}
+                  onChange={(e) => setAdImage(e.target.value)}
+                  placeholder="https://…/creative.png"
+                  className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Live preview */}
+            {adTitle.trim() && (
+              <div>
+                <p className="text-xs font-medium text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <Eye size={12} /> Preview
+                </p>
+                <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-r from-amber-50 via-white to-brand-50 p-4 flex items-center gap-4">
+                  <div className="w-10 h-10 shrink-0 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                    <Megaphone size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-600/80">Sponsored</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">{adTitle}</p>
+                    {adText && <p className="text-xs text-slate-500 truncate">{adText}</p>}
+                  </div>
+                  {adLink && (
+                    <span className="shrink-0 bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">
+                      {adCta || 'Learn more'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={saveAd}
+              disabled={savingAd}
+              className="inline-flex items-center gap-2 bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 disabled:opacity-60 transition-colors"
+            >
+              {savingAd ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+              {savingAd ? 'Saving…' : 'Save Advert'}
             </button>
           </div>
         </section>
