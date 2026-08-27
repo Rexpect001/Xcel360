@@ -17,7 +17,12 @@
 
   body {
     @apply bg-surface-50 text-gray-900 antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-sora), 'Sora', var(--font-inter), system-ui, sans-serif;
+    letter-spacing: -0.02em;
   }
 
   * {

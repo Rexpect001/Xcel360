@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Sora } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' })
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
+const sora = Sora({ subsets: ['latin'], display: 'swap', variable: '--font-sora' })
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 
@@ -80,8 +81,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.className}>
-      <body>
+    <html lang="en" className={`${inter.variable} ${sora.variable}`}>
+      <body className="font-sans">
         {children}
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </body>

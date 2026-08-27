@@ -1,5 +1,6 @@
 'use client'
 import { useState, useMemo, lazy, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, GraduationCap, Briefcase, Building2 } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
@@ -18,16 +19,22 @@ interface Props {
 
 export default function OpportunitiesClient({ initialOpportunities }: Props) {
   const { data: session } = useSession()
-  const [search, setSearch] = useState('')
+  // Deep-linkable filters — hero search, "Choose Your Path" and category cards
+  // land here with ?search=, ?level=, ?field=, ?funding=, ?country=, ?soon=
+  const searchParams = useSearchParams()
+  const soonDays = searchParams.get('soon')
+  const [search, setSearch] = useState(searchParams.get('search') ?? '')
   const [category, setCategory] = useState<'ALL' | 'SCHOLARSHIP' | 'JOB' | 'INTERNSHIP'>('ALL')
   const [filters, setFilters] = useState({
-    programLevel: '',
-    field: '',
-    country: '',
-    fundingType: '',
+    programLevel: searchParams.get('level') ?? '',
+    field: searchParams.get('field') ?? '',
+    country: searchParams.get('country') ?? '',
+    fundingType: searchParams.get('funding') ?? '',
     sortBy: 'deadline',
   })
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(
+    Boolean(searchParams.get('level') || searchParams.get('field') || searchParams.get('funding') || searchParams.get('country') || soonDays)
+  )
   const [saving, setSaving] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
 
@@ -62,6 +69,17 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       result = result.filter((o) => o.fundingType === filters.fundingType)
     }
 
+    // ?soon=N — only opportunities closing within N days
+    if (soonDays) {
+      const within = parseInt(soonDays, 10)
+      if (!Number.isNaN(within)) {
+        result = result.filter((o) => {
+          const d = daysUntilDeadline(o.deadline)
+          return d !== null && d >= 0 && d <= within
+        })
+      }
+    }
+
     if (filters.sortBy === 'deadline') {
       result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
     } else if (filters.sortBy === 'newest') {
@@ -71,7 +89,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     }
 
     return result
-  }, [initialOpportunities, search, filters])
+  }, [initialOpportunities, search, filters, category, soonDays])
 
   const clearFilters = () => {
     setSearch('')

@@ -1,108 +1,57 @@
-'use client'
-import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { GraduationCap, Microscope, Globe2, Banknote, BookOpen, Plane } from 'lucide-react'
+import Link from 'next/link'
+import {
+  Sparkles, Clock, Briefcase, Star, Cpu, HeartPulse, Scale, Leaf, ArrowRight,
+} from 'lucide-react'
 
 const categories = [
-  { icon: GraduationCap, label: 'Masters', query: 'Masters', color: 'from-blue-500 to-cyan-400', bg: 'bg-blue-50' },
-  { icon: Microscope, label: 'PhD / Research', query: 'PhD', color: 'from-violet-500 to-purple-400', bg: 'bg-violet-50' },
-  { icon: Globe2, label: 'Study in USA', query: 'United States', color: 'from-red-500 to-pink-400', bg: 'bg-red-50' },
-  { icon: Globe2, label: 'Study in UK', query: 'United Kingdom', color: 'from-indigo-500 to-blue-400', bg: 'bg-indigo-50' },
-  { icon: Globe2, label: 'Study in Europe', query: 'Europe (Multiple)', color: 'from-emerald-500 to-teal-400', bg: 'bg-emerald-50' },
-  { icon: Banknote, label: 'Fully Funded', query: 'Fully funded', color: 'from-amber-500 to-orange-400', bg: 'bg-amber-50' },
-  { icon: BookOpen, label: 'STEM', query: 'STEM', color: 'from-sky-500 to-cyan-400', bg: 'bg-sky-50' },
-  { icon: Plane, label: 'Global', query: 'Global', color: 'from-rose-500 to-pink-400', bg: 'bg-rose-50' },
+  { href: '/opportunities?funding=Fully%20funded', label: 'Fully Funded', desc: 'Tuition, stipend & travel covered', icon: Sparkles, color: 'bg-emerald-50 text-emerald-700' },
+  { href: '/opportunities?soon=30', label: 'Closing Soon', desc: 'Deadlines in the next 30 days', icon: Clock, color: 'bg-red-50 text-red-600' },
+  { href: '/jobs', label: 'Jobs', desc: 'Full-time & remote positions', icon: Briefcase, color: 'bg-brand-50 text-brand-700' },
+  { href: '/internships', label: 'Internships', desc: 'Gain experience worldwide', icon: Star, color: 'bg-amber-50 text-amber-700' },
+  { href: '/opportunities?field=Engineering', label: 'Engineering & STEM', desc: 'Technical fields & research', icon: Cpu, color: 'bg-violet-50 text-violet-700' },
+  { href: '/opportunities?field=Medicine', label: 'Health & Medicine', desc: 'Medical & health sciences', icon: HeartPulse, color: 'bg-rose-50 text-rose-700' },
+  { href: '/opportunities?field=Law', label: 'Law & Policy', desc: 'Legal studies & public policy', icon: Scale, color: 'bg-slate-100 text-slate-700' },
+  { href: '/opportunities?field=Environmental Science', label: 'Environment', desc: 'Climate & sustainability', icon: Leaf, color: 'bg-teal-50 text-teal-700' },
 ]
 
-// Inverse watermark pattern with larger dots
-function InverseWatermarkPattern() {
-  return (
-    <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="category-watermark" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-          {/* Grid of dots */}
-          <circle cx="50" cy="50" r="2" fill="rgba(3,105,161,0.05)" />
-          <circle cx="25" cy="25" r="1" fill="rgba(3,105,161,0.04)" />
-          <circle cx="75" cy="75" r="1" fill="rgba(3,105,161,0.04)" />
-          <circle cx="25" cy="75" r="0.8" fill="rgba(3,105,161,0.03)" />
-          <circle cx="75" cy="25" r="0.8" fill="rgba(3,105,161,0.03)" />
-          <circle cx="0" cy="50" r="1" fill="rgba(3,105,161,0.02)" />
-          <circle cx="50" cy="0" r="1" fill="rgba(3,105,161,0.02)" />
-          <circle cx="100" cy="50" r="1" fill="rgba(3,105,161,0.02)" />
-          <circle cx="50" cy="100" r="1" fill="rgba(3,105,161,0.02)" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#category-watermark)" />
-    </svg>
-  )
-}
-
+/** Scholarships360-style category browse — deep links into filtered listings. */
 export default function CategoryBrowse() {
-  const router = useRouter()
-
   return (
-    <section className="relative py-20 bg-gray-50 overflow-hidden">
-      {/* Inverse watermark pattern */}
-      <InverseWatermarkPattern />
-      
-      {/* Gradient accent */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-200 to-transparent" />
-      
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <span className="inline-flex items-center gap-1.5 text-brand-600 text-sm font-medium mb-3">
-            <span className="w-1.5 h-1.5 bg-brand-500 rounded-full" />
-            Browse by Category
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-            Find scholarships by category
-          </h2>
-          <p className="text-gray-500 mt-3 text-lg">
-            Explore opportunities organized by study level, location, and funding type
-          </p>
-        </motion.div>
+    <section className="py-16 sm:py-20 bg-surface-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600 mb-3">
+              Browse by category
+            </p>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900">
+              Find your fit, faster
+            </h2>
+          </div>
+          <Link
+            href="/opportunities"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800 transition-colors"
+          >
+            View everything <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.map((cat, i) => {
-            const Icon = cat.icon
-            return (
-              <motion.button
-                key={cat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                whileHover={{ y: -4, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => router.push(`/opportunities?search=${encodeURIComponent(cat.query)}`)}
-                className="group relative bg-white rounded-2xl border border-gray-100 p-6 text-left hover:shadow-lg hover:border-brand-200 transition-all duration-300"
-              >
-                {/* Subtle background gradient on hover */}
-                <div className={`absolute inset-0 rounded-2xl ${cat.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                
-                <div className="relative">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center mb-4 shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all duration-300`}>
-                    <Icon className="h-6 w-6 text-white" />
-                  </div>
-                  <span className="font-semibold text-gray-900 group-hover:text-brand-700 transition-colors">
-                    {cat.label}
-                  </span>
-                  
-                  {/* Arrow indicator on hover */}
-                  <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </motion.button>
-            )
-          })}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {categories.map(({ href, label, desc, icon: Icon, color }) => (
+            <Link
+              key={label}
+              href={href}
+              className="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-premium hover:-translate-y-0.5 transition-all"
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${color}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="font-semibold text-gray-900 text-sm sm:text-base group-hover:text-brand-700 transition-colors">
+                {label}
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">{desc}</p>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

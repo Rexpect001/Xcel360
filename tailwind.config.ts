@@ -61,7 +61,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-sora)', 'Sora', 'Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float':       'float 6s ease-in-out infinite',
