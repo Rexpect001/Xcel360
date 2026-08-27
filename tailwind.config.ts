@@ -9,18 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Brand blue — rebased on #006FEC: deeper, more professional, less glare
         brand: {
-          50:  '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
+          50:  '#eef5ff',
+          100: '#dceafe',
+          200: '#b9d4fd',
+          300: '#85b8fa',
+          400: '#4b95f5',
+          500: '#006fec',
+          600: '#005fc9',
+          700: '#004ca3',
+          800: '#003a7d',
+          900: '#002b5c',
+          950: '#001d3f',
         },
         accent: {
           50:  '#fffbeb',
@@ -93,13 +94,13 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient':   'linear-gradient(135deg, #0369a1 0%, #0ea5e9 40%, #38bdf8 70%, #7dd3fc 100%)',
+        'hero-gradient':   'linear-gradient(135deg, #002b5c 0%, #004ca3 40%, #006fec 75%, #4b95f5 100%)',
         'card-shine':      'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)',
       },
       boxShadow: {
-        'card-3d':  '0 20px 60px -10px rgba(3, 105, 161, 0.28)',
-        'glow':     '0 0 40px rgba(14, 165, 233, 0.24)',
-        'glow-sm':  '0 0 20px rgba(14, 165, 233, 0.16)',
+        'card-3d':  '0 20px 60px -10px rgba(0, 76, 163, 0.28)',
+        'glow':     '0 0 40px rgba(0, 111, 236, 0.22)',
+        'glow-sm':  '0 0 20px rgba(0, 111, 236, 0.15)',
         'premium':  '0 12px 32px -18px rgba(15, 23, 42, 0.26), 0 1px 4px rgba(15,23,42,0.06)',
         'accent':   '0 0 30px rgba(245, 158, 11, 0.25)',
       },

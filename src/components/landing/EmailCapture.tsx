@@ -27,7 +27,7 @@ export default function EmailCapture() {
 
   return (
     <section className="relative py-20 overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #f8faff 50%, #fffbf5 100%)' }}>
+      style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #f8faff 50%, #fffbf5 100%)' }}>
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: 'radial-gradient(circle, rgba(3,105,161,0.07) 1px, transparent 1px)',
         backgroundSize: '28px 28px',
@@ -37,7 +37,7 @@ export default function EmailCapture() {
 
         {/* Icon */}
         <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 shadow-sm text-white"
-          style={{ background: 'linear-gradient(135deg, #0369a1, #0284c7)' }}>
+          style={{ background: 'linear-gradient(135deg, #004ca3, #005fc9)' }}>
           <Bell className="h-5 w-5" />
         </div>
 
@@ -63,11 +63,11 @@ export default function EmailCapture() {
               placeholder="Enter your email address"
               required
               className="flex-1 px-5 py-3.5 rounded-2xl text-sm focus:outline-none bg-white placeholder:text-gray-400"
-              style={{ border: '1.5px solid #bae6fd', boxShadow: '0 2px 12px rgba(3,105,161,0.08)', color: '#0f172a' }}
+              style={{ border: '1.5px solid #b9d4fd', boxShadow: '0 2px 12px rgba(3,105,161,0.08)', color: '#0f172a' }}
             />
             <button type="submit" disabled={loading}
               className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50 whitespace-nowrap"
-              style={{ background: 'linear-gradient(135deg, #0369a1, #0284c7)', boxShadow: '0 4px 16px rgba(3,105,161,0.2)' }}>
+              style={{ background: 'linear-gradient(135deg, #004ca3, #005fc9)', boxShadow: '0 4px 16px rgba(3,105,161,0.2)' }}>
               {loading ? 'Subscribing...' : <><ArrowRight className="h-4 w-4" />Get Alerts</>}
             </button>
           </form>

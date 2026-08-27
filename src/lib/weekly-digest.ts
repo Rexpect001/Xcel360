@@ -70,7 +70,7 @@ function digestHtml(name: string, matches: DigestMatch[], completeness: number):
     return `
       <tr>
         <td style="padding:18px 0;border-bottom:1px solid #e5e7eb;">
-          <a href="${url}" style="font-size:16px;font-weight:700;color:#0c4a6e;text-decoration:none;">${escapeHtml(opp.title)}</a>
+          <a href="${url}" style="font-size:16px;font-weight:700;color:#002b5c;text-decoration:none;">${escapeHtml(opp.title)}</a>
           <p style="margin:6px 0;color:#4b5563;font-size:14px;line-height:1.5;">${escapeHtml(opp.hostOrg)} • ${escapeHtml(opp.country)} • ${escapeHtml(opp.fundingType)}</p>
           <p style="margin:0;color:#64748b;font-size:13px;">Deadline: ${escapeHtml(formatDate(opp.deadline))} | Match: ${opp.score}% | ${escapeHtml(opp.reasons.join(', '))}</p>
         </td>
@@ -85,7 +85,7 @@ function digestHtml(name: string, matches: DigestMatch[], completeness: number):
 <html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:Inter,Segoe UI,Arial,sans-serif;">
   <div style="max-width:620px;margin:32px auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
-    <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:30px 34px;">
+    <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:30px 34px;">
       <h1 style="margin:0;color:#ffffff;font-size:23px;">Your Xcel360 opportunity matches</h1>
       <p style="margin:8px 0 0;color:#dbeafe;font-size:14px;">A quick weekly roundup based on your profile.</p>
     </div>
@@ -94,7 +94,7 @@ function digestHtml(name: string, matches: DigestMatch[], completeness: number):
       ${profileNote}
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin-top:10px;">${items}</table>
       <div style="text-align:center;margin-top:28px;">
-        <a href="${BASE}/dashboard" style="display:inline-block;background:#0369a1;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:11px;font-weight:700;font-size:14px;">Open my dashboard</a>
+        <a href="${BASE}/dashboard" style="display:inline-block;background:#004ca3;color:#ffffff;text-decoration:none;padding:13px 22px;border-radius:11px;font-weight:700;font-size:14px;">Open my dashboard</a>
       </div>
       <p style="margin:24px 0 0;color:#94a3b8;font-size:12px;line-height:1.5;">You are receiving this because email notifications are enabled in your Xcel360 profile.</p>
     </div>

@@ -63,7 +63,7 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
 <html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-    <div style="background:linear-gradient(135deg,#0369a1,#0284c7);padding:32px 40px;">
+    <div style="background:linear-gradient(135deg,#004ca3,#005fc9);padding:32px 40px;">
       <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">Xcel360</h1>
       <p style="color:rgba(255,255,255,0.8);margin:6px 0 0;font-size:13px;">Scholarships &amp; Mentorship Platform</p>
     </div>
@@ -74,13 +74,13 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
         Click the button below to set a new password.
       </p>
       <a href="${resetUrl}"
-         style="display:inline-block;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
+         style="display:inline-block;background:linear-gradient(135deg,#004ca3,#005fc9);color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
         Reset Password →
       </a>
       <p style="color:#6b7280;font-size:13px;margin:28px 0 8px 0;">
         Or copy this link into your browser:
       </p>
-      <p style="color:#0369a1;font-size:12px;word-break:break-all;margin:0 0 28px 0;">${resetUrl}</p>
+      <p style="color:#004ca3;font-size:12px;word-break:break-all;margin:0 0 28px 0;">${resetUrl}</p>
       <hr style="border:none;border-top:1px solid #f3f4f6;margin:0 0 20px 0;">
       <p style="color:#9ca3af;font-size:12px;margin:0;">
         This link expires in <strong>1 hour</strong>. If you didn't request a password reset, you can safely ignore this email  -  your password will not change.
@@ -136,13 +136,13 @@ export async function sendVerificationEmail(email: string, name: string, token: 
 <html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-    <div style="background:linear-gradient(135deg,#0369a1,#0284c7);padding:32px 40px;">
+    <div style="background:linear-gradient(135deg,#004ca3,#005fc9);padding:32px 40px;">
       <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">Xcel360</h1>
     </div>
     <div style="padding:40px;">
       <h2 style="color:#111827;margin:0 0 16px 0;">Welcome, ${name}!</h2>
       <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 28px 0;">Please verify your email address to activate your account.</p>
-      <a href="${verificationUrl}" style="display:inline-block;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">Verify Email →</a>
+      <a href="${verificationUrl}" style="display:inline-block;background:linear-gradient(135deg,#004ca3,#005fc9);color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">Verify Email →</a>
       <p style="color:#9ca3af;font-size:12px;margin:28px 0 0 0;">Link expires in 24 hours. If you didn't sign up, ignore this email.</p>
     </div>
   </div>

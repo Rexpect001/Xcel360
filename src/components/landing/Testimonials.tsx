@@ -79,7 +79,7 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
     : defaultStories
 
   return (
-    <section className="relative py-24 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0369a1 0%, #0284c7 40%, #0ea5e9 75%, #38bdf8 100%)' }}>
+    <section className="relative py-24 overflow-hidden" style={{ background: 'linear-gradient(135deg, #004ca3 0%, #005fc9 40%, #006fec 75%, #4b95f5 100%)' }}>
       {/* Light watermark pattern for blue background */}
       <LightWatermarkPattern />
       

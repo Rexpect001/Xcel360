@@ -168,7 +168,7 @@ export async function GET(req: NextRequest) {
   const accentGradient =
     type === 'job'         ? 'linear-gradient(90deg, #16a34a, #4ade80, #86efac)'
     : type === 'internship' ? 'linear-gradient(90deg, #7c3aed, #a78bfa, #c4b5fd)'
-    : 'linear-gradient(90deg, #0ea5e9, #38bdf8, #7dd3fc)'
+    : 'linear-gradient(90deg, #006fec, #4b95f5, #85b8fa)'
 
   const img = new ImageResponse(
     (
@@ -183,10 +183,10 @@ export async function GET(req: NextRequest) {
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '48px 72px 44px', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg, #0369a1, #0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(14,165,233,0.4)' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg, #004ca3, #006fec)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(14,165,233,0.4)' }}>
                 <div style={{ color: 'white', fontSize: '20px', fontWeight: 800 }}>X</div>
               </div>
-              <span style={{ fontSize: '22px', fontWeight: 700, color: '#e0f2fe', letterSpacing: '-0.3px' }}>Xcel360</span>
+              <span style={{ fontSize: '22px', fontWeight: 700, color: '#dceafe', letterSpacing: '-0.3px' }}>Xcel360</span>
             </div>
             <div style={{ background: badgeBg, color: badgeColor, fontSize: '17px', fontWeight: 700, padding: '8px 20px', borderRadius: '999px', border: `1.5px solid ${badgeColor}40`, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: badgeColor, display: 'flex' }} />
@@ -204,7 +204,7 @@ export async function GET(req: NextRequest) {
                 <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {type === 'job' || type === 'internship' ? 'Company' : type === 'event' ? 'Host' : 'Offered by'}
                 </span>
-                <span style={{ fontSize: '20px', color: '#7dd3fc', fontWeight: 700 }}>{sub}</span>
+                <span style={{ fontSize: '20px', color: '#85b8fa', fontWeight: 700 }}>{sub}</span>
               </div>
               <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -222,7 +222,7 @@ export async function GET(req: NextRequest) {
                 <span style={{ fontSize: '20px', color: meta3Value === 'Open' ? '#4ade80' : '#e2e8f0', fontWeight: 600 }}>{meta3Value}</span>
               </div>
             </div>
-            <div style={{ background: 'linear-gradient(135deg, #0369a1, #0284c7)', color: 'white', fontSize: '17px', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 24px rgba(3,105,161,0.5)' }}>
+            <div style={{ background: 'linear-gradient(135deg, #004ca3, #005fc9)', color: 'white', fontSize: '17px', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 24px rgba(3,105,161,0.5)' }}>
               {type === 'event' ? 'Register now →' : 'Apply now →'}
             </div>
           </div>

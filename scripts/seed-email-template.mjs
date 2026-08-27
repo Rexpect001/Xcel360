@@ -30,10 +30,10 @@ const HTML_BODY = /* html */`
 
         <!-- ── Header ──────────────────────────────────────────── -->
         <tr>
-          <td style="background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 40%,#0284c7 70%,#0ea5e9 100%);padding:48px 40px 40px;text-align:center;">
-            <p style="margin:0 0 16px;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#bae6fd;">Xcel360 · 2026</p>
+          <td style="background:linear-gradient(135deg,#002b5c 0%,#004ca3 40%,#005fc9 70%,#006fec 100%);padding:48px 40px 40px;text-align:center;">
+            <p style="margin:0 0 16px;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b9d4fd;">Xcel360 · 2026</p>
             <h1 style="margin:0 0 12px;font-size:28px;font-weight:800;color:#ffffff;line-height:1.25;">Don't Miss Out  - <br/>Leverage AI at Xcel360 2026</h1>
-            <p style="margin:0;font-size:15px;color:#e0f2fe;line-height:1.5;">Learning · Innovation · Opportunity</p>
+            <p style="margin:0;font-size:15px;color:#dceafe;line-height:1.5;">Learning · Innovation · Opportunity</p>
           </td>
         </tr>
 
@@ -59,16 +59,16 @@ const HTML_BODY = /* html */`
         <!-- ── Card 1: Main Event ──────────────────────────────── -->
         <tr>
           <td style="padding:0 40px 16px;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f9ff;border-radius:12px;border:1px solid #bae6fd;overflow:hidden;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef5ff;border-radius:12px;border:1px solid #b9d4fd;overflow:hidden;">
               <tr>
                 <td style="padding:24px 24px 20px;">
                   <table cellpadding="0" cellspacing="0">
                     <tr>
                       <td style="vertical-align:top;padding-right:16px;">
-                        <div style="width:44px;height:44px;background:linear-gradient(135deg,#0284c7,#0ea5e9);border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:44px;font-size:22px;">🎤</div>
+                        <div style="width:44px;height:44px;background:linear-gradient(135deg,#005fc9,#006fec);border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:44px;font-size:22px;">🎤</div>
                       </td>
                       <td style="vertical-align:top;">
-                        <p style="margin:0 0 6px;font-size:16px;font-weight:700;color:#0c4a6e;">Attend the Main Event</p>
+                        <p style="margin:0 0 6px;font-size:16px;font-weight:700;color:#002b5c;">Attend the Main Event</p>
                         <p style="margin:0;font-size:14px;color:#374151;line-height:1.6;">
                           Learn from AI experts about practical applications for
                           <strong> scholarships, careers, research,</strong> and <strong>productivity</strong>.
@@ -79,7 +79,7 @@ const HTML_BODY = /* html */`
                   </table>
                   <div style="margin-top:18px;text-align:center;">
                     <a href="https://thexcel360.com/ai"
-                       style="display:inline-block;background:#0284c7;color:#ffffff;padding:12px 28px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;letter-spacing:0.02em;">
+                       style="display:inline-block;background:#005fc9;color:#ffffff;padding:12px 28px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;letter-spacing:0.02em;">
                       Register for the Event →
                     </a>
                     <p style="margin:8px 0 0;font-size:12px;color:#6b7280;">thexcel360.com/ai</p>
@@ -140,7 +140,7 @@ const HTML_BODY = /* html */`
                 <td style="vertical-align:top;padding-left:12px;">
                   <p style="margin:0;font-size:14px;color:#1f2937;line-height:1.6;">
                     <strong>Event Registration:</strong>
-                    <a href="https://thexcel360.com/ai" style="color:#0284c7;text-decoration:none;">thexcel360.com/ai</a>
+                    <a href="https://thexcel360.com/ai" style="color:#005fc9;text-decoration:none;">thexcel360.com/ai</a>
                      -  simply log in and secure your spot.
                   </p>
                 </td>
@@ -156,7 +156,7 @@ const HTML_BODY = /* html */`
                 <td style="vertical-align:top;padding-left:12px;">
                   <p style="margin:0;font-size:14px;color:#1f2937;line-height:1.6;">
                     <strong>Poster Presentation Challenge:</strong>
-                    <a href="https://edifier.thexcel360.com" style="color:#0284c7;text-decoration:none;">edifier.thexcel360.com</a>
+                    <a href="https://edifier.thexcel360.com" style="color:#005fc9;text-decoration:none;">edifier.thexcel360.com</a>
                      -  enroll and submit your project.
                   </p>
                 </td>
@@ -172,7 +172,7 @@ const HTML_BODY = /* html */`
                 <td style="vertical-align:top;padding-left:12px;">
                   <p style="margin:0;font-size:14px;color:#1f2937;line-height:1.6;">
                     <strong>Volunteer Opportunities:</strong>
-                    <a href="https://thexcel360.com/volunteer" style="color:#0284c7;text-decoration:none;">thexcel360.com/volunteer</a>
+                    <a href="https://thexcel360.com/volunteer" style="color:#005fc9;text-decoration:none;">thexcel360.com/volunteer</a>
                      -  support the event as a judge or team member.
                   </p>
                 </td>
@@ -201,7 +201,7 @@ const HTML_BODY = /* html */`
             </p>
             <p style="margin:0;font-size:16px;color:#374151;line-height:1.7;">
               Warm regards,<br/>
-              <strong style="color:#0c4a6e;">The Xcel360 Team</strong>
+              <strong style="color:#002b5c;">The Xcel360 Team</strong>
             </p>
           </td>
         </tr>
@@ -210,11 +210,11 @@ const HTML_BODY = /* html */`
         <tr>
           <td style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:24px 40px;text-align:center;">
             <p style="margin:0 0 8px;font-size:13px;color:#9ca3af;">
-              <a href="https://thexcel360.com" style="color:#0284c7;text-decoration:none;font-weight:600;">thexcel360.com</a>
+              <a href="https://thexcel360.com" style="color:#005fc9;text-decoration:none;font-weight:600;">thexcel360.com</a>
               &nbsp;·&nbsp;
-              <a href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" style="color:#0284c7;text-decoration:none;">WhatsApp Channel</a>
+              <a href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" style="color:#005fc9;text-decoration:none;">WhatsApp Channel</a>
               &nbsp;·&nbsp;
-              <a href="https://www.youtube.com/@Xcel_360" style="color:#0284c7;text-decoration:none;">YouTube</a>
+              <a href="https://www.youtube.com/@Xcel_360" style="color:#005fc9;text-decoration:none;">YouTube</a>
             </p>
             <p style="margin:0;font-size:12px;color:#d1d5db;">© 2026 Xcel360. Empowering scholars across Africa.</p>
           </td>

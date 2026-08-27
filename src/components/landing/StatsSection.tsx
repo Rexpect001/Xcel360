@@ -28,7 +28,7 @@ export default function StatsSection() {
     <section className="relative py-16 bg-white overflow-hidden">
       {/* Top gradient line */}
       <div className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, #6366f1, #0369a1, #f59e0b, transparent)' }} />
+        style={{ background: 'linear-gradient(90deg, transparent, #6366f1, #004ca3, #f59e0b, transparent)' }} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

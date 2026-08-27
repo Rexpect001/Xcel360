@@ -33,8 +33,8 @@ export default function GrowthChart({
       <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#0284c7" stopOpacity={0.15} />
-            <stop offset="95%" stopColor="#0284c7" stopOpacity={0} />
+            <stop offset="5%" stopColor="#005fc9" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#005fc9" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -42,8 +42,8 @@ export default function GrowthChart({
           interval={mode === 'daily' ? 4 : 0} />
         <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} allowDecimals={false} />
         <Tooltip content={<CustomTooltip mode={mode} />} />
-        <Area type="monotone" dataKey="users" stroke="#0284c7" strokeWidth={2}
-          fill="url(#userGradient)" dot={false} activeDot={{ r: 4, fill: '#0284c7' }} />
+        <Area type="monotone" dataKey="users" stroke="#005fc9" strokeWidth={2}
+          fill="url(#userGradient)" dot={false} activeDot={{ r: 4, fill: '#005fc9' }} />
       </AreaChart>
     </ResponsiveContainer>
   )

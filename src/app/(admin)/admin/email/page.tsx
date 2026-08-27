@@ -314,14 +314,14 @@ const BASE_TEMPLATES = [
     preview: 'announcement',
     subject: '[Your Subject Here]',
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:40px 32px;text-align:center;">
     <h1 style="color:#ffffff;font-size:26px;margin:0;">[Your Headline Here]</h1>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">[Opening paragraph  -  introduce the announcement and why it matters to your audience.]</p>
     <p style="font-size:16px;line-height:1.7;">[Supporting paragraph  -  add more context, details, or key information here.]</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">[Call to Action]</a>
+      <a href="https://xcel360.com" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">[Call to Action]</a>
     </div>
     <p style="font-size:16px;line-height:1.7;">Warm regards,<br/><strong>The Xcel360 Team</strong></p>
   </div>
@@ -336,29 +336,29 @@ const BASE_TEMPLATES = [
     preview: 'opportunity',
     subject: 'New Scholarship Opportunity: [Scholarship Name]',
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:40px 32px;text-align:center;">
     <span style="display:inline-block;background:rgba(255,255,255,0.2);color:#ffffff;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:16px;">New Opportunity</span>
     <h1 style="color:#ffffff;font-size:24px;margin:0;">[Scholarship Name]</h1>
-    <p style="color:#bae6fd;margin:8px 0 0;font-size:15px;">Offered by [Organisation Name]</p>
+    <p style="color:#b9d4fd;margin:8px 0 0;font-size:15px;">Offered by [Organisation Name]</p>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <div style="display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:120px;background:#f0f9ff;border-radius:10px;padding:16px;text-align:center;">
+      <div style="flex:1;min-width:120px;background:#eef5ff;border-radius:10px;padding:16px;text-align:center;">
         <p style="font-size:12px;color:#6b7280;margin:0 0 4px;">Deadline</p>
-        <p style="font-size:15px;font-weight:700;color:#0c4a6e;margin:0;">[Date]</p>
+        <p style="font-size:15px;font-weight:700;color:#002b5c;margin:0;">[Date]</p>
       </div>
-      <div style="flex:1;min-width:120px;background:#f0f9ff;border-radius:10px;padding:16px;text-align:center;">
+      <div style="flex:1;min-width:120px;background:#eef5ff;border-radius:10px;padding:16px;text-align:center;">
         <p style="font-size:12px;color:#6b7280;margin:0 0 4px;">Value</p>
-        <p style="font-size:15px;font-weight:700;color:#0c4a6e;margin:0;">[Amount]</p>
+        <p style="font-size:15px;font-weight:700;color:#002b5c;margin:0;">[Amount]</p>
       </div>
-      <div style="flex:1;min-width:120px;background:#f0f9ff;border-radius:10px;padding:16px;text-align:center;">
+      <div style="flex:1;min-width:120px;background:#eef5ff;border-radius:10px;padding:16px;text-align:center;">
         <p style="font-size:12px;color:#6b7280;margin:0 0 4px;">Open to</p>
-        <p style="font-size:15px;font-weight:700;color:#0c4a6e;margin:0;">[Eligibility]</p>
+        <p style="font-size:15px;font-weight:700;color:#002b5c;margin:0;">[Eligibility]</p>
       </div>
     </div>
     <p style="font-size:16px;line-height:1.7;">[Describe the scholarship  -  what it covers, who it is for, and why this is a great opportunity.]</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com/opportunities" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">View &amp; Apply Now</a>
+      <a href="https://xcel360.com/opportunities" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">View &amp; Apply Now</a>
     </div>
     <p style="font-size:14px;color:#6b7280;line-height:1.7;">Don't wait  -  deadlines fill up fast. Share this with someone who might benefit.</p>
     <p style="font-size:16px;line-height:1.7;margin-top:24px;">Best of luck,<br/><strong>The Xcel360 Team</strong></p>
@@ -374,30 +374,30 @@ const BASE_TEMPLATES = [
     preview: 'programme',
     subject: 'Xcel360 Programme Update  -  [Cohort Name]',
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:40px 32px;text-align:center;">
     <h1 style="color:#ffffff;font-size:26px;margin:0;">Programme Update</h1>
-    <p style="color:#bae6fd;margin:8px 0 0;font-size:15px;">[Cohort Name] · [Year]</p>
+    <p style="color:#b9d4fd;margin:8px 0 0;font-size:15px;">[Cohort Name] · [Year]</p>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">[Opening  -  share the programme news and set the context for readers.]</p>
-    <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:24px 0;">
-      <p style="font-size:14px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.05em;">What to Expect</p>
+    <div style="background:#eef5ff;border-radius:12px;padding:24px;margin:24px 0;">
+      <p style="font-size:14px;font-weight:700;color:#002b5c;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.05em;">What to Expect</p>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
-        <span style="background:#0284c7;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span>
+        <span style="background:#005fc9;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">1</span>
         <p style="margin:4px 0 0;font-size:15px;color:#374151;">[Step or highlight one  -  describe a key benefit or milestone]</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
-        <span style="background:#0284c7;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">2</span>
+        <span style="background:#005fc9;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">2</span>
         <p style="margin:4px 0 0;font-size:15px;color:#374151;">[Step or highlight two]</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <span style="background:#0284c7;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">3</span>
+        <span style="background:#005fc9;color:#fff;border-radius:50%;width:24px;height:24px;min-width:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;">3</span>
         <p style="margin:4px 0 0;font-size:15px;color:#374151;">[Step or highlight three]</p>
       </div>
     </div>
     <p style="font-size:16px;line-height:1.7;">[Closing  -  next steps, how to get involved, or a call to action.]</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com/programs" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Learn More</a>
+      <a href="https://xcel360.com/programs" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Learn More</a>
     </div>
     <p style="font-size:16px;line-height:1.7;">With excitement,<br/><strong>The Xcel360 Team</strong></p>
   </div>
@@ -412,15 +412,15 @@ const BASE_TEMPLATES = [
     preview: 'appreciation',
     subject: 'Thank You for Being Part of Xcel360',
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:40px 32px;text-align:center;">
     <h1 style="color:#ffffff;font-size:28px;margin:0;">Thank You for Being Part of Xcel360</h1>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">Dear Scholar,</p>
     <p style="font-size:16px;line-height:1.7;">[Opening  -  express genuine gratitude and what it means to the team.]</p>
     <p style="font-size:16px;line-height:1.7;">[Supporting paragraph  -  acknowledge their journey and your commitment to helping them.]</p>
-    <div style="background:#f0f9ff;border-left:4px solid #0284c7;padding:20px 24px;margin:32px 0;border-radius:0 8px 8px 0;">
-      <p style="font-size:16px;line-height:1.7;margin:0;color:#0c4a6e;font-weight:600;">[Key message  -  one powerful forward-looking sentence]</p>
+    <div style="background:#eef5ff;border-left:4px solid #005fc9;padding:20px 24px;margin:32px 0;border-radius:0 8px 8px 0;">
+      <p style="font-size:16px;line-height:1.7;margin:0;color:#002b5c;font-weight:600;">[Key message  -  one powerful forward-looking sentence]</p>
       <p style="font-size:15px;line-height:1.7;margin:8px 0 0;color:#374151;">[Supporting detail  -  what's coming next, what you're working on for them.]</p>
     </div>
     <p style="font-size:16px;line-height:1.7;">[Closing  -  encouraging and warm. Remind them you're with them every step.]</p>
@@ -437,33 +437,33 @@ const BASE_TEMPLATES = [
     preview: 'reconnect',
     subject: "A lot has happened since our last event  -  meet Xcel360",
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
-    <p style="color:#bae6fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">From the Xcel360 Team</p>
+  <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:40px 32px;text-align:center;">
+    <p style="color:#b9d4fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">From the Xcel360 Team</p>
     <h1 style="color:#ffffff;font-size:26px;margin:0 0 10px;line-height:1.3;">We've Been Building Something for You</h1>
-    <p style="color:#e0f2fe;font-size:15px;margin:0;">Introducing the Xcel360 Scholarship Platform</p>
+    <p style="color:#dceafe;font-size:15px;margin:0;">Introducing the Xcel360 Scholarship Platform</p>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">Hi Scholar,</p>
     <p style="font-size:16px;line-height:1.7;">It's been a minute since we connected at our last event  -  and it's been a busy one. We've been working tirelessly behind the scenes, and we're excited to finally share what we've built.</p>
     <p style="font-size:16px;line-height:1.7;">Meet <strong>Xcel360</strong>  -  a scholarship discovery platform built to help you navigate your scholarship journey, search smarter, and find the right programme for you.</p>
-    <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:28px 0;">
-      <p style="font-size:13px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What Xcel360 gives you</p>
+    <div style="background:#eef5ff;border-radius:12px;padding:24px;margin:28px 0;">
+      <p style="font-size:13px;font-weight:700;color:#002b5c;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What Xcel360 gives you</p>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
-        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <span style="color:#005fc9;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
         <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>A rich scholarship database</strong>  -  curated opportunities updated regularly to support your journey</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
-        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <span style="color:#005fc9;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
         <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline reminders</strong>  -  save opportunities and get notified before they close</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <span style="color:#005fc9;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
         <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>More features on the way</strong>  -  we're constantly improving the platform to better support your search and applications</p>
       </div>
     </div>
     <p style="font-size:16px;line-height:1.7;">We're doing well, and we're genuinely proud of what we've put together for you. Check it out, explore, and let us know what you think.</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://thexcel360.com" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Explore the Platform</a>
+      <a href="https://thexcel360.com" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Explore the Platform</a>
     </div>
     <div style="background:#fef9c3;border-left:4px solid #facc15;border-radius:0 8px 8px 0;padding:20px 24px;margin:28px 0;">
       <p style="font-size:15px;font-weight:700;color:#92400e;margin:0 0 6px;">Something big is coming.</p>
@@ -487,34 +487,34 @@ const BASE_TEMPLATES = [
     preview: 'invitation',
     subject: "You're Invited  -  Join Xcel360 and Discover Scholarships",
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
-  <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);padding:40px 32px;text-align:center;">
-    <p style="color:#bae6fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">You're Invited</p>
+  <div style="background:linear-gradient(135deg,#002b5c,#005fc9);padding:40px 32px;text-align:center;">
+    <p style="color:#b9d4fd;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 14px;">You're Invited</p>
     <h1 style="color:#ffffff;font-size:26px;margin:0 0 10px;line-height:1.3;">Discover Scholarships Built for You</h1>
-    <p style="color:#e0f2fe;font-size:15px;margin:0;">Join Xcel360  -  Africa's scholarship discovery platform</p>
+    <p style="color:#dceafe;font-size:15px;margin:0;">Join Xcel360  -  Africa's scholarship discovery platform</p>
   </div>
   <div style="padding:40px 32px;color:#1f2937;">
     <p style="font-size:16px;line-height:1.7;">Hi [First Name],</p>
     <p style="font-size:16px;line-height:1.7;">We'd love to invite you to join <strong>Xcel360</strong>  -  a platform built to help students and young professionals across Africa find, track, and apply for scholarships, internships, and funding opportunities.</p>
-    <div style="background:#f0f9ff;border-radius:12px;padding:24px;margin:28px 0;">
-      <p style="font-size:13px;font-weight:700;color:#0c4a6e;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What you get on Xcel360</p>
+    <div style="background:#eef5ff;border-radius:12px;padding:24px;margin:28px 0;">
+      <p style="font-size:13px;font-weight:700;color:#002b5c;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.06em;">What you get on Xcel360</p>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
-        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <span style="color:#005fc9;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
         <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Curated opportunities</strong>  -  scholarships, fellowships, and internships updated regularly</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
-        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <span style="color:#005fc9;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
         <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Deadline tracking</strong>  -  save opportunities and get reminded before they close</p>
       </div>
       <div style="display:flex;align-items:flex-start;gap:12px;">
-        <span style="color:#0284c7;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
+        <span style="color:#005fc9;font-size:16px;line-height:1;margin-top:3px;flex-shrink:0;">✦</span>
         <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;"><strong>Personalised matches</strong>  -  opportunities matched to your field, level, and goals</p>
       </div>
     </div>
     <p style="font-size:16px;line-height:1.7;">It's completely free to join. Create your account in under a minute and start exploring opportunities that could change your future.</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com/signup" style="display:inline-block;background:#0284c7;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Create Your Free Account</a>
+      <a href="https://xcel360.com/signup" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Create Your Free Account</a>
     </div>
-    <p style="font-size:14px;color:#6b7280;line-height:1.7;text-align:center;">Already curious? Browse opportunities without signing in at <a href="https://xcel360.com" style="color:#0284c7;text-decoration:none;">xcel360.com</a></p>
+    <p style="font-size:14px;color:#6b7280;line-height:1.7;text-align:center;">Already curious? Browse opportunities without signing in at <a href="https://xcel360.com" style="color:#005fc9;text-decoration:none;">xcel360.com</a></p>
     <p style="font-size:16px;line-height:1.7;margin-top:32px;">Looking forward to seeing you on the platform,<br/><strong>The Xcel360 Team</strong></p>
   </div>
   <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">

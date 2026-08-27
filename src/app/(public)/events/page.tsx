@@ -270,7 +270,7 @@ export default async function EventsPage() {
         )}
 
         {/* CTA */}
-        <div className="rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%)' }}>
+        <div className="rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #004ca3 0%, #006fec 100%)' }}>
           <div className="px-8 py-12 text-center">
             <h2 className="text-2xl font-bold text-white mb-3">Ready for the next cohort?</h2>
             <p className="text-sky-100 mb-8 max-w-lg mx-auto">

@@ -75,6 +75,30 @@ export default function AboutPage() {
             </Link>
           </div>
         </div>
+
+        {/* Trust & legal — quick access to our policies */}
+        <div className="mt-12 border-t border-gray-100 pt-8">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest text-center mb-4">
+            Trust & Transparency
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/privacy"
+              className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:border-brand-300 hover:text-brand-700 transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/terms"
+              className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:border-brand-300 hover:text-brand-700 transition-colors"
+            >
+              Terms of Service
+            </Link>
+          </div>
+          <p className="text-xs text-gray-400 text-center mt-4">
+            We take your data seriously — read exactly what we collect and how it protects you.
+          </p>
+        </div>
       </div>
     </div>
   )
