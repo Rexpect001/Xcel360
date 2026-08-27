@@ -1,6 +1,7 @@
 export const revalidate = 60
 import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
 import Link from 'next/link'
+import PageHero from '@/components/layout/PageHero'
 
 export const metadata = {
   title: 'About Xcel360  -  Our Mission & Story',
@@ -17,14 +18,12 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-24 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">About Xcel360</h1>
-          <p className="text-blue-200 text-xl leading-relaxed">
-            We believe every talented student deserves access to world-class education  -  regardless of where they come from or how much their family earns.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Our Story"
+        title="About Xcel360"
+        subtitle="We believe every talented student deserves access to world-class education — regardless of where they come from or how much their family earns."
+        className="pb-24"
+      />
 
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 gap-12 mb-16">

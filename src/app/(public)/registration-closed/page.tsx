@@ -10,7 +10,7 @@ export default function RegistrationClosedPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="relative bg-gradient-to-br from-brand-950 via-brand-900 to-sky-700 pt-28 pb-24 px-4 overflow-hidden">
+      <div className="relative bg-hero-gradient pt-28 pb-24 px-4 overflow-hidden">
         <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-2xl" />
         <div className="max-w-2xl mx-auto relative text-center">
@@ -22,7 +22,7 @@ export default function RegistrationClosedPage() {
               <Lock className="h-3.5 w-3.5" /> Registration Closed
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
             Leveraging AI in Today&apos;s World
           </h1>
           <p className="text-white/70 text-base md:text-lg">
@@ -36,7 +36,7 @@ export default function RegistrationClosedPage() {
       <div className="max-w-2xl mx-auto px-4 py-12 space-y-6 -mt-10">
         {/* Certificate access card */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="h-1.5 bg-gradient-to-r from-brand-950 to-sky-700" />
+          <div className="h-1.5 bg-gradient-to-r from-brand-900 to-brand-500" />
           <div className="p-8 text-center">
             <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-5">
               <Award className="h-8 w-8 text-brand-700" />

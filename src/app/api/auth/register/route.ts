@@ -15,7 +15,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 8 characters.' }, { status: 400 })
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } })
+    // Normalize email so case/whitespace can't create duplicate accounts.
+    const normEmail = String(email).trim().toLowerCase()
+
+    const existing = await prisma.user.findFirst({
+      where: { email: { equals: normEmail, mode: 'insensitive' } },
+    })
     if (existing) {
       return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 })
     }
@@ -25,7 +30,7 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normEmail,
         password: hashed,
         emailVerified: new Date(), // auto-verify  -  no email confirmation needed
         profile: { create: {} },

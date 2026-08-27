@@ -1,6 +1,7 @@
 export const revalidate = 86400
 import prisma from '@/lib/prisma'
 import { Quote } from 'lucide-react'
+import PageHero from '@/components/layout/PageHero'
 
 export const metadata = {
   title: 'Success Stories  -  Real Students, Real Scholarships',
@@ -75,12 +76,11 @@ export default async function SuccessStoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Success Stories</h1>
-          <p className="text-blue-200 text-lg">Real students, real scholarships, real impact.</p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Community"
+        title="Success Stories"
+        subtitle="Real students, real scholarships, real impact."
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-6">

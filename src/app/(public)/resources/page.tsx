@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { BookOpen, Calendar, Tag, Download, FileText, ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import ResourceDownloadButton from '@/components/resources/ResourceDownloadButton'
+import PageHero from '@/components/layout/PageHero'
 
 export const metadata: Metadata = {
   title: 'Free Resources  -  Templates, Guides & SOP Samples',
@@ -84,21 +85,18 @@ export default async function ResourcesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Resources & Templates</h1>
-          <p className="text-blue-200 text-lg">
-            Free guides, templates, and tools to help you craft a winning application.
-          </p>
-          {dbResources.length > 0 && (
-            <div className="flex items-center gap-6 mt-6 text-sm text-blue-200">
-              <span className="flex items-center gap-2"><Download className="h-4 w-4" />{dbResources.length} resources available</span>
-              <span>{categories.length} categories</span>
-            </div>
-          )}
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Learn"
+        title="Resources & Templates"
+        subtitle="Free guides, templates, and tools to help you craft a winning application."
+      >
+        {dbResources.length > 0 && (
+          <div className="flex items-center gap-6 mt-6 text-sm text-brand-100">
+            <span className="flex items-center gap-2"><Download className="h-4 w-4" />{dbResources.length} resources available</span>
+            <span>{categories.length} categories</span>
+          </div>
+        )}
+      </PageHero>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
 

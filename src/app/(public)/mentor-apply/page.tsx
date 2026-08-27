@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Users, CheckCircle } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import PageHero from '@/components/layout/PageHero'
 
 export default function MentorApplyPage() {
   const [form, setForm] = useState({
@@ -44,14 +45,11 @@ export default function MentorApplyPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Apply to Become a Mentor</h1>
-          <p className="text-blue-200 text-lg max-w-2xl">
-            Share your scholarship journey and guide the next generation of scholars. Fill in the form below and we&apos;ll be in touch.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Community"
+        title="Apply to Become a Mentor"
+        subtitle="Share your scholarship journey and guide the next generation of scholars. Fill in the form below and we'll be in touch."
+      />
 
       <div className="max-w-2xl mx-auto px-4 py-12">
         {submitted ? (

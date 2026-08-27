@@ -5,6 +5,7 @@ import { Users, ArrowRight, ExternalLink } from 'lucide-react'
 import { Linkedin } from 'lucide-react'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
+import PageHero from '@/components/layout/PageHero'
 
 export const metadata: Metadata = {
   title: 'Find a Mentor  -  Scholarship & Study Abroad Guidance',
@@ -81,14 +82,11 @@ export default async function MentorshipPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Mentorship</h1>
-          <p className="text-blue-200 text-lg max-w-2xl mx-auto">
-            Get personalized guidance from scholars and professionals who have been where you want to go.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Community"
+        title="Mentorship"
+        subtitle="Get personalized guidance from scholars and professionals who have been where you want to go."
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import prisma from '@/lib/prisma'
 import JobsClient from '@/components/jobs/JobsClient'
 import AdSlot from '@/components/ads/AdSlot'
+import PageHero from '@/components/layout/PageHero'
 import { opportunityListSelect } from '@/types/opportunity-list'
 
 export const metadata: Metadata = {
@@ -44,12 +45,11 @@ export default async function JobsPage() {
   const jobs = await getJobs()
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-br from-emerald-900 to-emerald-700 pt-28 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Jobs & Careers</h1>
-          <p className="text-emerald-200 text-lg">{jobs.length} open positions across multiple countries</p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Careers"
+        title="Jobs & Careers"
+        subtitle={`${jobs.length} open positions across multiple countries`}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <AdSlot placement="jobs-top" compact />
       </div>

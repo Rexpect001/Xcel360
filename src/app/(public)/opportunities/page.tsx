@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import OpportunitiesClient from '@/components/opportunities/OpportunitiesClient'
 import AdSlot from '@/components/ads/AdSlot'
+import PageHero from '@/components/layout/PageHero'
 import prisma from '@/lib/prisma'
 import { opportunityListSelect } from '@/types/opportunity-list'
 
@@ -73,14 +74,11 @@ export default async function OpportunitiesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="bg-gradient-to-br from-brand-900 to-brand-700 pt-28 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Opportunities</h1>
-          <p className="text-blue-200 text-lg">
-            Search scholarships, grants, fellowships, jobs, and internships from trusted sources.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="Funding"
+        title="Scholarships & Opportunities"
+        subtitle="Search scholarships, grants, fellowships, jobs, and internships from trusted sources."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <AdSlot placement="opportunities-top" compact />
       </div>

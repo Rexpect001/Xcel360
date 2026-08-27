@@ -43,7 +43,7 @@ export default async function NewsArticlePage({ params }: { params: { slug: stri
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="relative bg-gradient-to-br from-brand-950 via-brand-900 to-sky-700 pt-28 pb-20 px-4 overflow-hidden">
+      <div className="relative bg-hero-gradient pt-28 pb-20 px-4 overflow-hidden">
         <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="max-w-3xl mx-auto relative">
           <Link href="/news" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white mb-6 transition-colors">
@@ -51,12 +51,12 @@ export default async function NewsArticlePage({ params }: { params: { slug: stri
           </Link>
           <div className="flex flex-wrap gap-2 mb-4">
             {(post.tags ?? []).map((t: string) => (
-              <span key={t} className="text-xs font-semibold text-sky-100 bg-white/10 px-2.5 py-1 rounded-full border border-white/20">
+              <span key={t} className="text-xs font-semibold text-brand-100 bg-white/10 px-2.5 py-1 rounded-full border border-white/20">
                 {t}
               </span>
             ))}
           </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">{post.title}</h1>
+          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-4 mt-5 text-sm text-white/60">
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4" /> {formatDate(post.createdAt)}

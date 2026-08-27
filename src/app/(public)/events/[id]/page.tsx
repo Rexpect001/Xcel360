@@ -34,11 +34,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 const TYPE_GRAD: Record<string, string> = {
-  Webinar: 'from-brand-950 via-brand-900 to-sky-700',
-  Workshop: 'from-violet-950 via-violet-900 to-purple-700',
-  'Q&A': 'from-emerald-950 via-emerald-900 to-teal-700',
-  'Info Session': 'from-orange-900 via-orange-800 to-amber-700',
-  Zoom: 'from-brand-950 via-brand-900 to-sky-700',
+  Webinar: 'from-brand-950 via-brand-900 to-brand-600',
+  Workshop: 'from-brand-950 via-brand-800 to-brand-500',
+  'Q&A': 'from-brand-950 via-brand-900 to-brand-600',
+  'Info Session': 'from-brand-900 via-brand-800 to-brand-500',
+  Zoom: 'from-brand-950 via-brand-900 to-brand-600',
 }
 
 export default async function EventDetailPage({ params }: { params: { id: string } }) {

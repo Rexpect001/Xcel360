@@ -47,9 +47,15 @@ export const authOptions: NextAuthOptions = {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const db = prisma as any
-        const user = await db.user.findUnique({
-          where: { email: credentials.email },
+        // Match email case-insensitively so "John@X.com" logs in as "john@x.com".
+        // If duplicate accounts exist for one email (differing only by case),
+        // prefer the one that actually has a password (credentials-capable).
+        const emailInput = credentials.email.trim().toLowerCase()
+        const candidates = await db.user.findMany({
+          where: { email: { equals: emailInput, mode: 'insensitive' } },
         })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const user = candidates.find((u: any) => u.password) ?? candidates[0] ?? null
 
         if (!user || !user.password) {
           // Track failed attempt

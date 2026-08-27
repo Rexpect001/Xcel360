@@ -1,11 +1,12 @@
 export const revalidate = 900
 import type { Metadata } from 'next'
 import prisma from '@/lib/prisma'
-import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight, MapPin, Zap } from 'lucide-react'
+import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight, MapPin } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
 import ScrollingBeneficiaries from '@/components/programs/ScrollingBeneficiaries'
 import { CountdownBadge } from '@/components/events/CountdownTimer'
+import PageHero from '@/components/layout/PageHero'
 
 export const metadata: Metadata = {
   title: 'Events & Webinars',
@@ -71,35 +72,25 @@ export default async function EventsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="relative bg-gradient-to-br from-brand-950 via-brand-900 to-brand-700 pt-28 pb-20 px-4 overflow-hidden">
-        {/* Decorative circles */}
-        <div className="absolute -top-16 -right-16 w-72 h-72 bg-white/5 rounded-full" />
-        <div className="absolute top-1/2 -left-10 w-48 h-48 bg-sky-400/10 rounded-full" />
-        <div className="max-w-7xl mx-auto relative">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 bg-white/10 text-blue-200 text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-sm">
-              <Zap className="h-3 w-3" /> Live Events & Programs
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Events &amp; Programs</h1>
-          <p className="text-blue-200 text-lg max-w-xl">
-            Webinars, workshops, info sessions, and our cohort mentorship programs  -  all free for students.
-          </p>
-          {upcoming.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-4">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 flex items-center gap-3 border border-white/10">
-                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-                </div>
-                <div>
-                  <p className="text-white font-semibold text-sm">{upcoming.length} Upcoming Event{upcoming.length > 1 ? 's' : ''}</p>
-                  <p className="text-blue-300 text-xs">Registration open</p>
-                </div>
+      <PageHero
+        eyebrow="Live Events & Programs"
+        title="Events & Programs"
+        subtitle="Webinars, workshops, info sessions, and our cohort mentorship programs — all free for students."
+      >
+        {upcoming.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 flex items-center gap-3 border border-white/10">
+              <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
+              </div>
+              <div>
+                <p className="text-white font-semibold text-sm">{upcoming.length} Upcoming Event{upcoming.length > 1 ? 's' : ''}</p>
+                <p className="text-brand-200 text-xs">Registration open</p>
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </PageHero>
 
       <div className="max-w-7xl mx-auto px-4 py-12 space-y-16">
 
