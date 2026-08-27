@@ -3,7 +3,8 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User, Chrome } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
+import GoogleIcon from '@/components/ui/GoogleIcon'
 import { toast } from 'react-hot-toast'
 
 export default function SignUpPage() {
@@ -54,10 +55,10 @@ export default function SignUpPage() {
 
       <button
         onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-        className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-medium text-sm hover:border-brand-300 hover:bg-brand-50 transition-all mb-6"
+        className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-xl font-medium text-sm hover:bg-gray-50 hover:shadow-sm transition-all mb-6"
       >
-        <Chrome className="h-4 w-4" />
-        Continue with Google
+        <GoogleIcon className="h-5 w-5" />
+        Sign up with Google
       </button>
 
       <div className="relative mb-6">
