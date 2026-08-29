@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
-// Safe, public site settings — consumed by the announcement bar and footer.
+// Safe, public site settings - consumed by the announcement bar and footer.
 // NEVER return admin-only or sensitive keys here.
 const PUBLIC_KEYS = [
   'announcement_enabled',

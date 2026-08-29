@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * User growth chart — isolated so recharts (~100KB gz) is code-split and only
+ * User growth chart - isolated so recharts (~100KB gz) is code-split and only
  * downloaded when an admin opens the Users page chart, via next/dynamic.
  */
 import {

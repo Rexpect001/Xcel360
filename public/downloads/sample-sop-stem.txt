@@ -1,5 +1,5 @@
 ========================================
-SAMPLE STATEMENT OF PURPOSE — STEM
+SAMPLE STATEMENT OF PURPOSE - STEM
 Xcel360 | xcel360.com
 ========================================
 
@@ -7,7 +7,7 @@ Word limit: 800–1,200 words (varies by program)
 Focus: Research-driven, technical credibility, clear problem statement
 
 ========================================
-PARAGRAPH 1 — RESEARCH MOTIVATION (100–130 words)
+PARAGRAPH 1 - RESEARCH MOTIVATION (100–130 words)
 ========================================
 [Open with the research problem, not your biography. Show that you
 understand the field and why your specific question matters.]
@@ -17,12 +17,12 @@ Example:
 an open and consequential problem. Current approaches to [X] are
 limited by [specific limitation], resulting in [negative outcome].
 My goal is to contribute to solving this problem through [your approach
-or methodology]. It is this challenge — and its implications for
-[broader impact area] — that motivates my application to the [Program]
+or methodology]. It is this challenge - and its implications for
+[broader impact area] - that motivates my application to the [Program]
 at [University]."
 
 ========================================
-PARAGRAPH 2 — TECHNICAL BACKGROUND (180–220 words)
+PARAGRAPH 2 - TECHNICAL BACKGROUND (180–220 words)
 ========================================
 [Describe your academic preparation for this research. Mention
 specific courses, techniques, and skills. Connect them to your goals.]
@@ -38,7 +38,7 @@ introduced me to [research challenge] and sparked my interest in
 pursuing it further at the graduate level."
 
 ========================================
-PARAGRAPH 3 — RESEARCH EXPERIENCE (250–300 words)
+PARAGRAPH 3 - RESEARCH EXPERIENCE (250–300 words)
 ========================================
 [This is the most important section for STEM SOPs. Be technical.
 Use specific numbers, methods, and outcomes.]
@@ -51,14 +51,14 @@ The core challenge we addressed was [specific problem]. I contributed
 by [your specific role and contribution]. I used [Python/MATLAB/R/etc.]
 to [what you built or analyzed]. The key finding was [result]. This
 work was presented at [conference] and is currently under review at
-[journal] — a process that taught me the full research pipeline from
+[journal] - a process that taught me the full research pipeline from
 hypothesis to publication.
 
 In a separate project, I [briefly describe another relevant experience
-— competition, capstone, internship]."
+- competition, capstone, internship]."
 
 ========================================
-PARAGRAPH 4 — RESEARCH PROPOSAL / INTERESTS (200 words)
+PARAGRAPH 4 - RESEARCH PROPOSAL / INTERESTS (200 words)
 ========================================
 [Be specific about what you want to research in grad school.
 Name potential advisors and explain why their work excites you.]
@@ -75,7 +75,7 @@ this direction is both scientifically novel and practically impactful
 because [reasoning]."
 
 ========================================
-PARAGRAPH 5 — GOALS & IMPACT (120 words)
+PARAGRAPH 5 - GOALS & IMPACT (120 words)
 ========================================
 "I intend to complete a PhD and pursue a career in [academia /
 industry R&D / policy / your country's research sector]. My long-term
@@ -85,7 +85,7 @@ collaborative environment of [specific lab/center] and the resources
 available for [specific need]."
 
 ========================================
-PARAGRAPH 6 — CLOSING (60 words)
+PARAGRAPH 6 - CLOSING (60 words)
 ========================================
 "I am enthusiastic about the opportunity to contribute to [University]'s
 research mission. My technical preparation, demonstrated research
@@ -102,7 +102,7 @@ STEM SOP CHECKLIST:
 □ Mentions specific methods, tools, languages used
 □ States a clear research question or direction for grad school
 □ Connects your background to the program's research strengths
-□ No fluff — every sentence adds value
+□ No fluff - every sentence adds value
 □ Proofread by a technical peer or mentor
 ========================================
-Template by Xcel360 — xcel360.com
+Template by Xcel360 - xcel360.com

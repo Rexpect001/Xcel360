@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
 import { FIELDS, COUNTRIES } from '@/types'
 
-// xlsx is heavy (~400KB) — loaded on demand inside import/export handlers
+// xlsx is heavy (~400KB) - loaded on demand inside import/export handlers
 // instead of shipping with the page bundle.
 type XLSXModule = typeof import('xlsx')
 

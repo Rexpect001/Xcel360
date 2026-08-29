@@ -13,7 +13,7 @@ interface HomeAd {
 }
 
 /**
- * Homepage sponsored banner — fully managed from Admin → Site Settings.
+ * Homepage sponsored banner - fully managed from Admin → Site Settings.
  * Renders nothing unless enabled with at least a title. Leaderboard-style:
  * slim, clearly labelled "Sponsored", never intrusive.
  */

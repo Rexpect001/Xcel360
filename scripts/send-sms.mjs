@@ -22,7 +22,7 @@ const testIdx=args.indexOf('--test'); const testNumber=testIdx!==-1?args[testIdx
 const senderIdx=args.indexOf('--sender'); const SENDER=senderIdx!==-1?args[senderIdx+1]:'Xcel360'
 const routeIdx=args.indexOf('--route'); const ROUTE=routeIdx!==-1?args[routeIdx+1]:'dnd'
 
-// MTN bulk route blocks URLs AND the words "code"/"passcode" — keep it clean.
+// MTN bulk route blocks URLs AND the words "code"/"passcode" - keep it clean.
 const MESSAGE = `Xcel360: Leveraging AI in Todays World holds TODAY 4PM WAT. Open Zoom app, Join a Meeting: ID 914 5917 2327, then enter XCEL360. See you there!`
 
 // Normalize a Nigerian phone to E.164 digits (234XXXXXXXXXX). Returns null if implausible.
@@ -70,7 +70,7 @@ async function main(){
   console.log(`Sendable (unique 234…): ${good.length}`)
   console.log(`Unnormalizable: ${bad.length}${bad.length?' -> '+bad.slice(0,10).join(', ')+(bad.length>10?' …':''):''}\n`)
 
-  if(dry){ console.log('Dry run — nothing sent.'); return }
+  if(dry){ console.log('Dry run - nothing sent.'); return }
   if(!confirmed){ console.log('Refusing to send: pass --yes to confirm the bulk SMS.'); return }
 
   // SendChamp accepts an array of recipients per call; chunk to be safe.

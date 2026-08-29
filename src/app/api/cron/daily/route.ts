@@ -8,7 +8,7 @@ import { runCampaignSend } from '@/lib/email-utils'
 import prisma from '@/lib/prisma'
 
 /**
- * Consolidated daily cron — Vercel's free Hobby tier allows at most 2 cron
+ * Consolidated daily cron - Vercel's free Hobby tier allows at most 2 cron
  * jobs, so the three fast jobs (deadline reminders, campaign batches, weekly
  * digest) run together here. The long-running auto-discovery job stays on its
  * own route (/api/cron/auto-discover).

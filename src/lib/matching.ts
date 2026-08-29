@@ -117,7 +117,7 @@ export function scoreOpportunity(opp: MatchableOpportunity, profile: MatchablePr
     reasons.push('Your field')
   }
 
-  // 4. Course-of-study match — the "ML-style" signal: token overlap between the
+  // 4. Course-of-study match - the "ML-style" signal: token overlap between the
   //    user's course/department and the opportunity's title, field, and tags.
   const courseTokens = new Set(Array.from(tokenize(profile.courseOfStudy)).concat(Array.from(tokenize(profile.department))))
   if (courseTokens.size > 0) {

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Upload, Search, Trash2, Users, X, Loader2, ChevronLeft, ChevronRight, Download, RefreshCw } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
-// xlsx is heavy (~400KB) — loaded on demand inside import/export handlers
+// xlsx is heavy (~400KB) - loaded on demand inside import/export handlers
 // instead of shipping with the page bundle.
 type XLSXModule = typeof import('xlsx')
 

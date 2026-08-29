@@ -137,7 +137,7 @@ export async function notifyMatchingUsers(opportunityId: string) {
   if (!opportunity) return
 
   // Pull every user with a profile, then score each one with the matching
-  // engine. Only genuinely strong matches (score >= threshold) get alerted —
+  // engine. Only genuinely strong matches (score >= threshold) get alerted -
   // this replaces the old naive field-OR-country broadcast.
   const MATCH_THRESHOLD = 50
 
@@ -170,7 +170,7 @@ export async function notifyMatchingUsers(opportunityId: string) {
       userId: user.id,
       type: 'NEW_OPPORTUNITY',
       title: `New ${score}% match for you`,
-      message: `"${opportunity.title}" just posted — ${reasons.join(', ')}.`,
+      message: `"${opportunity.title}" just posted - ${reasons.join(', ')}.`,
       link: `/opportunities/${opportunityId}`,
     })
 

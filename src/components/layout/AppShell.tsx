@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * AppShell — the single unified shell for BOTH the user dashboard and the
+ * AppShell - the single unified shell for BOTH the user dashboard and the
  * admin panel. One sidebar, one mobile top bar, one set of interaction
  * patterns. Parents pass serializable nav descriptors (icon keys, not
  * components) so server layouts can use it too.
@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-// Icon registry — parents reference icons by these string keys so props stay
+// Icon registry - parents reference icons by these string keys so props stay
 // serializable across the server/client boundary.
 const ICONS = {
   dashboard: LayoutDashboard,

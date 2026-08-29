@@ -6,6 +6,7 @@ import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
 import { formatDate, daysUntilDeadline, deadlineLabel, getFundingBadgeColor, cn } from '@/lib/utils'
+import { tokenizeQuery, searchScore } from '@/lib/opportunitySearch'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
@@ -19,7 +20,7 @@ interface Props {
 
 export default function OpportunitiesClient({ initialOpportunities }: Props) {
   const { data: session } = useSession()
-  // Deep-linkable filters — hero search, "Choose Your Path" and category cards
+  // Deep-linkable filters - hero search, "Choose Your Path" and category cards
   // land here with ?search=, ?level=, ?field=, ?funding=, ?country=, ?soon=
   const searchParams = useSearchParams()
   const soonDays = searchParams.get('soon')
@@ -30,7 +31,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     field: searchParams.get('field') ?? '',
     country: searchParams.get('country') ?? '',
     fundingType: searchParams.get('funding') ?? '',
-    sortBy: 'deadline',
+    sortBy: searchParams.get('search') ? 'relevance' : 'deadline',
   })
   const [showFilters, setShowFilters] = useState(
     Boolean(searchParams.get('level') || searchParams.get('field') || searchParams.get('funding') || searchParams.get('country') || soonDays)
@@ -45,15 +46,18 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       result = result.filter((o) => (o as any).category === category)
     }
 
-    if (search) {
-      const q = search.toLowerCase()
-      result = result.filter(
-        (o) =>
-          o.title.toLowerCase().includes(q) ||
-          o.hostOrg.toLowerCase().includes(q) ||
-          o.country.toLowerCase().includes(q) ||
-          o.fieldTags.some((t) => t.toLowerCase().includes(q))
-      )
+    // Google-style keyword search - no country/level/field required. The query is
+    // split into keywords and matched (and ranked) across every searchable field,
+    // including the full description and eligibility text.
+    let scores: Record<string, number> | null = null
+    const keywords = tokenizeQuery(search)
+    if (keywords.length > 0) {
+      scores = {}
+      result = result.filter((o) => {
+        const score = searchScore(o, keywords)
+        if (score > 0) scores![o.id] = score
+        return score > 0
+      })
     }
 
     if (filters.programLevel) {
@@ -69,7 +73,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       result = result.filter((o) => o.fundingType === filters.fundingType)
     }
 
-    // ?soon=N — only opportunities closing within N days
+    // ?soon=N - only opportunities closing within N days
     if (soonDays) {
       const within = parseInt(soonDays, 10)
       if (!Number.isNaN(within)) {
@@ -80,12 +84,14 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       }
     }
 
-    if (filters.sortBy === 'deadline') {
-      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
+    if (filters.sortBy === 'relevance' && scores) {
+      result = [...result].sort((a, b) => (scores![b.id] ?? 0) - (scores![a.id] ?? 0))
     } else if (filters.sortBy === 'newest') {
       result = [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     } else if (filters.sortBy === 'featured') {
       result = [...result].sort((a, b) => Number(b.featured) - Number(a.featured))
+    } else {
+      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
     }
 
     return result
@@ -150,7 +156,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search scholarships, universities, countries..."
+            placeholder="Search anything - keywords, field, country, eligibility..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
@@ -187,6 +193,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
           onChange={(e) => setFilters((f) => ({ ...f, sortBy: e.target.value }))}
           className="px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
         >
+          {search.trim() && <option value="relevance">Best match</option>}
           <option value="deadline">Soonest Deadline</option>
           <option value="newest">Newest</option>
           <option value="featured">Featured</option>

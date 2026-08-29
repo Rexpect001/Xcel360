@@ -124,7 +124,7 @@ const sections = [
         </p>
         <p className="mt-2">
           To the maximum extent permitted by law, Xcel360 is not liable for any indirect,
-          incidental, or consequential damages — including lost opportunities, funding, or data —
+          incidental, or consequential damages - including lost opportunities, funding, or data -
           arising from your use of the Platform.
         </p>
       </>
@@ -173,7 +173,7 @@ export default function TermsPage() {
             <h1 className="text-3xl sm:text-4xl font-bold">Terms of Service</h1>
           </div>
           <p className="text-brand-100 max-w-2xl">
-            The ground rules for using Xcel360 — what we provide, what we ask of you, and how we
+            The ground rules for using Xcel360 - what we provide, what we ask of you, and how we
             both stay protected.
           </p>
           <p className="text-sm text-brand-200 mt-4">Last updated: {LAST_UPDATED}</p>

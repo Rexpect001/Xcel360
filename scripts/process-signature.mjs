@@ -28,7 +28,7 @@ for (let i = 0; i < data.length; i += 4) {
   }
 }
 
-if (maxX < minX) { console.error('No ink detected — check thresholds'); process.exit(1) }
+if (maxX < minX) { console.error('No ink detected - check thresholds'); process.exit(1) }
 const pad = 16
 minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad)
 maxX = Math.min(W - 1, maxX + pad); maxY = Math.min(H - 1, maxY + pad)

@@ -22,7 +22,7 @@ export const QUICK_LINKS: NavItem[] = [
   { href: '/mentorship',    label: 'Find a Mentor',  icon: 'users2' },
 ]
 
-// Admin sections — `section` matches ROLE_ACCESS entries in src/lib/permissions.ts
+// Admin sections - `section` matches ROLE_ACCESS entries in src/lib/permissions.ts
 export interface AdminNavItem extends NavItem {
   section: string
 }

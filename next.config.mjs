@@ -41,7 +41,7 @@ const nextConfig = {
   },
 
   images: {
-    // Serve modern formats — dramatically smaller images for supported browsers
+    // Serve modern formats - dramatically smaller images for supported browsers
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },

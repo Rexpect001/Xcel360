@@ -75,7 +75,7 @@ export default async function EventsPage() {
       <PageHero
         eyebrow="Live Events & Programs"
         title="Events & Programs"
-        subtitle="Webinars, workshops, info sessions, and our cohort mentorship programs — all free for students."
+        subtitle="Webinars, workshops, info sessions, and our cohort mentorship programs - all free for students."
       >
         {upcoming.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-4">

@@ -76,9 +76,9 @@ model Profile {
   level           String?
   targetCountries String[]
   targetFields    String[]
-  courseOfStudy   String?  // e.g. "Mechanical Engineering" — what they study/studied
-  degree          String?  // what they graduated with — e.g. "B.Sc", "B.Eng", "M.Sc", "HND"
-  graduationYear  Int?     // year of (expected) graduation — used for recency-based eligibility
+  courseOfStudy   String?  // e.g. "Mechanical Engineering" - what they study/studied
+  degree          String?  // what they graduated with - e.g. "B.Sc", "B.Eng", "M.Sc", "HND"
+  graduationYear  Int?     // year of (expected) graduation - used for recency-based eligibility
   bio             String?
   whatsappNumber  String?
   school          String?

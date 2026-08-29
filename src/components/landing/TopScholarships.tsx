@@ -36,11 +36,11 @@ function deadlineChip(deadline: Date | string | null) {
 export default function TopScholarships({ scholarships }: { scholarships: Scholarship[] }) {
   if (scholarships.length === 0) return null
 
-  const shown = scholarships.slice(0, 8)
+  const shown = scholarships.slice(0, 12)
 
   return (
-    <section className="py-16 sm:py-20 bg-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+    <section className="py-16 sm:py-20 bg-surface-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-end justify-between mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -53,7 +53,7 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
               Latest on the desk
             </h2>
             <p className="text-sm text-gray-500 mt-2">
-              Fresh scholarships and opportunities — apply before they close.
+              Fresh scholarships and opportunities - apply before they close.
             </p>
           </div>
           <Link
@@ -74,7 +74,7 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
                 href={`/opportunities/${s.id}`}
                 className="group flex items-center gap-4 px-4 sm:px-6 py-4 hover:bg-brand-50/40 transition-colors"
               >
-                {/* Deadline chip — OpportunityDesk style, deadline first */}
+                {/* Deadline chip - OpportunityDesk style, deadline first */}
                 <span className={`shrink-0 w-28 text-center text-[11px] font-bold px-2 py-1.5 rounded-lg ${chip.classes}`}>
                   {chip.text}
                 </span>

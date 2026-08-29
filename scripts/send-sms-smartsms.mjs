@@ -25,7 +25,7 @@ const ROUTING=val('--routing')||'0'            // route selector; confirm value 
 const TYPE=val('--type')||'0'                  // 0 = plain text
 const TOKEN=val('--token')||process.env.SMARTSMS_TOKEN
 
-// MTN bulk route blocks URLs AND the words "code"/"passcode" — keep it clean.
+// MTN bulk route blocks URLs AND the words "code"/"passcode" - keep it clean.
 const MESSAGE=`Xcel360: Leveraging AI in Todays World holds TODAY 4PM WAT. Open Zoom app, Join a Meeting: ID 914 5917 2327, then enter XCEL360. See you there!`
 
 function normalize(raw){
@@ -40,7 +40,7 @@ function normalize(raw){
 }
 
 async function send(toCsv){
-  if(!TOKEN) return {ok:false,error:'No token — set SMARTSMS_TOKEN or pass --token'}
+  if(!TOKEN) return {ok:false,error:'No token - set SMARTSMS_TOKEN or pass --token'}
   const body=new URLSearchParams({token:TOKEN,sender:SENDER,to:toCsv,message:MESSAGE,type:TYPE,routing:ROUTING})
   try{
     const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',Accept:'application/json'},body})
@@ -68,7 +68,7 @@ async function main(){
   for(const r of regs){const n=normalize(r.phone); if(n){if(!seen.has(n)){seen.add(n);good.push(n)}} else bad.push(r.phone)}
   console.log(`Registrations: ${regs.length} | sendable: ${good.length} | bad: ${bad.length}\n`)
 
-  if(dry){console.log('Dry run — nothing sent.');return}
+  if(dry){console.log('Dry run - nothing sent.');return}
   if(!confirmed){console.log('Pass --yes to send the bulk SMS.');return}
 
   const CHUNK=100; let sent=0,failed=0

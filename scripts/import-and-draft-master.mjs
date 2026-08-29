@@ -29,10 +29,10 @@ const prisma = new PrismaClient()
 const CSV = here('../.tmp/master-registrants.csv')
 const HTML = here('../../../Xcel360/events/email-reminders/general-broadcast.html')
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-// common domain typos worth flagging (still imported — can't be certain)
+// common domain typos worth flagging (still imported - can't be certain)
 const SUSPICIOUS = /@(gmal|gmai|gmsil|gmail\.co$|gmail\.con$|ail|gamil|gmail\.com\.|yaho|outlok|hotmal)/i
 
-const SUBJECT = "📌 Today at 4PM WAT — Your join link for Leveraging AI in Today's World"
+const SUBJECT = "📌 Today at 4PM WAT - Your join link for Leveraging AI in Today's World"
 const HTML_BODY = readFileSync(HTML, 'utf8').replace(/^<!--[\s\S]*?-->\s*/gm, '').trim()
 const TEXT_BODY = `Dear [First Name],
 
@@ -59,7 +59,7 @@ Don't forget that our AI Poster Presentation Competition is also underway!
 Theme: What Can You Do With AI?
 Showcase an AI-powered project or innovative idea and compete for prizes from our ₦300,000 prize pool.
 
-There's no gatekeeper of knowledge — invite anyone who'd benefit. Every person you bring is a win for them and for you.
+There's no gatekeeper of knowledge - invite anyone who'd benefit. Every person you bring is a win for them and for you.
 
 See you at 4:00 PM WAT!
 

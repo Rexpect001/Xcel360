@@ -2,6 +2,7 @@ export const revalidate = 60
 import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
 import Link from 'next/link'
 import PageHero from '@/components/layout/PageHero'
+import HowItWorks from '@/components/landing/HowItWorks'
 
 export const metadata = {
   title: 'About Xcel360  -  Our Mission & Story',
@@ -21,7 +22,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="Our Story"
         title="About Xcel360"
-        subtitle="We believe every talented student deserves access to world-class education — regardless of where they come from or how much their family earns."
+        subtitle="We believe every talented student deserves access to world-class education - regardless of where they come from or how much their family earns."
         className="pb-24"
       />
 
@@ -55,7 +56,11 @@ export default function AboutPage() {
             </ul>
           </div>
         </div>
+      </div>
 
+      <HowItWorks />
+
+      <div className="max-w-4xl mx-auto px-4 pb-16">
         <div className="bg-brand-50 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Join the community</h2>
           <p className="text-gray-500 mb-6">Start your scholarship journey today. It&apos;s completely free.</p>
@@ -75,7 +80,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Trust & legal — quick access to our policies */}
+        {/* Trust & legal - quick access to our policies */}
         <div className="mt-12 border-t border-gray-100 pt-8">
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest text-center mb-4">
             Trust & Transparency
@@ -95,7 +100,7 @@ export default function AboutPage() {
             </Link>
           </div>
           <p className="text-xs text-gray-400 text-center mt-4">
-            We take your data seriously — read exactly what we collect and how it protects you.
+            We take your data seriously - read exactly what we collect and how it protects you.
           </p>
         </div>
       </div>

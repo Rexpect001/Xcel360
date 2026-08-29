@@ -15,7 +15,7 @@ function readMinutes(text: string | null): number {
   return Math.max(2, Math.round(text.split(/\s+/).length / 200))
 }
 
-/** Scholarships360-style "Expert Guides" preview — latest published blog posts. */
+/** Scholarships360-style "Expert Guides" preview - latest published blog posts. */
 export default function GuidesPreview({ posts }: { posts: Post[] }) {
   if (posts.length === 0) return null
 

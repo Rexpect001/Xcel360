@@ -34,7 +34,7 @@ const HTML=val('--html')||here('../../../Xcel360/events/email-reminders/general-
 const USER=process.env.GMAIL_USER
 const PASS=process.env.GMAIL_APP_PASSWORD
 const FROM=`Xcel360 <${USER}>`
-const SUBJECT=val('--subject')||"Today at 4PM WAT — Your Zoom link for Leveraging AI in Today's World"
+const SUBJECT=val('--subject')||"Today at 4PM WAT - Your Zoom link for Leveraging AI in Today's World"
 const HTML_BODY=readFileSync(HTML,'utf8').replace(/^<!--[\s\S]*?-->\s*/gm,'').trim()
 
 const firstName=(full)=>{ if(!full) return 'Scholar'; const t=full.trim().replace(/^"|"$/g,'').split(/\s+/); return t[0]||'Scholar' }
@@ -66,12 +66,12 @@ async function main(){
   const todo=[...map.keys()].filter(e=>!already.has(e))
   console.log(`Registrants: ${map.size} | already sent: ${already.size} | remaining: ${todo.length} | cap this run: ${CAP}`)
 
-  if(dry){ console.log('Dry run — nothing sent.'); return }
+  if(dry){ console.log('Dry run - nothing sent.'); return }
   if(!confirmed){ console.log('Pass --yes to send.'); return }
 
   let sent=0, failed=0
   for(const email of todo){
-    if(sent>=CAP){ console.log(`\nReached cap ${CAP} — stop. Re-run later to continue (resumable).`); break }
+    if(sent>=CAP){ console.log(`\nReached cap ${CAP} - stop. Re-run later to continue (resumable).`); break }
     try{
       await tx.sendMail({ from:FROM, to:email, subject:SUBJECT, html:personalize(HTML_BODY, map.get(email)) })
       appendFileSync(SENTLOG, email+'\n'); sent++

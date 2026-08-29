@@ -278,7 +278,7 @@ export default function ProfilePage() {
                   className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">The exact course you studied or are studying — this powers your match score</p>
+              <p className="text-xs text-gray-500 mt-1">The exact course you studied or are studying - this powers your match score</p>
             </div>
 
             {/* Degree + graduation year */}

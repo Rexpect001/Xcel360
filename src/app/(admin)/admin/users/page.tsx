@@ -12,7 +12,7 @@ import { toast } from 'react-hot-toast'
 import { ROLE_LABELS, type UserRole } from '@/lib/permissions'
 import Modal from '@/components/ui/Modal'
 
-// recharts is heavy — split into a separate chunk loaded on demand
+// recharts is heavy - split into a separate chunk loaded on demand
 const GrowthChart = dynamic(() => import('./GrowthChart'), {
   ssr: false,
   loading: () => (

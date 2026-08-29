@@ -285,7 +285,7 @@ export default function SiteSettingsPage() {
                   )}
                 </div>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  A slim sponsored banner shown twice on the homepage — between the level cards and
+                  A slim sponsored banner shown twice on the homepage - between the level cards and
                   the latest listings, and again before success stories. Clearly labelled
                   "Sponsored" and styled to fit the site.
                 </p>

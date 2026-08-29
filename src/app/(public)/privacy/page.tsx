@@ -5,7 +5,7 @@ import { Shield, Mail } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'Privacy Policy | Xcel360',
   description:
-    'How Xcel360 collects, uses, stores, and protects your personal data — and the rights you have over it.',
+    'How Xcel360 collects, uses, stores, and protects your personal data - and the rights you have over it.',
 }
 
 const LAST_UPDATED = 'January 2025'
@@ -86,7 +86,7 @@ const sections = [
         </li>
         <li>
           <strong>Notifications and email alerts:</strong> to send you deadline reminders, new
-          opportunity alerts that match your profile, weekly digests, and event-related emails —
+          opportunity alerts that match your profile, weekly digests, and event-related emails -
           only where you have enabled these preferences.
         </li>
         <li>To administer events, issue and verify certificates, and manage mentorship programmes.</li>
@@ -133,8 +133,8 @@ const sections = [
         </p>
         <ul className="list-disc pl-5 space-y-1.5 mt-2">
           <li>
-            <strong>Service providers</strong> who help us operate the platform — hosting,
-            database, email delivery, and file storage providers — each bound by contractual
+            <strong>Service providers</strong> who help us operate the platform - hosting,
+            database, email delivery, and file storage providers - each bound by contractual
             data-protection obligations.
           </li>
           <li>
@@ -181,7 +181,7 @@ const sections = [
             page.
           </li>
           <li>
-            <strong>Withdraw consent</strong> to emails — every email includes an unsubscribe
+            <strong>Withdraw consent</strong> to emails - every email includes an unsubscribe
             link, and you can toggle notifications in your profile settings.
           </li>
           <li>
@@ -261,7 +261,7 @@ export default function PrivacyPolicyPage() {
             <h1 className="text-3xl sm:text-4xl font-bold">Privacy Policy</h1>
           </div>
           <p className="text-brand-100 max-w-2xl">
-            Your trust matters to us. This policy explains — in plain language — what data Xcel360
+            Your trust matters to us. This policy explains - in plain language - what data Xcel360
             collects, why, and the control you have over it.
           </p>
           <p className="text-sm text-brand-200 mt-4">Last updated: {LAST_UPDATED}</p>

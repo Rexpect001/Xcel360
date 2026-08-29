@@ -27,7 +27,7 @@ loadEnv(new URL('../.env', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '
 const prisma = new PrismaClient()
 
 const EVENT_TITLE_MATCH = 'Leveraging AI in Today'
-const SUBJECT = "📌 Today at 4PM WAT — Your join link for Leveraging AI in Today's World"
+const SUBJECT = "📌 Today at 4PM WAT - Your join link for Leveraging AI in Today's World"
 
 const HTML_BODY = readFileSync(new URL('../../../Xcel360/events/email-reminders/general-broadcast.html', import.meta.url))
   .toString()
@@ -59,7 +59,7 @@ Don't forget that our AI Poster Presentation Competition is also underway!
 Theme: What Can You Do With AI?
 Showcase an AI-powered project or innovative idea and compete for prizes from our ₦300,000 prize pool.
 
-There's no gatekeeper of knowledge — invite anyone who'd benefit. Every person you bring is a win for them and for you.
+There's no gatekeeper of knowledge - invite anyone who'd benefit. Every person you bring is a win for them and for you.
 
 See you at 4:00 PM WAT!
 
@@ -80,7 +80,7 @@ async function main() {
   if (!events.length) { console.error(`❌ No event matching "${EVENT_TITLE_MATCH}" found.`); process.exit(1) }
 
   console.log(`\nMatching events:`)
-  events.forEach((e, i) => console.log(`  [${i}] ${e.title} — ${new Date(e.date).toDateString()} — ${e._count.registrations} registrations — id=${e.id}`))
+  events.forEach((e, i) => console.log(`  [${i}] ${e.title} - ${new Date(e.date).toDateString()} - ${e._count.registrations} registrations - id=${e.id}`))
 
   const event = events.find(e => new Date(e.date).toISOString().slice(0, 10) === '2026-06-27') ?? events[0]
   console.log(`\n→ Using: ${event.title} (${new Date(event.date).toDateString()})  id=${event.id}`)

@@ -23,8 +23,8 @@ const prisma = new PrismaClient()
 async function main() {
   const before = await prisma.emailCampaign.findUnique({ where: { id } })
   if (!before) { console.error(`❌ Campaign ${id} not found`); process.exit(1) }
-  if (before.status !== 'DRAFT') { console.error(`❌ Campaign is ${before.status}, not DRAFT — aborting`); process.exit(1) }
-  if (!before.textBody?.trim()) { console.error('❌ No textBody — SendChamp needs plain text. Aborting'); process.exit(1) }
+  if (before.status !== 'DRAFT') { console.error(`❌ Campaign is ${before.status}, not DRAFT - aborting`); process.exit(1) }
+  if (!before.textBody?.trim()) { console.error('❌ No textBody - SendChamp needs plain text. Aborting'); process.exit(1) }
 
   const c = await prisma.emailCampaign.update({
     where: { id },

@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand blue — rebased on #006FEC: deeper, more professional, less glare
+        // Brand blue - rebased on #006FEC: deeper, more professional, less glare
         brand: {
           50:  '#eef5ff',
           100: '#dceafe',
@@ -94,7 +94,7 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient':   'linear-gradient(135deg, #002b5c 0%, #004ca3 40%, #006fec 75%, #4b95f5 100%)',
+        'hero-gradient':   'linear-gradient(140deg, #001d3f 0%, #002b5c 18%, #004ca3 42%, #006fec 66%, #2f86f2 84%, #4b95f5 100%)',
         'card-shine':      'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)',
       },
       boxShadow: {

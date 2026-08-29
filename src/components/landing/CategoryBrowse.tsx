@@ -14,7 +14,7 @@ const categories = [
   { href: '/opportunities?field=Environmental Science', label: 'Environment', desc: 'Climate & sustainability', icon: Leaf, color: 'bg-teal-50 text-teal-700' },
 ]
 
-/** Scholarships360-style category browse — deep links into filtered listings. */
+/** Scholarships360-style category browse - deep links into filtered listings. */
 export default function CategoryBrowse() {
   return (
     <section className="py-16 sm:py-20 bg-surface-50">

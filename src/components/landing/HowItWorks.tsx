@@ -5,7 +5,7 @@ const steps = [
     icon: Search,
     step: '01',
     title: 'Search',
-    text: 'Browse vetted scholarships, jobs and internships — filtered by level, field and country.',
+    text: 'Browse vetted scholarships, jobs and internships - filtered by level, field and country.',
   },
   {
     icon: Sparkles,
@@ -23,7 +23,7 @@ const steps = [
     icon: Trophy,
     step: '04',
     title: 'Succeed',
-    text: 'Learn from mentors, guides and success stories — then become one yourself.',
+    text: 'Learn from mentors, guides and success stories - then become one yourself.',
   },
 ]
 

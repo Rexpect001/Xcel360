@@ -140,7 +140,7 @@ export async function sendNewOpportunityEmail({
 
   await sendMail({
     to,
-    subject: `${matchScore !== undefined ? `${matchScore}% match — ` : ''}New opportunity matches your profile: ${opportunityTitle}`,
+    subject: `${matchScore !== undefined ? `${matchScore}% match - ` : ''}New opportunity matches your profile: ${opportunityTitle}`,
     html: `<!DOCTYPE html>
 <html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">

@@ -15,7 +15,7 @@ const slug = 'leveraging-ai-in-todays-world-recap'
 
 const content = `Xcel360 hosted "Leveraging AI in Today's World: From Learning to Opportunity" on Saturday, 27 June 2026 at 4:00 PM WAT, a free live session held on Zoom for students and early-career professionals.
 
-The session drew 472 registrations from across Africa — mostly from Nigeria, with participants also joining from Ghana, Kenya and Zimbabwe. It focused on practical ways to apply artificial intelligence to everyday academic and professional work — from scholarship applications and research to career growth and finding global opportunities.
+The session drew 472 registrations from across Africa - mostly from Nigeria, with participants also joining from Ghana, Kenya and Zimbabwe. It focused on practical ways to apply artificial intelligence to everyday academic and professional work - from scholarship applications and research to career growth and finding global opportunities.
 
 Certificates of Participation
 
@@ -31,13 +31,13 @@ Looking ahead
 
 Xcel360 continues to run free webinars, workshops and mentorship programs focused on scholarships, study abroad and career development. Upcoming sessions are listed on the Events page, and announcements are shared through the Xcel360 WhatsApp channel and YouTube.
 
-Thank you to everyone who registered, joined and shared the session — and to FUOYE iHub for partnering on this edition.`
+Thank you to everyone who registered, joined and shared the session - and to FUOYE iHub for partnering on this edition.`
 
 const data = {
   title: "Leveraging AI in Today's World: 472 Register for Xcel360's Free AI Session",
   slug,
   excerpt:
-    "A recap of the 27 June 2026 session on using artificial intelligence for scholarships, research and career growth — plus how to claim your Certificate of Participation.",
+    "A recap of the 27 June 2026 session on using artificial intelligence for scholarships, research and career growth - plus how to claim your Certificate of Participation.",
   content,
   coverImage:
     'https://xroogngayha6w4h2.public.blob.vercel-storage.com/fifa-worldcup-2026-6YkyYDMfhIoNTy3aPVJHD1BHBNa1wP.png',

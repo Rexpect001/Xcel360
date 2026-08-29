@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import OpportunitiesClient from '@/components/opportunities/OpportunitiesClient'
 import AdSlot from '@/components/ads/AdSlot'
 import PageHero from '@/components/layout/PageHero'
+import CategoryBrowse from '@/components/landing/CategoryBrowse'
 import prisma from '@/lib/prisma'
 import { opportunityListSelect } from '@/types/opportunity-list'
 
@@ -85,6 +86,7 @@ export default async function OpportunitiesPage() {
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <OpportunitiesClient initialOpportunities={opportunities} />
       </Suspense>
+      <CategoryBrowse />
       <section className="bg-white border-t border-gray-100 px-4 py-10">
         <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-3">
           <div>

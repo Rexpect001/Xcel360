@@ -13,7 +13,7 @@ const paths = [
   {
     level: 'Masters',
     title: 'Masters',
-    description: 'Fully funded taught and research masters — Chevening, DAAD, Erasmus+ and more.',
+    description: 'Fully funded taught and research masters - Chevening, DAAD, Erasmus+ and more.',
     icon: GraduationCap,
     accent: 'bg-brand-50 text-brand-700',
     hoverRing: 'hover:border-brand-300',
@@ -36,7 +36,7 @@ const paths = [
   },
 ]
 
-/** ProFellow-style "Choose Your Path" — routes into pre-filtered listings. */
+/** ProFellow-style "Choose Your Path" - routes into pre-filtered listings. */
 export default function ChooseYourPath() {
   return (
     <section className="py-16 sm:py-20 bg-white">
@@ -49,7 +49,7 @@ export default function ChooseYourPath() {
             Funding for every stage of your journey
           </h2>
           <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">
-            Whether you are starting out or advancing your research career — pick your level and
+            Whether you are starting out or advancing your research career - pick your level and
             see only what fits you.
           </p>
         </div>

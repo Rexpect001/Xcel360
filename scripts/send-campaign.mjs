@@ -1,5 +1,5 @@
 /**
- * Local SendChamp sender for a campaign — mirrors src/lib/email-utils.runCampaignSend.
+ * Local SendChamp sender for a campaign - mirrors src/lib/email-utils.runCampaignSend.
  *
  *   node scripts/send-campaign.mjs <campaignId> --test you@example.com   # send ONE test, no state change
  *   node scripts/send-campaign.mjs <campaignId> --yes                    # FULL send (resumable)

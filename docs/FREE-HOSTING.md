@@ -13,17 +13,17 @@ the current host.
 | File storage | **Vercel Blob** (already used) | 1 GB | Certificates, resource PDFs, uploads |
 | Email | **Resend** free tier | 3,000 emails/month, 100/day | The weekly digest already batches at 100/day for this reason |
 | Cron | Vercel Cron (Hobby) | **2 jobs**, once per day each | Already consolidated: `/api/cron/daily` + `/api/cron/auto-discover` |
-| DNS | Cloudflare free | — | Optional, adds free CDN + caching |
+| DNS | Cloudflare free | - | Optional, adds free CDN + caching |
 
 ## Why the CPU bill was climbing
 
-1. **Fluid compute** — Vercel's Fluid mode bills for actual CPU time. With
+1. **Fluid compute** - Vercel's Fluid mode bills for actual CPU time. With
    certificate PDF generation (pdf-lib) and the AI auto-discover job, CPU
-   minutes add up fast. On Hobby there is no Fluid billing — functions are
+   minutes add up fast. On Hobby there is no Fluid billing - functions are
    capped at 60s and that's the ceiling.
-2. **Four separate cron jobs** — Hobby only allows 2. The repo now consolidates
+2. **Four separate cron jobs** - Hobby only allows 2. The repo now consolidates
    the three fast jobs into `/api/cron/daily`.
-3. **Cold-start heavy pages** — `xlsx` and `recharts` were bundled into admin
+3. **Cold-start heavy pages** - `xlsx` and `recharts` were bundled into admin
    pages. They are now lazy-loaded, so admins only download them when actually
    importing/exporting or viewing the growth chart.
 
@@ -39,7 +39,7 @@ the current host.
    - Set env vars from `.env.example` plus `RESEND_API_KEY` and `CRON_SECRET`.
    - `CRON_SECRET`: any long random string. Vercel sends it automatically as
      `Authorization: Bearer <CRON_SECRET>` to the cron routes.
-   - If prompted about Fluid compute, leave it **off** — standard serverless
+   - If prompted about Fluid compute, leave it **off** - standard serverless
      functions are what keeps this free.
 
 3. **Email (Resend)**
@@ -61,13 +61,13 @@ the current host.
 ## Keeping it free long-term
 
 - **Images**: serve through `next/image` (AVIF/WebP enabled in
-  `next.config.mjs`) — cuts bandwidth, the main free-tier limit.
+  `next.config.mjs`) - cuts bandwidth, the main free-tier limit.
 - **Storage**: resources and certificates live in Vercel Blob (1 GB free).
   Periodically purge revoked certificates' PDFs if storage nears the cap.
 - **Bandwidth**: put Cloudflare in front (free) and enable caching for
   `/downloads/*` and static assets if bandwidth ever approaches 100 GB.
 - **Auto-discover**: the AI discovery job calls Anthropic + Serper. It is the
-  only part of the platform with metered third-party cost — disable the cron
+  only part of the platform with metered third-party cost - disable the cron
   in `vercel.json` if you want a strictly $0/month operation and post
   opportunities manually from the admin panel.
 

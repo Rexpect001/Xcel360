@@ -165,7 +165,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
     }
   }
 
-  // Related opportunities — same field or destination, still open
+  // Related opportunities - same field or destination, still open
   const related = await prisma.opportunity.findMany({
     where: {
       id: { not: opp.id },

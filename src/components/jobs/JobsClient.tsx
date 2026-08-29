@@ -5,6 +5,7 @@ import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
 import { formatDate, daysUntilDeadline, cn } from '@/lib/utils'
+import { tokenizeQuery, searchScore } from '@/lib/opportunitySearch'
 import { FIELDS, COUNTRIES } from '@/types'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
@@ -38,16 +39,18 @@ export default function JobsClient({ initialJobs, mode }: Props) {
   const filtered = useMemo(() => {
     let result = initialJobs
 
-    if (search) {
-      const q = search.toLowerCase()
-      result = result.filter(
-        (o) =>
-          o.title.toLowerCase().includes(q) ||
-          (o.company ?? o.hostOrg).toLowerCase().includes(q) ||
-          o.country.toLowerCase().includes(q) ||
-          o.fieldTags.some((t) => t.toLowerCase().includes(q)) ||
-          o.skills.some((s) => s.toLowerCase().includes(q))
-      )
+    // Google-style keyword search - no filter is required. The query is split
+    // into keywords and matched (and ranked) across every searchable field,
+    // including the full description and eligibility text.
+    let scores: Record<string, number> | null = null
+    const keywords = tokenizeQuery(search)
+    if (keywords.length > 0) {
+      scores = {}
+      result = result.filter((o) => {
+        const score = searchScore(o, keywords)
+        if (score > 0) scores![o.id] = score
+        return score > 0
+      })
     }
 
     if (filters.jobType) result = result.filter((o) => o.jobType === filters.jobType)
@@ -56,12 +59,14 @@ export default function JobsClient({ initialJobs, mode }: Props) {
     if (filters.experienceLevel) result = result.filter((o) => o.experienceLevel === filters.experienceLevel)
     if (filters.remote) result = result.filter((o) => o.remote)
 
-    if (filters.sortBy === 'deadline') {
-      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
+    if (filters.sortBy === 'relevance' && scores) {
+      result = [...result].sort((a, b) => (scores![b.id] ?? 0) - (scores![a.id] ?? 0))
     } else if (filters.sortBy === 'newest') {
       result = [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     } else if (filters.sortBy === 'featured') {
       result = [...result].sort((a, b) => Number(b.featured) - Number(a.featured))
+    } else {
+      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
     }
 
     return result
@@ -100,7 +105,7 @@ export default function JobsClient({ initialJobs, mode }: Props) {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search jobs, companies, skills, countries..."
+            placeholder="Search anything - keywords, skills, company, country..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
@@ -136,6 +141,7 @@ export default function JobsClient({ initialJobs, mode }: Props) {
           onChange={(e) => setFilters((f) => ({ ...f, sortBy: e.target.value }))}
           className="px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
         >
+          {search.trim() && <option value="relevance">Best match</option>}
           <option value="deadline">Soonest Deadline</option>
           <option value="newest">Newest</option>
           <option value="featured">Featured</option>

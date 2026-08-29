@@ -1,7 +1,7 @@
 /**
  * Generate certificates for ALL registrations of the Leveraging AI event.
  * Skips registrations that already have a certificate (resumable). Does NOT
- * email — emailing is handled separately. Writes PDFs to Vercel Blob and
+ * email - emailing is handled separately. Writes PDFs to Vercel Blob and
  * Certificate records to the DB.
  *   npx tsx scripts/gen-certs.mts            # dry run (counts only)
  *   npx tsx scripts/gen-certs.mts --yes      # generate
@@ -66,7 +66,7 @@ async function main() {
   console.log(`Registrations: ${regs.length} | already have cert: ${exMap.size} | ${regenerate ? 'to REGENERATE' : 'to generate'}: ${todo.length}`)
   console.log(`Template signature: ${template.signatureName ?? '(none)'} | sig image: ${template.signatureUrl ? 'yes' : 'no'}`)
 
-  if (!confirmed) { console.log('\nDry run — pass --yes to generate.'); return }
+  if (!confirmed) { console.log('\nDry run - pass --yes to generate.'); return }
   const token = process.env.BLOB_READ_WRITE_TOKEN
   if (!token) throw new Error('BLOB_READ_WRITE_TOKEN not set')
 

@@ -23,6 +23,8 @@ export type OpportunityListItem = Pick<
   | 'remote'
   | 'experienceLevel'
   | 'skills'
+  | 'description'
+  | 'eligibility'
 >
 
 export const opportunityListSelect = {
@@ -47,4 +49,6 @@ export const opportunityListSelect = {
   remote: true,
   experienceLevel: true,
   skills: true,
+  description: true,
+  eligibility: true,
 } as const

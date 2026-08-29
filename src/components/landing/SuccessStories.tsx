@@ -10,7 +10,7 @@ type Story = {
   year: number | null
 }
 
-/** Success stories from the CMS (SuccessStory model) — Scholarships360-style wall. */
+/** Success stories from the CMS (SuccessStory model) - Scholarships360-style wall. */
 export default function SuccessStories({ stories }: { stories: Story[] }) {
   if (stories.length === 0) return null
 
