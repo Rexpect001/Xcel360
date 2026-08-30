@@ -50,12 +50,12 @@ export default async function InternshipsPage() {
         title="Internships"
         subtitle={`${internships.length} internship positions available worldwide`}
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <AdSlot placement="internships-top" compact />
-      </div>
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <JobsClient initialJobs={internships} mode="internships" />
       </Suspense>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <AdSlot placement="internships-bottom" compact />
+      </div>
     </div>
   )
 }

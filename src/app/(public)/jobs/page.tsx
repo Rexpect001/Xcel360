@@ -50,12 +50,12 @@ export default async function JobsPage() {
         title="Jobs & Careers"
         subtitle={`${jobs.length} open positions across multiple countries`}
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <AdSlot placement="jobs-top" compact />
-      </div>
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <JobsClient initialJobs={jobs} mode="jobs" />
       </Suspense>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <AdSlot placement="jobs-bottom" compact />
+      </div>
     </div>
   )
 }

@@ -80,12 +80,12 @@ export default async function OpportunitiesPage() {
         title="Scholarships & Opportunities"
         subtitle="Search scholarships, grants, fellowships, jobs, and internships from trusted sources."
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <AdSlot placement="opportunities-top" compact />
-      </div>
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <OpportunitiesClient initialOpportunities={opportunities} />
       </Suspense>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <AdSlot placement="opportunities-bottom" compact />
+      </div>
       <CategoryBrowse />
       <section className="bg-white border-t border-gray-100 px-4 py-10">
         <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-3">

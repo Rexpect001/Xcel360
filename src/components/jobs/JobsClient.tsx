@@ -1,9 +1,10 @@
 'use client'
-import { useState, useMemo, lazy, Suspense } from 'react'
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react'
 import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, Briefcase, DollarSign, Wifi } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
+import Pagination from '@/components/ui/Pagination'
 import { formatDate, daysUntilDeadline, cn } from '@/lib/utils'
 import { tokenizeQuery, searchScore } from '@/lib/opportunitySearch'
 import { FIELDS, COUNTRIES } from '@/types'
@@ -15,6 +16,7 @@ const ScholarshipMap = lazy(() => import('@/components/opportunities/Scholarship
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Remote']
 const EXPERIENCE_LEVELS = ['Entry Level', 'Mid Level', 'Senior Level', 'Internship']
+const PAGE_SIZE = 20
 
 interface Props {
   initialJobs: OpportunityListItem[]
@@ -35,6 +37,7 @@ export default function JobsClient({ initialJobs, mode }: Props) {
   const [showFilters, setShowFilters] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
+  const [page, setPage] = useState(1)
 
   const filtered = useMemo(() => {
     let result = initialJobs
@@ -71,6 +74,17 @@ export default function JobsClient({ initialJobs, mode }: Props) {
 
     return result
   }, [initialJobs, search, filters])
+
+  // Reset to page 1 whenever the result set changes underneath the pager
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paginated = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page]
+  )
 
   const clearFilters = () => {
     setSearch('')
@@ -217,7 +231,12 @@ export default function JobsClient({ initialJobs, mode }: Props) {
       )}
 
       {/* Results count */}
-      <p className="text-sm text-gray-500 mb-4">{filtered.length} position{filtered.length !== 1 ? 's' : ''} found</p>
+      <p className="text-sm text-gray-500 mb-4">
+        {filtered.length} position{filtered.length !== 1 ? 's' : ''} found
+        {viewMode === 'list' && totalPages > 1 && (
+          <span className="text-gray-400"> · page {page} of {totalPages}</span>
+        )}
+      </p>
 
       {/* Map view */}
       {viewMode === 'map' && (
@@ -235,8 +254,9 @@ export default function JobsClient({ initialJobs, mode }: Props) {
           <button onClick={clearFilters} className="mt-4 text-brand-600 text-sm font-medium">Clear filters</button>
         </div>
       ) : viewMode === 'list' ? (
+        <>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((job) => {
+          {paginated.map((job) => {
             const days = daysUntilDeadline(job.deadline)
             const detailPath = job.category === 'INTERNSHIP' ? `/internships/${job.id}` : `/jobs/${job.id}`
             return (
@@ -323,6 +343,8 @@ export default function JobsClient({ initialJobs, mode }: Props) {
             )
           })}
         </div>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
       ) : null}
     </div>
   )

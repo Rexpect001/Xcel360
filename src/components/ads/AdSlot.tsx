@@ -1,4 +1,5 @@
 import { Megaphone } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type AdSlotProps = {
   placement: string
@@ -15,23 +16,28 @@ export default function AdSlot({ placement, compact = false }: AdSlotProps) {
   return (
     <aside
       aria-label={`${label} placement: ${placement}`}
-      className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm"
+      className="rounded-2xl border border-sky-100 bg-white p-4 sm:p-5 shadow-sm"
     >
-      <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-          <Megaphone className="h-4 w-4" />
+      <div className={compact ? 'flex flex-col sm:flex-row sm:items-center gap-4' : 'flex items-start gap-3'}>
+        <div className={compact ? 'flex items-center gap-3 min-w-0 flex-1' : 'flex items-start gap-3 min-w-0 flex-1'}>
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+            <Megaphone className="h-4 w-4" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{label}</p>
+            <h3 className="mt-0.5 text-sm sm:text-base font-bold text-gray-900">{title}</h3>
+            {!compact && <p className="mt-1.5 text-sm leading-6 text-gray-600">{description}</p>}
+          </div>
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{label}</p>
-          <h3 className="mt-1 text-sm font-bold text-gray-900">{title}</h3>
-          {!compact && <p className="mt-1.5 text-sm leading-6 text-gray-600">{description}</p>}
-          <a
-            href={href}
-            className="mt-3 inline-flex min-h-10 items-center rounded-xl bg-brand-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-800"
-          >
-            {cta}
-          </a>
-        </div>
+        <a
+          href={href}
+          className={cn(
+            'inline-flex shrink-0 min-h-10 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-800 whitespace-nowrap',
+            compact ? 'w-full sm:w-auto' : 'mt-3'
+          )}
+        >
+          {cta}
+        </a>
       </div>
     </aside>
   )

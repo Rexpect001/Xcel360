@@ -1,10 +1,11 @@
 'use client'
-import { useState, useMemo, lazy, Suspense } from 'react'
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, GraduationCap, Briefcase, Building2 } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
+import Pagination from '@/components/ui/Pagination'
 import { formatDate, daysUntilDeadline, deadlineLabel, getFundingBadgeColor, cn } from '@/lib/utils'
 import { tokenizeQuery, searchScore } from '@/lib/opportunitySearch'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
@@ -13,6 +14,8 @@ import { toast } from 'react-hot-toast'
 import type { OpportunityListItem } from '@/types/opportunity-list'
 
 const ScholarshipMap = lazy(() => import('./ScholarshipMap'))
+
+const PAGE_SIZE = 20
 
 interface Props {
   initialOpportunities: OpportunityListItem[]
@@ -38,6 +41,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
   )
   const [saving, setSaving] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
+  const [page, setPage] = useState(1)
 
   const filtered = useMemo(() => {
     let result = initialOpportunities
@@ -96,6 +100,17 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
 
     return result
   }, [initialOpportunities, search, filters, category, soonDays])
+
+  // Reset to page 1 whenever the result set changes underneath the pager
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters, category, soonDays])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paginated = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page]
+  )
 
   const clearFilters = () => {
     setSearch('')
@@ -258,7 +273,12 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       )}
 
       {/* Results count */}
-      <p className="text-sm text-gray-500 mb-4">{filtered.length} opportunit{filtered.length !== 1 ? 'ies' : 'y'} found</p>
+      <p className="text-sm text-gray-500 mb-4">
+        {filtered.length} opportunit{filtered.length !== 1 ? 'ies' : 'y'} found
+        {viewMode === 'list' && totalPages > 1 && (
+          <span className="text-gray-400"> · page {page} of {totalPages}</span>
+        )}
+      </p>
 
       {/* Map view */}
       {viewMode === 'map' && (
@@ -276,8 +296,9 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
           <button onClick={clearFilters} className="mt-4 text-brand-600 text-sm font-medium">Clear filters</button>
         </div>
       ) : viewMode === 'list' ? (
+        <>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((opp) => {
+          {paginated.map((opp) => {
             const days = daysUntilDeadline(opp.deadline)
             return (
               <div
@@ -392,6 +413,8 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
             )
           })}
         </div>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
       ) : null}
     </div>
   )
