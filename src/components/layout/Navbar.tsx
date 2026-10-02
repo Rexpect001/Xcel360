@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   Menu, X, ChevronDown, Bell, LogOut, User, LayoutDashboard, Shield,
-  GraduationCap, Briefcase, Star, Users, Award, Clock, Youtube, MessageCircle, CirclePlay,
+  GraduationCap, Briefcase, Star, Users, Award, Youtube, MessageCircle, Info, CirclePlay,
   type LucideIcon,
 } from 'lucide-react'
 import Logo from '@/components/brand/Logo'
@@ -18,24 +18,23 @@ type NavEntry =
 
 const NAV: NavEntry[] = [
   {
-    label: 'Scholarship Opportunities',
-    match: ['/opportunities', '/scholarships', '/jobs', '/internships', '/how-to-search'],
+    label: 'Opportunities',
+    match: ['/opportunities', '/scholarships', '/jobs', '/internships'],
     items: [
       { href: '/opportunities', label: 'Scholarships', icon: GraduationCap, desc: 'Funded study at every level' },
-      { href: '/opportunities?soon=30', label: 'Closing this month', icon: Clock, desc: 'Deadlines in the next 30 days' },
-      { href: '/jobs', label: 'Jobs', icon: Briefcase, desc: 'Full-time and remote roles' },
       { href: '/internships', label: 'Internships', icon: Star, desc: 'Paid experience worldwide' },
-      { href: '/how-to-search', label: 'How to search', icon: CirclePlay, desc: 'A 60-second walkthrough' },
+      { href: '/jobs', label: 'Jobs', icon: Briefcase, desc: 'Full-time and remote roles' },
     ],
   },
   { label: 'Resources', href: '/resources' },
   { label: 'Events', href: '/events' },
-  { label: 'Programs', href: '/programs' },
   { label: 'News', href: '/news' },
   {
-    label: 'Community',
-    match: ['/mentorship', '/success-stories', '/mentor-apply'],
+    label: 'About',
+    match: ['/about', '/how-to-search', '/mentorship', '/success-stories', '/mentor-apply'],
     items: [
+      { href: '/about', label: 'About Xcel360', icon: Info, desc: 'Our story and mission' },
+      { href: '/how-to-search', label: 'How to search', icon: CirclePlay, desc: 'A 60-second walkthrough' },
       { href: '/mentorship', label: 'Mentorship', icon: Users, desc: 'Guidance from scholars and alumni' },
       { href: '/success-stories', label: 'Success stories', icon: Award, desc: 'Wins from our community' },
       { href: 'https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30', label: 'WhatsApp channel', icon: MessageCircle, desc: 'Daily opportunity drops', external: true },

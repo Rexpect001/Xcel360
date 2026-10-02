@@ -1,5 +1,5 @@
 export const revalidate = 60
-import { GraduationCap, Target, Heart, Globe } from 'lucide-react'
+import { GraduationCap, Target, Heart, Globe, Quote } from 'lucide-react'
 import Link from 'next/link'
 import PageHero from '@/components/layout/PageHero'
 import HowItWorks from '@/components/landing/HowItWorks'
@@ -26,7 +26,36 @@ export default function AboutPage() {
         className="pb-24"
       />
 
-      <div className="max-w-4xl mx-auto px-4 py-16">
+      {/* Founder's story */}
+      <div className="max-w-4xl mx-auto px-4 pt-16">
+        <div className="relative bg-brand-50 border border-brand-100 rounded-3xl p-8 md:p-10">
+          <Quote className="h-8 w-8 text-brand-300 mb-4" />
+          <p className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium">
+            Xcel360 was founded by Alabi Johnson Sunday. The idea came from a simple, personal
+            experience: during university in Kenya, exposure to scholarships and global
+            opportunities came far later than it should have - not because the opportunities
+            weren&apos;t there, but because the information never reached the people who needed
+            it most.
+          </p>
+          <p className="mt-5 text-gray-600 leading-relaxed">
+            That gap between opportunity and awareness is what Xcel360 exists to close. Our goal
+            is to bring scholarship and opportunity information closer to students everywhere -
+            especially in places where that information rarely reaches - so that no talented
+            student misses a fully funded opportunity simply because they never heard about it.
+          </p>
+          <div className="mt-6 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+              AJ
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Alabi Johnson Sunday</p>
+              <p className="text-xs text-gray-500">Founder, Xcel360</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 pt-12 pb-16">
         <div className="grid md:grid-cols-2 gap-12 mb-16">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>

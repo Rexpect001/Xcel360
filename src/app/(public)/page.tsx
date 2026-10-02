@@ -33,6 +33,23 @@ const orgJsonLd = {
     'Xcel360 helps African students discover fully funded scholarships, track deadlines, and connect with mentors to study abroad.',
 }
 
+// Enables Google's sitelinks search box and gives AI crawlers a clear,
+// machine-readable way to understand the site has an on-page search tool.
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Xcel360',
+  url: BASE,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${BASE}/opportunities?search={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
 const cardSelect = {
   id: true, title: true, hostOrg: true, country: true, category: true,
   fundingType: true, deadline: true, field: true, programLevel: true,
@@ -73,6 +90,10 @@ export default async function LandingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <div className="overflow-x-hidden">
         <Hero liveCount={liveCount} />

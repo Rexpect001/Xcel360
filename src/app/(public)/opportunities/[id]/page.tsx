@@ -276,7 +276,6 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
               </div>
             ))}
           </div>
-          <GoogleAd placement="detail-top" shape="leaderboard" className="mt-6" />
         </div>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -319,8 +318,6 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                   <Description text={opp.description} />
                 </section>
               )}
-
-              <GoogleAd placement="detail-inline" />
 
               <section className="paper-card p-6 sm:p-8">
                 <h2 className="font-display text-2xl text-ink-900 mb-4 flex items-center gap-2">

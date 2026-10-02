@@ -5,15 +5,13 @@ import Logo from '@/components/brand/Logo'
 const footerLinks = {
   Opportunities: [
     { label: 'Scholarships', href: '/opportunities' },
-    { label: 'Closing this month', href: '/opportunities?soon=30' },
-    { label: 'Jobs', href: '/jobs' },
     { label: 'Internships', href: '/internships' },
+    { label: 'Jobs', href: '/jobs' },
     { label: 'How to search', href: '/how-to-search' },
   ],
   Platform: [
     { label: 'Resources', href: '/resources' },
-    { label: 'Events', href: '/events' },
-    { label: 'Programs', href: '/programs' },
+    { label: 'Events & Programs', href: '/events' },
     { label: 'News', href: '/news' },
     { label: 'Mentorship', href: '/mentorship' },
   ],
