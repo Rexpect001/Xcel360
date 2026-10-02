@@ -48,7 +48,7 @@ export default function ApplicationsPage() {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" /></div>
+  if (loading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" /></div>
 
   return (
     <div>
@@ -74,7 +74,7 @@ export default function ApplicationsPage() {
         <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
           <FileText className="h-12 w-12 text-gray-200 mx-auto mb-3" />
           <p className="text-gray-500 mb-4">No applications tracked yet. Save an opportunity and start tracking.</p>
-          <Link href="/opportunities" className="inline-flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800">
+          <Link href="/opportunities" className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700">
             Browse Opportunities
           </Link>
         </div>

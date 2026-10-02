@@ -59,7 +59,7 @@ export default function ServicesPage() {
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {SERVICES.map(({ icon: Icon, title, text, href, cta }) => (
           <Link key={title} href={href} className="group paper-card p-6 flex flex-col hover:border-ink-200 hover:shadow-premium transition-all">
-            <span className="w-11 h-11 rounded-xl bg-surface-100 text-ink-800 flex items-center justify-center group-hover:bg-ink-900 group-hover:text-accent-300 transition-colors">
+            <span className="w-11 h-11 rounded-xl bg-surface-100 text-ink-800 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-colors">
               <Icon className="h-5 w-5" />
             </span>
             <h2 className="mt-5 font-bold text-lg text-ink-900 font-sans">{title}</h2>

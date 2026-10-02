@@ -685,7 +685,7 @@ export default function AdminOpportunitiesPage() {
           <button
             onClick={() => { setShowPosterPanel(v => !v); if (!showPosterPanel) loadPosterActivity() }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-colors ${
-              showPosterPanel ? 'bg-ink-900 text-white border-ink-900' : 'bg-white text-brand-700 border-brand-200 hover:bg-brand-50'
+              showPosterPanel ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-brand-700 border-brand-200 hover:bg-brand-50'
             }`}
           >
             <Users className="h-4 w-4" />
@@ -743,7 +743,7 @@ export default function AdminOpportunitiesPage() {
           </button>
           <button
             onClick={openAdd}
-            className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
           >
             <Plus className="h-4 w-4" /> Add Opportunity
           </button>
@@ -822,7 +822,7 @@ export default function AdminOpportunitiesPage() {
 
       {/* ── Bulk action bar ── */}
       {selected.size > 0 && (
-        <div className="mb-3 flex items-center gap-3 bg-ink-900 text-white px-4 py-3 rounded-2xl">
+        <div className="mb-3 flex items-center gap-3 bg-brand-600 text-white px-4 py-3 rounded-2xl">
           <span className="text-sm font-semibold">{selected.size} selected</span>
           <div className="flex-1" />
           <button
@@ -868,7 +868,7 @@ export default function AdminOpportunitiesPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
@@ -1056,7 +1056,7 @@ export default function AdminOpportunitiesPage() {
               <button
                 onClick={confirmImport}
                 disabled={importPreview.parsed.length === 0}
-                className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-50 transition-colors"
+                className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-50 transition-colors"
               >
                 Import {importPreview.parsed.length} Opportunities
               </button>
@@ -1181,7 +1181,7 @@ export default function AdminOpportunitiesPage() {
             <div className="flex gap-3 pt-1 border-t border-gray-100">
               <button
                 onClick={() => { setDetailOpp(null); openEdit(detailOpp) }}
-                className="flex items-center gap-2 flex-1 justify-center py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors"
+                className="flex items-center gap-2 flex-1 justify-center py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 transition-colors"
               >
                 <Pencil className="h-4 w-4" /> Edit Opportunity
               </button>
@@ -1305,7 +1305,7 @@ export default function AdminOpportunitiesPage() {
                     onClick={() => toggleProgramLevel(level)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       form.programLevel.includes(level)
-                        ? 'bg-ink-900 text-white'
+                        ? 'bg-brand-600 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -1471,7 +1471,7 @@ export default function AdminOpportunitiesPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors"
+              className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-60 transition-colors"
             >
               {saving ? 'Saving...' : editOpp ? 'Update' : 'Create'}
             </button>

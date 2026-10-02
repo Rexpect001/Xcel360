@@ -17,7 +17,7 @@ export default function VideoGrid({ videos }: { videos: ChannelVideo[] }) {
             onClick={() => setActive(v)}
             className="group text-left paper-card overflow-hidden hover:shadow-premium transition-shadow"
           >
-            <span className="relative block aspect-video bg-ink-900">
+            <span className="relative block aspect-video bg-brand-600">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}

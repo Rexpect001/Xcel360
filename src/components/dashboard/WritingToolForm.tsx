@@ -145,7 +145,7 @@ export default function WritingToolForm({ toolId }: { toolId: ToolId }) {
           </div>
         ))}
         <button type="submit" disabled={loading} className="btn-primary w-full">
-          {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Writing your draft…</> : <><Sparkles className="h-4 w-4 text-accent-300" /> Generate draft</>}
+          {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Writing your draft…</> : <><Sparkles className="h-4 w-4 text-accent-200" /> Generate draft</>}
         </button>
         <p className="text-xs text-ink-400 leading-relaxed">
           Drafts use only what you enter. Gaps are marked like [add GPA] so nothing is made up. Always edit the draft in your own voice before submitting.

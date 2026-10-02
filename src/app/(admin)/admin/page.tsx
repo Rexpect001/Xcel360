@@ -176,7 +176,7 @@ export default async function AdminPage() {
 
       {/* Section heading */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-1 h-4 rounded-full bg-ink-800" />
+        <div className="w-1 h-4 rounded-full bg-brand-700" />
         <h2 className="admin-section-title">Manage Content</h2>
       </div>
 

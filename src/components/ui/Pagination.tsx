@@ -52,7 +52,7 @@ export default function Pagination({ page, totalPages, onPageChange }: Paginatio
               aria-current={p === page ? 'page' : undefined}
               className={cn(
                 'w-9 h-9 rounded-xl text-sm font-medium transition-colors',
-                p === page ? 'bg-ink-900 text-white' : 'text-gray-600 hover:bg-brand-50 hover:text-brand-700'
+                p === page ? 'bg-brand-600 text-white' : 'text-gray-600 hover:bg-brand-50 hover:text-brand-700'
               )}
             >
               {p}

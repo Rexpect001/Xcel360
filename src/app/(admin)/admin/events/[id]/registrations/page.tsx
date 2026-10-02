@@ -77,7 +77,7 @@ export default function AdminEventRegistrationsPage() {
         {registrations.length > 0 && (
           <button
             onClick={downloadCSV}
-            className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
           >
             <Download className="h-4 w-4" /> Download CSV
           </button>

@@ -12,7 +12,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-50">
-        <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }

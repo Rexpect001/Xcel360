@@ -108,7 +108,7 @@ export default function SearchDemo({ compact = false }: { compact?: boolean }) {
             >
               <span className={cn(
                 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-colors',
-                step === i ? 'bg-ink-900 text-accent-300' : step > i ? 'bg-accent-200 text-ink-900' : 'bg-surface-200 text-ink-500'
+                step === i ? 'bg-brand-600 text-accent-200' : step > i ? 'bg-accent-200 text-ink-900' : 'bg-surface-200 text-ink-500'
               )}>
                 {i + 1}
               </span>
@@ -140,10 +140,10 @@ export default function SearchDemo({ compact = false }: { compact?: boolean }) {
                 <Search className="h-4 w-4 text-ink-300" />
                 <span className="text-sm text-ink-900">
                   {shownQuery || <span className="text-ink-300">Search scholarships…</span>}
-                  {phase === 'typing' && <span className="inline-block w-px h-4 bg-ink-900 align-middle ml-px animate-pulse" />}
+                  {phase === 'typing' && <span className="inline-block w-px h-4 bg-brand-600 align-middle ml-px animate-pulse" />}
                 </span>
               </div>
-              <span className={cn('hidden sm:flex items-center gap-1.5 rounded-xl px-3.5 text-xs font-semibold border transition-colors', filtersOn ? 'bg-ink-900 text-white border-ink-900' : 'bg-white text-ink-600 border-surface-200')}>
+              <span className={cn('hidden sm:flex items-center gap-1.5 rounded-xl px-3.5 text-xs font-semibold border transition-colors', filtersOn ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-ink-600 border-surface-200')}>
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
               </span>
             </div>
@@ -178,7 +178,7 @@ export default function SearchDemo({ compact = false }: { compact?: boolean }) {
                     transition={{ delay: reduce ? 0 : i * 0.25, duration: 0.35 }}
                     className={cn('bg-white rounded-xl border p-3.5 flex gap-3 items-start transition-shadow', i === 0 && atLeast(phase, 'cursor') ? 'border-ink-200 shadow-soft' : 'border-surface-200')}
                   >
-                    <span className="w-9 h-9 rounded-lg bg-ink-900 text-accent-300 text-xs font-display font-semibold flex items-center justify-center shrink-0">{r.org}</span>
+                    <span className="w-9 h-9 rounded-lg bg-brand-600 text-accent-200 text-xs font-display font-semibold flex items-center justify-center shrink-0">{r.org}</span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <span className="text-[10px] text-ink-400 font-semibold truncate">{r.host}</span>
@@ -225,14 +225,14 @@ export default function SearchDemo({ compact = false }: { compact?: boolean }) {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 16 }}
-                  className="absolute left-4 right-4 sm:left-auto sm:right-6 bottom-5 sm:w-80 rounded-xl bg-ink-900 text-white p-3.5 shadow-premium"
+                  className="absolute left-4 right-4 sm:left-auto sm:right-6 bottom-5 sm:w-80 rounded-xl bg-brand-600 text-white p-3.5 shadow-premium"
                 >
                   <p className="text-sm font-semibold flex items-center gap-2">
-                    <BookmarkCheck className="h-4 w-4 text-accent-300" /> Saved to your dashboard
+                    <BookmarkCheck className="h-4 w-4 text-accent-200" /> Saved to your dashboard
                   </p>
                   {atLeast(phase, 'reminder') && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-ink-200 mt-1.5 flex items-center gap-2">
-                      <Bell className="h-3.5 w-3.5 text-accent-300" /> Reminders set for 30, 14, 7 and 2 days before 14 Dec
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-brand-100 mt-1.5 flex items-center gap-2">
+                      <Bell className="h-3.5 w-3.5 text-accent-200" /> Reminders set for 30, 14, 7 and 2 days before 14 Dec
                     </motion.p>
                   )}
                 </motion.div>
@@ -253,7 +253,7 @@ export default function SearchDemo({ compact = false }: { compact?: boolean }) {
                   aria-selected={step === i}
                   aria-label={`Step ${i + 1}: ${s.title}`}
                   onClick={() => jump(i)}
-                  className={cn('h-1.5 rounded-full transition-all', step === i ? 'w-8 bg-ink-900' : 'w-3 bg-surface-300 hover:bg-ink-300')}
+                  className={cn('h-1.5 rounded-full transition-all', step === i ? 'w-8 bg-brand-600' : 'w-3 bg-surface-300 hover:bg-ink-300')}
                 />
               ))}
             </div>

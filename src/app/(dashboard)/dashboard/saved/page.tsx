@@ -28,7 +28,7 @@ export default async function SavedPage() {
           <Bookmark className="h-12 w-12 text-gray-200 mx-auto mb-3" />
           <h2 className="text-lg font-semibold text-gray-700 mb-2">No saved opportunities yet</h2>
           <p className="text-gray-500 text-sm mb-6">Browse scholarships and save the ones you&apos;re interested in.</p>
-          <Link href="/opportunities" className="inline-flex items-center gap-2 bg-ink-900 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors">
+          <Link href="/opportunities" className="inline-flex items-center gap-2 bg-brand-600 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-brand-700 transition-colors">
             Browse Opportunities <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -57,7 +57,7 @@ export default async function SavedPage() {
                       View details
                     </Link>
                     <a href={opp.applicationLink} target="_blank" rel="noopener noreferrer"
-                      className="px-3 py-2 bg-ink-900 text-white rounded-lg hover:bg-ink-800 transition-colors">
+                      className="px-3 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors">
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   </div>

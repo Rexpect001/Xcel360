@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { CheckCircle, ArrowRight, MessageCircle, Youtube } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import BrandPattern from '@/components/brand/BrandPattern'
 
 /** Closing band: weekly email digest + the two community channels. */
 export default function EmailCapture() {
@@ -26,12 +27,13 @@ export default function EmailCapture() {
   }
 
   return (
-    <section className="bg-ink-900 text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-center">
+    <section className="relative overflow-hidden bg-brand-600 text-white">
+      <BrandPattern opacity={0.12} />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-center">
         <div>
-          <p className="eyebrow !text-accent-300 mb-3">The Friday digest</p>
+          <p className="eyebrow !text-accent-200 mb-3">The Friday digest</p>
           <h2 className="font-display text-3xl sm:text-4xl text-white">New scholarships in your inbox, once a week.</h2>
-          <p className="text-ink-200 mt-3 max-w-xl">
+          <p className="text-brand-100 mt-3 max-w-xl">
             A short list of the best new opportunities and the deadlines closing soon. No spam, unsubscribe in one click.
           </p>
 
@@ -49,9 +51,9 @@ export default function EmailCapture() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="flex-1 rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-ink-300 focus:outline-none focus:ring-2 focus:ring-accent-300"
+                className="flex-1 rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-brand-100 focus:outline-none focus:ring-2 focus:ring-accent-300"
               />
-              <button type="submit" disabled={loading} className="btn-gold">
+              <button type="submit" disabled={loading} className="btn-light">
                 {loading ? 'Subscribing…' : <>Subscribe <ArrowRight className="h-4 w-4" /></>}
               </button>
             </form>
@@ -70,9 +72,9 @@ export default function EmailCapture() {
             </span>
             <span className="flex-1">
               <span className="block font-semibold">WhatsApp channel</span>
-              <span className="block text-xs text-ink-300 mt-0.5">Daily opportunity drops, straight to your phone</span>
+              <span className="block text-xs text-brand-100 mt-0.5">Daily opportunity drops, straight to your phone</span>
             </span>
-            <ArrowRight className="h-4 w-4 text-ink-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="h-4 w-4 text-brand-100 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </a>
           <a
             href="https://www.youtube.com/@Xcel_360"
@@ -85,9 +87,9 @@ export default function EmailCapture() {
             </span>
             <span className="flex-1">
               <span className="block font-semibold">YouTube</span>
-              <span className="block text-xs text-ink-300 mt-0.5">Application walkthroughs and interview prep</span>
+              <span className="block text-xs text-brand-100 mt-0.5">Application walkthroughs and interview prep</span>
             </span>
-            <ArrowRight className="h-4 w-4 text-ink-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="h-4 w-4 text-brand-100 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </a>
         </div>
       </div>

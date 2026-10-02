@@ -169,7 +169,7 @@ export default function MentorApplyPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-ink-900 text-white py-3 rounded-xl font-semibold hover:bg-ink-800 transition-colors disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-2 bg-brand-600 text-white py-3 rounded-xl font-semibold hover:bg-brand-700 transition-colors disabled:opacity-60"
               >
                 <Users className="h-4 w-4" />
                 {loading ? 'Submitting...' : 'Submit Application'}

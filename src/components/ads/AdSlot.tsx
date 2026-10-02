@@ -32,7 +32,7 @@ export default function AdSlot({ placement, compact = false }: AdSlotProps) {
         <a
           href={href}
           className={cn(
-            'inline-flex shrink-0 min-h-10 items-center justify-center rounded-xl bg-ink-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-ink-800 whitespace-nowrap',
+            'inline-flex shrink-0 min-h-10 items-center justify-center rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-700 whitespace-nowrap',
             compact ? 'w-full sm:w-auto' : 'mt-3'
           )}
         >

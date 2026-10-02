@@ -31,8 +31,8 @@ export default function Button({
   const base = cn(
     'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
     {
-      'bg-ink-900 text-white hover:bg-ink-800 active:bg-ink-950 shadow-sm hover:shadow-md': variant === 'primary',
-      'border-2 border-ink-900 text-brand-700 hover:bg-brand-50': variant === 'secondary',
+      'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 shadow-sm hover:shadow-md': variant === 'primary',
+      'border-2 border-brand-600 text-brand-700 hover:bg-brand-50': variant === 'secondary',
       'text-gray-600 hover:bg-surface-100': variant === 'ghost',
       'bg-danger-600 text-white hover:bg-danger-700': variant === 'danger',
       'px-3 py-1.5 text-xs': size === 'sm',

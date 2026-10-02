@@ -53,7 +53,7 @@ export default function HowToSearchPage() {
         <p className="text-ink-500 mt-2">New opportunities added every day, each checked for a live deadline.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/opportunities" className="btn-primary">Search scholarships <ArrowRight className="h-4 w-4" /></Link>
-          <Link href="/signup" className="btn-gold">Create a free account</Link>
+          <Link href="/signup" className="btn-light">Create a free account</Link>
         </div>
       </section>
     </div>

@@ -45,7 +45,7 @@ export default function HowItWorks() {
           {steps.map(({ icon: Icon, step, title, text }, i) => (
             <div key={step} className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-11 h-11 bg-ink-900 rounded-xl flex items-center justify-center shadow-glow-sm">
+                <div className="w-11 h-11 bg-brand-600 rounded-xl flex items-center justify-center shadow-glow-sm">
                   <Icon className="h-5 w-5 text-white" />
                 </div>
                 <span className="font-display text-3xl font-bold text-gray-100">{step}</span>

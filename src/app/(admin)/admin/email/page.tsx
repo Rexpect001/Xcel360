@@ -257,7 +257,7 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
           <span>{pct}%</span>
         </div>
         <div className="w-full bg-gray-100 rounded-full h-1.5">
-          <div className={`h-1.5 rounded-full transition-all ${c.status === 'COMPLETED' ? 'bg-green-500' : c.status === 'FAILED' ? 'bg-red-400' : c.status === 'CANCELLED' ? 'bg-orange-400' : c.status === 'DRAFT' ? 'bg-gray-400' : 'bg-ink-800'}`}
+          <div className={`h-1.5 rounded-full transition-all ${c.status === 'COMPLETED' ? 'bg-green-500' : c.status === 'FAILED' ? 'bg-red-400' : c.status === 'CANCELLED' ? 'bg-orange-400' : c.status === 'DRAFT' ? 'bg-gray-400' : 'bg-brand-700'}`}
             style={{ width: `${pct}%` }} />
         </div>
         {c.status === 'SENDING' && (
@@ -268,20 +268,20 @@ function CampaignCard({ campaign: c, onAction, onView }: { campaign: Campaign; o
       <div className="flex gap-2 mt-4 pt-4 border-t border-gray-50 flex-wrap">
         {c.status === 'DRAFT' && (
           <button onClick={() => doAction('send')} disabled={acting}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 disabled:opacity-50 transition-colors">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 disabled:opacity-50 transition-colors">
             {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />} Send Now
           </button>
         )}
         {c.status === 'FAILED' && (
           <button onClick={() => doAction('retry')} disabled={acting}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 disabled:opacity-50 transition-colors">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 disabled:opacity-50 transition-colors">
             {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />} Retry
           </button>
         )}
         {c.status === 'SENDING' && (
           <>
             <button onClick={() => doAction('resume')} disabled={acting}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 disabled:opacity-50 transition-colors">
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 disabled:opacity-50 transition-colors">
               {acting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />} Resume Sending
             </button>
             <button onClick={() => doAction('cancel')} disabled={acting}
@@ -691,7 +691,7 @@ function TemplateEditModal({
           <button
             onClick={() => onSave(draft)}
             disabled={saving}
-            className="inline-flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 disabled:opacity-60 transition-colors"
+            className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 disabled:opacity-60 transition-colors"
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {saving ? 'Saving…' : 'Save Changes'}
@@ -730,7 +730,7 @@ function TemplateGallery({ onSelect, onClose }: { onSelect: (subject: string, ht
                 <div className="p-4">
                   <p className="font-semibold text-gray-900 text-sm">{t.name}</p>
                   <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{t.desc}</p>
-                  <div className="mt-3 w-full py-2 bg-ink-900 group-hover:bg-ink-800 text-white rounded-lg text-xs font-semibold text-center transition-colors">
+                  <div className="mt-3 w-full py-2 bg-brand-600 group-hover:bg-brand-700 text-white rounded-lg text-xs font-semibold text-center transition-colors">
                     Use this template
                   </div>
                 </div>
@@ -764,7 +764,7 @@ function CampaignPreviewModal({
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => { onEditResend(campaign.subject, campaign.htmlBody); onClose() }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 transition-colors">
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 transition-colors">
               <Send className="h-3.5 w-3.5" /> Edit &amp; Resend
             </button>
             <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
@@ -1264,7 +1264,7 @@ export default function AdminEmailPage() {
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
                     <div className="flex gap-2">
                       <button onClick={handleSaveTemplate} disabled={savingTemplate}
-                        className="flex-1 py-2 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 disabled:opacity-50">
+                        className="flex-1 py-2 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 disabled:opacity-50">
                         {savingTemplate ? 'Saving…' : 'Save'}
                       </button>
                       <button onClick={() => { setShowSaveTemplate(false); setNewTemplateName('') }} className="px-3 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs hover:bg-gray-50">
@@ -1278,7 +1278,7 @@ export default function AdminEmailPage() {
             {/* Actions */}
             <div className="space-y-2">
               <button onClick={handleSend} disabled={sending || savingDraft || !subject.trim() || !htmlBody.trim()}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-ink-900 text-white rounded-xl font-semibold hover:bg-ink-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 {sending ? 'Sending…' : 'Send Campaign'}
               </button>
@@ -1307,7 +1307,7 @@ export default function AdminEmailPage() {
                       if (res.ok) { toast.success(`Resumed  -  sent ${d.results?.reduce((s: number, r: any) => s + r.sent, 0) ?? 0} emails`); loadCampaigns() }
                       else toast.error(d.error ?? 'Resume failed')
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 transition-colors">
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 transition-colors">
                     <RotateCcw className="h-3 w-3" /> Resume Batch Now
                   </button>
                   <button onClick={loadCampaigns} className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"><RefreshCw className="h-3 w-3" /> Refresh</button>
@@ -1342,7 +1342,7 @@ export default function AdminEmailPage() {
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Starter Templates</h2>
                 <p className="text-xs text-gray-400 mt-0.5">Pre-designed layouts  -  click to load into Compose</p>
               </div>
-              <button onClick={() => setTab('compose')} className="flex items-center gap-2 px-4 py-2 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
+              <button onClick={() => setTab('compose')} className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
                 <Mail className="h-4 w-4" /> New Email
               </button>
             </div>
@@ -1357,7 +1357,7 @@ export default function AdminEmailPage() {
                   <div className="p-4">
                     <p className="font-semibold text-gray-900 text-sm">{t.name}</p>
                     <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{t.desc}</p>
-                    <div className="mt-3 w-full py-2 bg-ink-900 group-hover:bg-ink-800 text-white rounded-lg text-xs font-semibold text-center transition-colors">
+                    <div className="mt-3 w-full py-2 bg-brand-600 group-hover:bg-brand-700 text-white rounded-lg text-xs font-semibold text-center transition-colors">
                       Use this template
                     </div>
                   </div>
@@ -1387,7 +1387,7 @@ export default function AdminEmailPage() {
                       </div>
                       <div className="flex gap-2 mt-auto">
                         <button onClick={() => loadTemplate(t)}
-                          className="flex-1 py-2 bg-ink-900 text-white rounded-lg text-xs font-semibold hover:bg-ink-800 transition-colors">
+                          className="flex-1 py-2 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700 transition-colors">
                           Use Template
                         </button>
                         <button onClick={() => setEditingTemplate(t)} title="Edit template"

@@ -37,7 +37,7 @@ export default function ResourceDownloadButton({ resource }: Props) {
     <button
       onClick={handleDownload}
       disabled={downloading}
-      className="flex items-center justify-center gap-2 w-full py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors disabled:opacity-60 disabled:cursor-wait"
+      className="flex items-center justify-center gap-2 w-full py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-60 disabled:cursor-wait"
     >
       <Download className="h-3.5 w-3.5" />
       {downloading ? 'Downloading...' : 'Download'}

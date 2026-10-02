@@ -77,7 +77,7 @@ function PreviewModal({
             Cancel
           </button>
           <button onClick={onConfirm} disabled={importing}
-            className="flex-1 py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
             {importing ? <><Loader2 className="h-4 w-4 animate-spin" /> Importing…</> : `Import ${rows.length.toLocaleString()} Contacts`}
           </button>
         </div>
@@ -221,7 +221,7 @@ export default function AdminContactsPage() {
             <Download className="h-4 w-4" /> Export
           </button>
           <button onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-2 px-4 py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
             <Upload className="h-4 w-4" /> Import Excel
           </button>
           <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" className="hidden"

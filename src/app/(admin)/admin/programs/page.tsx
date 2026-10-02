@@ -122,7 +122,7 @@ export default function AdminProgramsPage() {
 
   if (loading) return (
     <div className="flex justify-center py-20">
-      <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -135,7 +135,7 @@ export default function AdminProgramsPage() {
             <h1 className="font-display text-3xl text-ink-900">Programs & Cohorts</h1>
             <p className="text-gray-500 mt-1">{programs.length} programs · {beneficiaries.length} beneficiaries total</p>
           </div>
-          <button onClick={openAdd} className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
+          <button onClick={openAdd} className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
             <Plus className="h-4 w-4" /> Add Program
           </button>
         </div>
@@ -179,7 +179,7 @@ export default function AdminProgramsPage() {
               Bulk Import
               {bulkPanel ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
-            <button onClick={() => { setBForm({ firstName: '', department: '', school: '', programId: '' }); setBModal(true) }} className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
+            <button onClick={() => { setBForm({ firstName: '', department: '', school: '', programId: '' }); setBModal(true) }} className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
               <Plus className="h-4 w-4" /> Add One
             </button>
           </div>
@@ -284,7 +284,7 @@ export default function AdminProgramsPage() {
           </div>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setProgramModal(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60">{saving ? 'Saving...' : editProgram ? 'Update' : 'Create'}</button>
+            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-60">{saving ? 'Saving...' : editProgram ? 'Update' : 'Create'}</button>
           </div>
         </div>
       </Modal>
@@ -313,7 +313,7 @@ export default function AdminProgramsPage() {
           </div>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setBModal(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50">Cancel</button>
-            <button onClick={handleAddBeneficiary} className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800">Add</button>
+            <button onClick={handleAddBeneficiary} className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700">Add</button>
           </div>
         </div>
       </Modal>

@@ -11,51 +11,52 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand blue - rebased on #006FEC: deeper, more professional, less glare
+        // Xcel brand blue - #2266B1 (600) is the logo blue. White text on 600+ passes WCAG AA (5.8:1).
         brand: {
-          50:  '#eef5ff',
-          100: '#dceafe',
-          200: '#b9d4fd',
-          300: '#85b8fa',
-          400: '#4b95f5',
-          500: '#006fec',
-          600: '#005fc9',
-          700: '#004ca3',
-          800: '#003a7d',
-          900: '#002b5c',
-          950: '#001d3f',
+          50:  '#eef5fc',
+          100: '#dbeaf8',
+          200: '#b8d4f1',
+          300: '#8ab7e6',
+          400: '#5594d6',
+          500: '#337cc6',
+          600: '#2266b1',
+          700: '#1d579a',
+          800: '#1a4880',
+          900: '#163b67',
+          950: '#0e2643',
         },
-        // Scholar gold - the Xcel360 accent. Use ink text on 300-500, white on 600+.
+        // Light "document" blue for highlights and soft fills (Word-style).
+        // 200 is the highlight colour for text on brand-600 backgrounds (4.5:1).
         accent: {
-          50:  '#fdf8ec',
-          100: '#f9edcc',
-          200: '#f2d994',
-          300: '#e9c262',
-          400: '#dfad3f',
-          500: '#c9962b',
-          600: '#a67a1f',
-          700: '#82601b',
+          50:  '#f0f8fe',
+          100: '#e3f1fd',
+          200: '#cbe6fb',
+          300: '#9fd0f6',
+          400: '#41a5ee',
+          500: '#2b8ddb',
+          600: '#1f72b8',
+          700: '#185a92',
         },
-        // Ink - the deep navy used for headings, heroes and the dark chrome.
+        // Ink - neutral text greys with a hint of blue. 400+ passes AA on white.
         ink: {
-          50:  '#f2f5f9',
-          100: '#e3e9f1',
-          200: '#c5d1e0',
-          300: '#94a7c1',
-          400: '#5f7798',
-          500: '#3d5677',
-          600: '#2a4161',
-          700: '#1c3150',
-          800: '#132542',
-          900: '#0b1f3a',
-          950: '#06142a',
+          50:  '#f6f8fb',
+          100: '#edf1f6',
+          200: '#d8e0ea',
+          300: '#a3b1c4',
+          400: '#5f6f86',
+          500: '#4d5d75',
+          600: '#3c4b62',
+          700: '#2d3a4f',
+          800: '#1f2a3c',
+          900: '#131c2b',
+          950: '#0b111c',
         },
-        // Paper - warm neutral page background, less clinical than pure grey.
+        // Surfaces - very light blue page background and borders.
         surface: {
-          50:  '#f8f7f3',
-          100: '#f1efe9',
-          200: '#e4e1d8',
-          300: '#c9c4b6',
+          50:  '#f5f8fc',
+          100: '#ebf1f8',
+          200: '#dbe4ef',
+          300: '#c3d0e0',
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
@@ -80,8 +81,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'Fraunces', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Plus Jakarta Sans', 'Segoe UI', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float':       'float 6s ease-in-out infinite',
@@ -112,7 +113,7 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient':   'linear-gradient(160deg, #06142a 0%, #0b1f3a 45%, #132f55 100%)',
+        'hero-gradient':   'linear-gradient(180deg, #2266b1 0%, #1f5fa6 100%)',
         'card-shine':      'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)',
       },
       boxShadow: {
@@ -120,8 +121,8 @@ const config: Config = {
         'glow':     '0 0 40px rgba(0, 111, 236, 0.22)',
         'glow-sm':  '0 0 20px rgba(0, 111, 236, 0.15)',
         'premium':  '0 12px 32px -18px rgba(15, 23, 42, 0.26), 0 1px 4px rgba(15,23,42,0.06)',
-        'accent':   '0 8px 24px -10px rgba(201, 150, 43, 0.55)',
-        'soft':     '0 1px 2px rgba(11,31,58,0.04), 0 4px 16px -8px rgba(11,31,58,0.10)',
+        'accent':   '0 8px 24px -10px rgba(34, 102, 177, 0.45)',
+        'soft':     '0 1px 2px rgba(19,28,43,0.04), 0 4px 16px -8px rgba(19,28,43,0.10)',
       },
     },
   },

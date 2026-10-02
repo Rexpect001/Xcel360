@@ -22,14 +22,14 @@ export default function ChooseYourPath() {
             <Link
               key={level}
               href={`/opportunities?level=${encodeURIComponent(level)}`}
-              className="group bg-white p-6 sm:p-7 hover:bg-ink-900 transition-colors"
+              className="group bg-white p-6 sm:p-7 hover:bg-brand-600 transition-colors"
             >
-              <span className="font-display text-sm text-accent-600 group-hover:text-accent-300">0{i + 1}</span>
+              <span className="font-display text-sm text-accent-600 group-hover:text-white">0{i + 1}</span>
               <h3 className="mt-6 font-display text-2xl font-semibold text-ink-900 group-hover:text-white flex items-center justify-between">
                 {title}
-                <ArrowUpRight className="h-5 w-5 text-ink-200 group-hover:text-accent-300 transition-colors" />
+                <ArrowUpRight className="h-5 w-5 text-ink-200 group-hover:text-white transition-colors" />
               </h3>
-              <p className="text-sm text-ink-500 group-hover:text-ink-200 mt-2 leading-relaxed">{description}</p>
+              <p className="text-sm text-ink-500 group-hover:text-brand-100 mt-2 leading-relaxed">{description}</p>
             </Link>
           ))}
         </div>

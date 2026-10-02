@@ -83,7 +83,7 @@ export default function Navbar() {
   const linkBase = 'px-3 py-2 rounded-lg text-[13.5px] font-semibold transition-colors whitespace-nowrap'
   const linkTone = (active: boolean) =>
     transparent
-      ? active ? 'text-white bg-white/10' : 'text-ink-100 hover:text-white hover:bg-white/10'
+      ? active ? 'text-white bg-white/10' : 'text-brand-50 hover:text-white hover:bg-white/10'
       : active ? 'text-ink-900 bg-surface-100' : 'text-ink-500 hover:text-ink-900 hover:bg-surface-100'
 
   return (
@@ -97,7 +97,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           <Link href="/" aria-label="Xcel360 home" className="shrink-0">
-            <Logo tone={transparent ? 'light' : 'ink'} markClassName="h-8 w-8" />
+            <Logo tone={transparent ? 'light' : 'ink'} />
           </Link>
 
           {/* Desktop nav */}
@@ -197,11 +197,11 @@ export default function Navbar() {
               <>
                 <Link
                   href="/signin"
-                  className={cn('text-sm font-semibold px-3 py-2 rounded-lg transition-colors', transparent ? 'text-ink-100 hover:text-white' : 'text-ink-600 hover:text-ink-900')}
+                  className={cn('text-sm font-semibold px-3 py-2 rounded-lg transition-colors', transparent ? 'text-brand-50 hover:text-white' : 'text-ink-600 hover:text-ink-900')}
                 >
                   Sign in
                 </Link>
-                <Link href="/signup" className="btn-gold !px-4 !py-2 !rounded-lg">
+                <Link href="/signup" className={cn(transparent ? 'btn-light !border-transparent' : 'btn-primary', '!px-4 !py-2 !rounded-lg')}>
                   Join free
                 </Link>
               </>
@@ -261,7 +261,7 @@ export default function Navbar() {
             ) : (
               <div className="grid grid-cols-2 gap-2 pb-2">
                 <Link href="/signin" className="text-center px-3 py-2.5 text-sm font-semibold text-ink-700 border border-surface-200 rounded-xl">Sign in</Link>
-                <Link href="/signup" className="btn-gold !py-2.5">Join free</Link>
+                <Link href="/signup" className="btn-primary !py-2.5">Join free</Link>
               </div>
             )}
           </div>

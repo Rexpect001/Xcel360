@@ -67,13 +67,13 @@ export default function AboutPage() {
           <div className="flex flex-wrap gap-4 justify-center">
             <Link
               href="/signup"
-              className="bg-ink-900 text-white px-8 py-3 rounded-xl font-semibold hover:bg-ink-800 transition-colors"
+              className="bg-brand-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-brand-700 transition-colors"
             >
               Create Free Account
             </Link>
             <Link
               href="/contact"
-              className="border-2 border-ink-900 text-brand-700 px-8 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
+              className="border-2 border-brand-600 text-brand-700 px-8 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
             >
               Contact Us
             </Link>

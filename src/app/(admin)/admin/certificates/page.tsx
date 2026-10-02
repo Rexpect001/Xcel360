@@ -310,7 +310,7 @@ export default function AdminCertificatesPage() {
               <button
                 onClick={() => generate(false)}
                 disabled={generating || selected.size === 0}
-                className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors disabled:opacity-40"
+                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-40"
               >
                 {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 Generate Certificates
@@ -515,7 +515,7 @@ function TemplatePanel({ eventId, open, onToggle }: { eventId: string; open: boo
 
           <div className="flex justify-end">
             <button onClick={save} disabled={saving}
-              className="flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors disabled:opacity-50">
+              className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-50">
               {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save Design
             </button>
           </div>

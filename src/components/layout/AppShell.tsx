@@ -194,7 +194,7 @@ export default function AppShell({
       {/* Brand */}
       <div className="flex items-center gap-2 px-5 h-16 shrink-0 border-b border-surface-200">
         <Link href="/" aria-label="Xcel360 home">
-          <Logo tag={brandTag} markClassName="h-8 w-8" />
+          <Logo tag={brandTag} />
         </Link>
         {mobile && (
           <button
@@ -219,9 +219,9 @@ export default function AppShell({
         ))}
 
         {promo && (
-          <Link href={promo.href} className="mt-6 block rounded-2xl bg-ink-900 p-4 text-white hover:bg-ink-800 transition-colors">
-            <p className="flex items-center gap-1.5 text-sm font-semibold"><Sparkles className="h-4 w-4 text-accent-300" /> {promo.title}</p>
-            <p className="text-xs text-ink-200 mt-1 leading-relaxed">{promo.text}</p>
+          <Link href={promo.href} className="mt-6 block rounded-2xl bg-brand-600 p-4 text-white hover:bg-brand-700 transition-colors">
+            <p className="flex items-center gap-1.5 text-sm font-semibold"><Sparkles className="h-4 w-4 text-accent-200" /> {promo.title}</p>
+            <p className="text-xs text-brand-100 mt-1 leading-relaxed">{promo.text}</p>
             <span className="mt-3 inline-block rounded-lg bg-accent-300 px-3 py-1.5 text-xs font-bold text-ink-900">{promo.cta}</span>
           </Link>
         )}
@@ -230,7 +230,7 @@ export default function AppShell({
       {/* User + footer actions */}
       <div className="px-3 py-3 border-t border-surface-200 shrink-0 space-y-1">
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-9 h-9 bg-ink-900 text-accent-300 rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+          <div className="w-9 h-9 bg-brand-600 text-accent-200 rounded-full flex items-center justify-center font-bold text-sm shrink-0">
             {user.name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           <div className="min-w-0 flex-1">
@@ -294,7 +294,7 @@ export default function AppShell({
           >
             <Menu className="h-5 w-5" />
           </button>
-          <Logo tag={brandTag} markClassName="h-7 w-7" className="[&_span.font-display]:text-lg" />
+          <Logo tag={brandTag} size="h-5" />
         </div>
 
         <div className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1400px] w-full">{children}</div>

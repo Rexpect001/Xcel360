@@ -1,17 +1,13 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 
-// Brand type: Fraunces (editorial serif) for headlines, Plus Jakarta Sans for UI/body.
-const sans = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
-const display = Fraunces({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-display',
-  axes: ['opsz', 'SOFT'],
-})
+// Brand type: Plus Jakarta Sans for headings, Inter for body/UI - both chosen
+// for readability at small sizes on a high-traffic information site.
+const sans = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
+const display = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-display', weight: ['500', '600', '700', '800'] })
 
 const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT
 
@@ -80,8 +76,8 @@ export const metadata: Metadata = {
     canonical: BASE,
   },
   icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    apple: '/apple-icon.svg',
+    icon: [{ url: '/icon.png', type: 'image/png' }],
+    apple: '/apple-icon.png',
   },
   verification: {
     google: 'HqtM8s2pElCiihxma2gV07HWCRTF8hM4J6AZ9gPGaW0',
@@ -92,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <head>
-        <meta name="theme-color" content="#0b1f3a" />
+        <meta name="theme-color" content="#2266b1" />
         {ADSENSE_CLIENT && <meta name="google-adsense-account" content={ADSENSE_CLIENT} />}
       </head>
       <body className="font-sans">

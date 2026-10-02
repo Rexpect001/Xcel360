@@ -42,9 +42,9 @@ export function fundingTone(funding: string | null | undefined): string {
 }
 
 const CATEGORY = {
-  SCHOLARSHIP: { key: 'SCHOLARSHIP', label: 'Scholarship', chip: 'bg-ink-900 text-white', href: (id: string) => `/opportunities/${id}` },
-  JOB:         { key: 'JOB',         label: 'Job',         chip: 'bg-teal-700 text-white', href: (id: string) => `/jobs/${id}` },
-  INTERNSHIP:  { key: 'INTERNSHIP',  label: 'Internship',  chip: 'bg-violet-700 text-white', href: (id: string) => `/internships/${id}` },
+  SCHOLARSHIP: { key: 'SCHOLARSHIP', label: 'Scholarship', chip: 'bg-brand-50 text-brand-700', href: (id: string) => `/opportunities/${id}` },
+  JOB:         { key: 'JOB',         label: 'Job',         chip: 'bg-teal-50 text-teal-800', href: (id: string) => `/jobs/${id}` },
+  INTERNSHIP:  { key: 'INTERNSHIP',  label: 'Internship',  chip: 'bg-violet-50 text-violet-800', href: (id: string) => `/internships/${id}` },
 } as const
 
 export function categoryMeta(category: string | null | undefined) {

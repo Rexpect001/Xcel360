@@ -237,7 +237,7 @@ export default function AdminEventsPage() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" /> Add Event
         </button>
@@ -245,7 +245,7 @@ export default function AdminEventsPage() {
 
       {/* Bulk action bar */}
       {selected.size > 0 && (
-        <div className="mb-4 flex items-center gap-3 bg-ink-900 text-white px-5 py-3 rounded-2xl shadow-lg">
+        <div className="mb-4 flex items-center gap-3 bg-brand-600 text-white px-5 py-3 rounded-2xl shadow-lg">
           <CheckSquare2 className="h-4 w-4 shrink-0" />
           <span className="text-sm font-semibold flex-1">{selected.size} selected</span>
           <button onClick={() => bulkAction('publish')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">Publish</button>
@@ -257,7 +257,7 @@ export default function AdminEventsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : events.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
@@ -448,7 +448,7 @@ export default function AdminEventsPage() {
               <Link
                 href={`/admin/events/${detailEvent.id}/registrations`}
                 onClick={() => setDetailEvent(null)}
-                className="flex-1 flex items-center justify-center gap-2 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 transition-colors"
               >
                 <Users className="h-4 w-4" /> View All Registrations <ChevronRight className="h-4 w-4" />
               </Link>
@@ -598,7 +598,7 @@ export default function AdminEventsPage() {
             <button onClick={() => setModalOpen(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">
               Cancel
             </button>
-            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors">
+            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-60 transition-colors">
               {saving ? 'Saving...' : editEvent ? 'Update' : 'Create'}
             </button>
           </div>
@@ -684,7 +684,7 @@ export default function AdminEventsPage() {
             <button onClick={() => setQModalOpen(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">
               Cancel
             </button>
-            <button onClick={saveQuestions} disabled={qSaving} className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors">
+            <button onClick={saveQuestions} disabled={qSaving} className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-60 transition-colors">
               {qSaving ? 'Saving...' : 'Save Questions'}
             </button>
           </div>

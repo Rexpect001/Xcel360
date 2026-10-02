@@ -24,7 +24,7 @@ export default function DeadlinesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -42,7 +42,7 @@ export default function DeadlinesPage() {
           <p className="text-gray-500 mb-4">No deadlines to track. Start by saving and tracking scholarships.</p>
           <Link
             href="/opportunities"
-            className="inline-flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+            className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
           >
             Browse Opportunities
           </Link>

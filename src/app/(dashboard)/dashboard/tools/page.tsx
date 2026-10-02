@@ -23,7 +23,7 @@ export default function ToolsIndexPage() {
           return (
             <Link key={id} href={`/dashboard/tools/${id}`} className="group paper-card p-6 hover:border-ink-200 hover:shadow-premium transition-all">
               <div className="flex items-start justify-between">
-                <span className="w-11 h-11 rounded-xl bg-ink-900 text-accent-300 flex items-center justify-center"><Icon className="h-5 w-5" /></span>
+                <span className="w-11 h-11 rounded-xl bg-brand-600 text-accent-200 flex items-center justify-center"><Icon className="h-5 w-5" /></span>
                 <ArrowUpRight className="h-5 w-5 text-ink-200 group-hover:text-ink-700 transition-colors" />
               </div>
               <h2 className="mt-5 font-bold text-lg text-ink-900">{t.name}</h2>

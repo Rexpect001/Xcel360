@@ -79,7 +79,7 @@ export default async function DashboardPage() {
           <Search className="h-4 w-4 text-ink-300 shrink-0" />
           <label htmlFor="dash-search" className="sr-only">Search scholarships</label>
           <input id="dash-search" name="search" placeholder="Search scholarships…" className="flex-1 min-w-0 py-1.5 text-sm bg-transparent focus:outline-none" />
-          <button type="submit" className="rounded-lg bg-ink-900 text-white text-xs font-semibold px-3 py-2 hover:bg-ink-800">Search</button>
+          <button type="submit" className="rounded-lg bg-brand-600 text-white text-xs font-semibold px-3 py-2 hover:bg-brand-700">Search</button>
         </form>
       </header>
 
@@ -174,16 +174,16 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <section className="rounded-2xl bg-ink-900 text-white p-5">
+          <section className="rounded-2xl bg-brand-600 text-white p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-white">Writing tools</h2>
               <span className="pro-badge">PRO</span>
             </div>
-            <p className="text-xs text-ink-200 mt-1">Draft your documents in minutes, in your own words.</p>
+            <p className="text-xs text-brand-100 mt-1">Draft your documents in minutes, in your own words.</p>
             <div className="mt-4 grid grid-cols-2 gap-2">
               {TOOLS.map(({ href, label, icon: Icon }) => (
                 <Link key={href} href={href} className="rounded-xl bg-white/[0.06] border border-white/10 p-3 hover:bg-white/10 transition-colors">
-                  <Icon className="h-4 w-4 text-accent-300" />
+                  <Icon className="h-4 w-4 text-accent-200" />
                   <span className="block text-xs font-semibold mt-2">{label}</span>
                 </Link>
               ))}

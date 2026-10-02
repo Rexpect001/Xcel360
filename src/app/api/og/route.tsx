@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
   const bgGradient =
     type === 'job'         ? 'linear-gradient(145deg, #0a1a10 0%, #0c2518 40%, #0e3a22 100%)'
     : type === 'internship' ? 'linear-gradient(145deg, #0f0a1e 0%, #1a0d2e 40%, #26104a 100%)'
-    : 'linear-gradient(160deg, #06142a 0%, #0b1f3a 50%, #132f55 100%)'
+    : 'linear-gradient(160deg, #2266b1 0%, #1d579a 60%, #1a4880 100%)'
 
   const glowColor =
     type === 'job'         ? 'rgba(34,197,94,0.15)'
@@ -168,7 +168,7 @@ export async function GET(req: NextRequest) {
   const accentGradient =
     type === 'job'         ? 'linear-gradient(90deg, #16a34a, #4ade80, #86efac)'
     : type === 'internship' ? 'linear-gradient(90deg, #7c3aed, #a78bfa, #c4b5fd)'
-    : 'linear-gradient(90deg, #a67a1f, #dfad3f, #f2d994)'
+    : 'linear-gradient(90deg, #9fd0f6, #ffffff, #9fd0f6)'
 
   const img = new ImageResponse(
     (
@@ -183,13 +183,8 @@ export async function GET(req: NextRequest) {
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '48px 72px 44px', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <svg width="44" height="44" viewBox="0 0 64 64">
-                <rect width="64" height="64" rx="15" fill="#ffffff" />
-                <path d="M47.6 18.4A21 21 0 1 0 53 32" fill="none" stroke="#dfad3f" strokeWidth="4.2" strokeLinecap="round" />
-                <circle cx="53" cy="24.5" r="3.4" fill="#dfad3f" />
-                <path d="M24 23.5 40 40.5M40 23.5 24 40.5" stroke="#0b1f3a" strokeWidth="5.6" strokeLinecap="round" />
-              </svg>
-              <span style={{ fontSize: '24px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.3px', display: 'flex' }}>Xcel<span style={{ color: '#dfad3f' }}>360</span></span>
+              <span style={{ fontSize: '30px', fontWeight: 900, color: '#ffffff', letterSpacing: '2px', display: 'flex' }}>XCEL</span>
+              <span style={{ fontSize: '16px', fontWeight: 600, color: '#cbe6fb', letterSpacing: '1px', display: 'flex' }}>360</span>
             </div>
             <div style={{ background: badgeBg, color: badgeColor, fontSize: '17px', fontWeight: 700, padding: '8px 20px', borderRadius: '999px', border: `1.5px solid ${badgeColor}40`, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: badgeColor, display: 'flex' }} />
@@ -204,28 +199,28 @@ export async function GET(req: NextRequest) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '13px', color: '#b8d4f1', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {type === 'job' || type === 'internship' ? 'Company' : type === 'event' ? 'Host' : 'Offered by'}
                 </span>
-                <span style={{ fontSize: '20px', color: '#e9c262', fontWeight: 700 }}>{sub}</span>
+                <span style={{ fontSize: '20px', color: '#cbe6fb', fontWeight: 700 }}>{sub}</span>
               </div>
               <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta1Label}</span>
+                <span style={{ fontSize: '13px', color: '#b8d4f1', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta1Label}</span>
                 <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta1Value}</span>
               </div>
               <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta2Label}</span>
+                <span style={{ fontSize: '13px', color: '#b8d4f1', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta2Label}</span>
                 <span style={{ fontSize: '20px', color: '#e2e8f0', fontWeight: 600 }}>{meta2Value}</span>
               </div>
               <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)', display: 'flex' }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta3Label}</span>
+                <span style={{ fontSize: '13px', color: '#b8d4f1', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{meta3Label}</span>
                 <span style={{ fontSize: '20px', color: meta3Value === 'Open' ? '#4ade80' : '#e2e8f0', fontWeight: 600 }}>{meta3Value}</span>
               </div>
             </div>
-            <div style={{ background: '#dfad3f', color: '#0b1f3a', fontSize: '17px', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 24px rgba(223,173,63,0.35)' }}>
+            <div style={{ background: '#ffffff', color: '#1d579a', fontSize: '17px', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 24px rgba(0,0,0,0.18)' }}>
               {type === 'event' ? 'Register now →' : 'Apply now →'}
             </div>
           </div>

@@ -52,6 +52,7 @@ import {
 } from 'lucide-react'
 import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import GoogleAd from '@/components/ads/GoogleAd'
+import BrandPattern from '@/components/brand/BrandPattern'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
@@ -214,14 +215,15 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
       />
       <div className="min-h-screen bg-surface-50">
         {/* ── Header band ── */}
-        <div className="bg-hero-gradient text-white pt-16">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-14">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-200 mb-6">
+        <div className="relative overflow-hidden bg-hero-gradient text-white pt-16">
+          <BrandPattern opacity={0.09} />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-14">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-brand-100 mb-6">
               <Link href="/" className="hover:text-white">Home</Link>
               <span>/</span>
               <Link href="/opportunities" className="hover:text-white">Scholarships</Link>
               <span>/</span>
-              <span className="text-ink-300 truncate max-w-[220px]">{opp.title}</span>
+              <span className="text-brand-100 truncate max-w-[220px]">{opp.title}</span>
             </nav>
 
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -229,24 +231,24 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 {opp.fundingType}
               </span>
               {opp.programLevel.map((l) => (
-                <span key={l} className="text-[11px] font-semibold px-2 py-1 rounded bg-white/10 text-ink-100">{l}</span>
+                <span key={l} className="text-[11px] font-semibold px-2 py-1 rounded bg-white/10 text-brand-50">{l}</span>
               ))}
-              {opp.field && <span className="text-[11px] font-semibold px-2 py-1 rounded bg-white/10 text-ink-100">{opp.field}</span>}
+              {opp.field && <span className="text-[11px] font-semibold px-2 py-1 rounded bg-white/10 text-brand-50">{opp.field}</span>}
               {isClosed && (
                 <span className="text-[11px] font-bold px-2 py-1 rounded bg-red-500 text-white">Applications closed</span>
               )}
             </div>
 
             <h1 className="font-display text-3xl sm:text-4xl md:text-[2.75rem] leading-[1.1] max-w-4xl text-white">{opp.title}</h1>
-            <p className="mt-3 text-ink-200 flex items-center gap-2 text-sm sm:text-base">
+            <p className="mt-3 text-brand-100 flex items-center gap-2 text-sm sm:text-base">
               <Building2 className="h-4 w-4 shrink-0" /> {opp.hostOrg}
             </p>
 
             {match && (
               <div className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-xl px-4 py-2.5 bg-white/10 border border-white/15">
-                <Sparkles className="h-4 w-4 text-accent-300" />
+                <Sparkles className="h-4 w-4 text-accent-200" />
                 <span className="text-sm font-semibold">{match.score}% match for you</span>
-                {match.reasons.length > 0 && <span className="text-xs text-ink-200">· {match.reasons.join(', ')}</span>}
+                {match.reasons.length > 0 && <span className="text-xs text-brand-100">· {match.reasons.join(', ')}</span>}
               </div>
             )}
           </div>
@@ -384,7 +386,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 )}
               </div>
 
-              <div className="rounded-2xl bg-ink-900 text-white p-5">
+              <div className="rounded-2xl bg-brand-600 text-white p-5">
                 <h3 className="font-bold text-white mb-3">Quick summary</h3>
                 <dl className="space-y-2.5 text-sm">
                   {[
@@ -395,7 +397,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                     ['Levels', opp.programLevel.join(', ') || 'All levels'],
                   ].map(([k, v]) => (
                     <div key={k} className="flex justify-between gap-4 border-b border-white/10 pb-2 last:border-0 last:pb-0">
-                      <dt className="text-ink-300 text-xs">{k}</dt>
+                      <dt className="text-brand-100 text-xs">{k}</dt>
                       <dd className="font-semibold text-right">{v}</dd>
                     </div>
                   ))}

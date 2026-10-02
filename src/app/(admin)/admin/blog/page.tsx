@@ -203,7 +203,7 @@ export default function AdminBlogPage() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" /> Add Post
         </button>
@@ -221,7 +221,7 @@ export default function AdminBlogPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
@@ -410,7 +410,7 @@ export default function AdminBlogPage() {
               </button>
               <button
                 onClick={() => openEdit(detailPost)}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 transition-colors"
               >
                 <Pencil className="h-4 w-4" />
                 Edit Post
@@ -492,7 +492,7 @@ export default function AdminBlogPage() {
           </label>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModalOpen(false)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors">
+            <button onClick={handleSave} disabled={saving} className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-60 transition-colors">
               {saving ? 'Saving...' : editPost ? 'Update' : 'Create'}
             </button>
           </div>

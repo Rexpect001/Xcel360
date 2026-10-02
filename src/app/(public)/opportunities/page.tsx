@@ -82,7 +82,7 @@ export default async function OpportunitiesPage() {
         title="Scholarships & Opportunities"
         subtitle="Every listing is checked for a live deadline and an official way to apply. Search by keyword, then narrow by level, country and funding."
       >
-        <Link href="/how-to-search" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent-300 hover:text-accent-200">
+        <Link href="/how-to-search" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent-200 hover:text-white">
           New here? Watch the 60-second search walkthrough →
         </Link>
       </PageHero>

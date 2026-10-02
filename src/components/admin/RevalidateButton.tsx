@@ -22,7 +22,7 @@ export default function RevalidateButton() {
       disabled={state === 'loading'}
       className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all
         disabled:opacity-60
-        bg-ink-900 text-white hover:bg-ink-800"
+        bg-brand-600 text-white hover:bg-brand-700"
     >
       {state === 'done' ? (
         <><CheckCircle className="h-4 w-4" /> Cache Flushed</>

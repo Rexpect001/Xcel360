@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     await sendMail({
       to,
       subject,
-      html: `<div style="font-family:Arial,sans-serif;font-size:14px;color:#0b1f3a">
+      html: `<div style="font-family:Arial,sans-serif;font-size:14px;color:#131c2b">
         <h2 style="margin:0 0 12px">${esc(subject)}</h2>
         <table cellpadding="6" style="border-collapse:collapse">${rows
           .map(([k, v]) => `<tr><td style="color:#5f7798">${k}</td><td><strong>${esc(v)}</strong></td></tr>`)

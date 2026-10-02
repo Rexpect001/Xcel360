@@ -104,7 +104,7 @@ export default async function ResourcesPage() {
         {dbResources.length > 0 ? (
           <div className="mb-14">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 bg-ink-900 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
                 <Download className="h-4 w-4 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Free Downloads</h2>

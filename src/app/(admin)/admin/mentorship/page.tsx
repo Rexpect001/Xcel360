@@ -208,7 +208,7 @@ export default function AdminMentorshipPage() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" /> Add Mentor
         </button>
@@ -227,7 +227,7 @@ export default function AdminMentorshipPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
@@ -508,7 +508,7 @@ export default function AdminMentorshipPage() {
             <div className="flex gap-3 pt-2 border-t border-gray-100">
               <button
                 onClick={() => openEdit(detailMentor)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
               >
                 <Pencil className="h-4 w-4" /> Edit
               </button>
@@ -622,7 +622,7 @@ export default function AdminMentorshipPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors"
+              className="flex-1 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:opacity-60 transition-colors"
             >
               {saving ? 'Saving...' : editMentor ? 'Update' : 'Create'}
             </button>

@@ -134,7 +134,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
             className={cn(
               'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors border',
               category === key
-                ? 'bg-ink-900 text-white border-ink-900'
+                ? 'bg-brand-600 text-white border-brand-600'
                 : 'bg-white text-ink-600 border-surface-200 hover:border-ink-300 hover:text-ink-900'
             )}>
             {icon}{label}
@@ -158,7 +158,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
             'flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium transition-colors',
-            showFilters ? 'bg-ink-900 text-white border-ink-900' : 'bg-white text-ink-700 border-surface-200 hover:border-ink-300'
+            showFilters ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-ink-700 border-surface-200 hover:border-ink-300'
           )}
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -169,13 +169,13 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
         <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white">
           <button
             onClick={() => setViewMode('list')}
-            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-surface-50')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-brand-600 text-white' : 'text-ink-600 hover:bg-surface-50')}
           >
             <LayoutGrid className="h-4 w-4" /> List
           </button>
           <button
             onClick={() => setViewMode('map')}
-            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-surface-50')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-brand-600 text-white' : 'text-ink-600 hover:bg-surface-50')}
           >
             <Map className="h-4 w-4" /> Map
           </button>

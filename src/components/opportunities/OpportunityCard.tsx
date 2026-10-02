@@ -93,7 +93,7 @@ export default function OpportunityCard({ opp, match, className }: Props) {
         <div className="flex items-start gap-3">
           <span
             aria-hidden
-            className="w-10 h-10 rounded-xl bg-ink-900 text-accent-300 font-display text-sm font-semibold flex items-center justify-center shrink-0"
+            className="w-10 h-10 rounded-xl bg-brand-600 text-accent-200 font-display text-sm font-semibold flex items-center justify-center shrink-0"
           >
             {monogram(org || opp.title)}
           </span>
@@ -153,7 +153,7 @@ export default function OpportunityCard({ opp, match, className }: Props) {
           </button>
           <Link
             href={href}
-            className="inline-flex items-center gap-1 rounded-lg bg-ink-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-ink-800 transition-colors"
+            className="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 transition-colors"
           >
             Details <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
