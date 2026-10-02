@@ -11,11 +11,24 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // In production, send to an API route
-    await new Promise((r) => setTimeout(r, 1000))
-    setSubmitted(true)
-    toast.success("Message sent! We'll get back to you shortly.")
-    setLoading(false)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'contact', ...form }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.error(data.error ?? 'Could not send your message. Please try again.')
+        return
+      }
+      setSubmitted(true)
+      toast.success("Message sent! We'll get back to you shortly.")
+    } catch {
+      toast.error('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -76,7 +89,7 @@ export default function ContactForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-brand-700 text-white py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 bg-ink-900 text-white py-3 rounded-xl font-semibold hover:bg-ink-800 transition-colors disabled:opacity-60"
             >
               <Send className="h-4 w-4" />
               {loading ? 'Sending...' : 'Send Message'}

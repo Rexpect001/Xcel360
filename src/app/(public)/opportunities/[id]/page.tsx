@@ -44,17 +44,18 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-import { formatDate, daysUntilDeadline, getFundingBadgeColor } from '@/lib/utils'
-import Badge from '@/components/ui/Badge'
+import { formatDate, daysUntilDeadline } from '@/lib/utils'
 import ShareButtons from '@/components/ui/ShareButtons'
 import {
-  Calendar, MapPin, BookOpen, FileText, CheckCircle, Download,
-  ArrowLeft, Sparkles, Globe, Building2, GraduationCap, Clock,
+  Calendar, MapPin, FileText, CheckCircle, Download,
+  Sparkles, Building2, GraduationCap, Clock,
 } from 'lucide-react'
+import OpportunityCard from '@/components/opportunities/OpportunityCard'
+import GoogleAd from '@/components/ads/GoogleAd'
+import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
-import AdSlot from '@/components/ads/AdSlot'
 import { getAuth } from '@/lib/auth'
 import { scoreOpportunity } from '@/lib/matching'
 import type { ReactNode } from 'react'
@@ -65,7 +66,7 @@ function renderInline(text: string): ReactNode {
   if (parts.length === 1) return text
   return parts.map((part, i) =>
     i % 2 === 1
-      ? <strong key={i} className="font-semibold text-gray-900">{part}</strong>
+      ? <strong key={i} className="font-semibold text-ink-900">{part}</strong>
       : part
   )
 }
@@ -90,8 +91,8 @@ function Description({ text }: { text: string }) {
     nodes.push(
       <ul key={key} className="space-y-1.5 my-2 pl-1">
         {bullets.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-            <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand-500 flex-shrink-0" />
+          <li key={i} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-ink-700">
+            <span className="mt-2.5 h-1.5 w-1.5 rounded-full bg-accent-500 flex-shrink-0" />
             <span>{renderInline(item)}</span>
           </li>
         ))}
@@ -118,13 +119,13 @@ function Description({ text }: { text: string }) {
 
     if (isHeader(trimmed)) {
       nodes.push(
-        <h3 key={`h-${idx}`} className="font-bold text-gray-900 text-sm mt-4 mb-1">
+        <h3 key={`h-${idx}`} className="font-bold text-ink-900 text-base mt-5 mb-1.5">
           {headerText(trimmed)}
         </h3>
       )
     } else {
       nodes.push(
-        <p key={`p-${idx}`} className="text-gray-700 text-sm leading-relaxed">
+        <p key={`p-${idx}`} className="text-ink-700 text-[15px] leading-relaxed">
           {renderInline(trimmed)}
         </p>
       )
@@ -132,14 +133,15 @@ function Description({ text }: { text: string }) {
   })
   flushBullets('ul-end')
 
-  return <div className="space-y-1">{nodes}</div>
+  return <div className="space-y-2 max-w-[68ch]">{nodes}</div>
 }
 
 function deadlineTone(days: number, closed: boolean) {
-  if (closed) return { chip: 'bg-red-100 text-red-700', label: 'Closed' }
-  if (days <= 7) return { chip: 'bg-red-100 text-red-700', label: `${days}d left` }
-  if (days <= 30) return { chip: 'bg-orange-100 text-orange-700', label: `${days} days left` }
-  return { chip: 'bg-green-100 text-green-700', label: `${days} days left` }
+  if (closed) return { chip: 'bg-red-50 text-red-700', label: 'Closed' }
+  if (days >= 999) return { chip: 'bg-surface-100 text-ink-700', label: 'Rolling' }
+  if (days <= 7) return { chip: 'bg-red-50 text-red-700', label: `${days} day${days === 1 ? '' : 's'} left` }
+  if (days <= 30) return { chip: 'bg-amber-50 text-amber-800', label: `${days} days left` }
+  return { chip: 'bg-emerald-50 text-emerald-700', label: `${days} days left` }
 }
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
@@ -167,17 +169,17 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
 
   // Related opportunities - same field or destination, still open
   const related = await prisma.opportunity.findMany({
-    where: {
+    where: liveOpportunityWhere({
       id: { not: opp.id },
-      status: 'OPEN',
-      deadline: { gt: new Date() },
+      category: opp.category,
       OR: [{ field: opp.field }, { country: opp.country }],
-    },
+    }),
     orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
     take: 3,
     select: {
-      id: true, title: true, hostOrg: true, country: true,
-      fundingType: true, deadline: true, field: true,
+      id: true, title: true, hostOrg: true, country: true, category: true,
+      fundingType: true, deadline: true, field: true, programLevel: true,
+      eligibility: true, createdAt: true,
     },
   }).catch(() => [])
 
@@ -210,238 +212,216 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-gray-50 pt-16">
-        {/* ── Hero band ── */}
-        <div className="bg-hero-gradient text-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-            <Link
-              href="/opportunities"
-              className="inline-flex items-center gap-1.5 text-sm text-brand-100 hover:text-white transition-colors mb-6"
-            >
-              <ArrowLeft className="h-4 w-4" /> Browse all opportunities
-            </Link>
+      <div className="min-h-screen bg-surface-50">
+        {/* ── Header band ── */}
+        <div className="bg-hero-gradient text-white pt-16">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-14">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-200 mb-6">
+              <Link href="/" className="hover:text-white">Home</Link>
+              <span>/</span>
+              <Link href="/opportunities" className="hover:text-white">Scholarships</Link>
+              <span>/</span>
+              <span className="text-ink-300 truncate max-w-[220px]">{opp.title}</span>
+            </nav>
 
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur text-white">
+              <span className="text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded bg-accent-300 text-ink-900">
                 {opp.fundingType}
               </span>
               {opp.programLevel.map((l) => (
-                <span key={l} className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-brand-50">
-                  {l}
-                </span>
+                <span key={l} className="text-[11px] font-semibold px-2 py-1 rounded bg-white/10 text-ink-100">{l}</span>
               ))}
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-brand-50">
-                {opp.field}
-              </span>
+              {opp.field && <span className="text-[11px] font-semibold px-2 py-1 rounded bg-white/10 text-ink-100">{opp.field}</span>}
               {isClosed && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-500/90 text-white">
-                  Applications Closed
-                </span>
+                <span className="text-[11px] font-bold px-2 py-1 rounded bg-red-500 text-white">Applications closed</span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-3">{opp.title}</h1>
-            <p className="text-brand-100 flex items-center gap-2 text-sm sm:text-base">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-[2.75rem] leading-[1.1] max-w-4xl text-white">{opp.title}</h1>
+            <p className="mt-3 text-ink-200 flex items-center gap-2 text-sm sm:text-base">
               <Building2 className="h-4 w-4 shrink-0" /> {opp.hostOrg}
             </p>
 
-            {/* Match badge for signed-in users */}
             {match && (
-              <div className="mt-5 inline-flex flex-wrap items-center gap-2 bg-white/12 backdrop-blur rounded-xl px-4 py-2.5 border border-white/15">
-                <Sparkles className="h-4 w-4 text-amber-300" />
+              <div className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-xl px-4 py-2.5 bg-white/10 border border-white/15">
+                <Sparkles className="h-4 w-4 text-accent-300" />
                 <span className="text-sm font-semibold">{match.score}% match for you</span>
-                {match.reasons.length > 0 && (
-                  <span className="text-xs text-brand-100">· {match.reasons.join(', ')}</span>
-                )}
+                {match.reasons.length > 0 && <span className="text-xs text-ink-200">· {match.reasons.join(', ')}</span>}
               </div>
             )}
           </div>
         </div>
 
-        {/* ── Key facts strip ── */}
-        <div className="bg-white border-b border-gray-100">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* ── At a glance ── */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-7 relative z-10">
+          <div className="paper-card grid grid-cols-2 md:grid-cols-4">
             {[
               { icon: MapPin, label: 'Destination', value: `${opp.country}${opp.region ? `, ${opp.region}` : ''}` },
+              { icon: GraduationCap, label: 'Level', value: opp.programLevel.join(', ') || 'All levels' },
               { icon: Calendar, label: 'Deadline', value: formatDate(opp.deadline) },
-              { icon: GraduationCap, label: 'Levels', value: opp.programLevel.join(', ') || 'All levels' },
               { icon: Clock, label: 'Time left', value: isClosed ? 'Closed' : tone.label, chip: tone.chip },
             ].map(({ icon: FactIcon, label, value, chip }) => (
-              <div key={label} className="flex items-start gap-2.5">
-                <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center shrink-0">
-                  <FactIcon className="h-4 w-4 text-brand-700" />
-                </div>
+              <div key={label} className="flex items-start gap-3 p-4 sm:p-5 border-surface-100 [&:not(:last-child)]:md:border-r [&:nth-child(-n+2)]:border-b md:[&:nth-child(-n+2)]:border-b-0">
+                <FactIcon className="h-4 w-4 mt-0.5 text-accent-600 shrink-0" />
                 <div className="min-w-0">
-                  <div className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">{label}</div>
+                  <div className="text-[10.5px] text-ink-400 uppercase tracking-wider font-bold">{label}</div>
                   {chip ? (
-                    <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mt-0.5 ${chip}`}>{value}</span>
+                    <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded mt-1 ${chip}`}>{value}</span>
                   ) : (
-                    <div className="text-sm font-semibold text-gray-900 truncate">{value}</div>
+                    <div className="text-sm font-semibold text-ink-900 mt-0.5">{value}</div>
                   )}
                 </div>
               </div>
             ))}
           </div>
+          <GoogleAd placement="detail-top" shape="leaderboard" className="mt-6" />
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-          {/* Poster image */}
-          {opp.imageUrl && (
-            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white mb-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={opp.imageUrl}
-                alt={`${opp.title} poster`}
-                className="w-full max-h-[520px] object-contain"
-              />
-            </div>
-          )}
-
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-8 items-start">
             {/* ── Main column ── */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Email application notice */}
+            <div className="space-y-6 min-w-0">
               {opp.applicationLink && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(opp.applicationLink.trim()) && (
-                <section className="bg-brand-50 border-2 border-brand-200 rounded-2xl p-6">
-                  <h2 className="text-lg font-bold text-brand-900 mb-2 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-brand-600" /> How to Apply
+                <section className="bg-accent-50 border border-accent-200 rounded-2xl p-6">
+                  <h2 className="font-display text-xl text-ink-900 mb-2 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-accent-600" /> How to apply
                   </h2>
-                  <p className="text-sm text-brand-800 font-semibold leading-relaxed">
-                    Send your application directly via email to:{' '}
-                    <a href={`mailto:${opp.applicationLink.trim()}`} className="underline text-brand-700 break-all">
+                  <p className="text-sm text-ink-700 leading-relaxed">
+                    Send your application by email to{' '}
+                    <a href={`mailto:${opp.applicationLink.trim()}`} className="font-semibold underline text-ink-900 break-all">
                       {opp.applicationLink.trim()}
                     </a>
                   </p>
                 </section>
               )}
 
+              {/* Real uploaded posters only - auto-generated /api/og title cards just repeat the heading */}
+              {opp.imageUrl && !opp.imageUrl.includes('/api/og') && (
+                <figure className="paper-card overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={opp.imageUrl}
+                    alt={`${opp.title} poster`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full max-h-[480px] object-contain bg-surface-100"
+                  />
+                </figure>
+              )}
+
               {opp.description && (
-                <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
-                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-brand-600" /> About this {opp.category === 'JOB' ? 'role' : opp.category === 'INTERNSHIP' ? 'internship' : 'scholarship'}
+                <section className="paper-card p-6 sm:p-8">
+                  <h2 className="font-display text-2xl text-ink-900 mb-4">
+                    About this {opp.category === 'JOB' ? 'role' : opp.category === 'INTERNSHIP' ? 'internship' : 'scholarship'}
                   </h2>
                   <Description text={opp.description} />
                 </section>
               )}
 
-              <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
-                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-brand-600" /> Eligibility
+              <GoogleAd placement="detail-inline" />
+
+              <section className="paper-card p-6 sm:p-8">
+                <h2 className="font-display text-2xl text-ink-900 mb-4 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-emerald-600" /> Who can apply
                 </h2>
-                <div className="text-gray-700 text-sm leading-relaxed">
-                  <Description text={opp.eligibility ?? ''} />
-                </div>
+                <Description text={opp.eligibility ?? ''} />
               </section>
 
               {opp.requiredDocs.length > 0 && (
-                <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-7">
-                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-brand-600" /> Required Documents
+                <section className="paper-card p-6 sm:p-8">
+                  <h2 className="font-display text-2xl text-ink-900 mb-4 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-accent-600" /> Documents you will need
                   </h2>
                   <ul className="grid sm:grid-cols-2 gap-2.5">
                     {opp.requiredDocs.map((doc) => (
-                      <li key={doc} className="flex items-center gap-2 text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2.5">
-                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      <li key={doc} className="flex items-center gap-2 text-sm text-ink-700 bg-surface-50 border border-surface-100 rounded-lg px-3 py-2.5">
+                        <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0" />
                         {doc}
                       </li>
                     ))}
                   </ul>
+                  <p className="mt-4 text-xs text-ink-500">
+                    Need a CV, SOP or cover letter? Xcel360 Pro writing tools draft them for you.{' '}
+                    <Link href="/dashboard/tools" className="font-semibold text-brand-700 hover:underline">Open writing tools</Link>
+                  </p>
                 </section>
               )}
 
-              {/* Share */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <ShareButtons
-                  title={opp.title}
-                  url={pageUrl}
-                  applicationLink={opp.applicationLink || undefined}
-                />
+              <div className="paper-card p-5">
+                <ShareButtons title={opp.title} url={pageUrl} applicationLink={opp.applicationLink || undefined} />
               </div>
             </div>
 
             {/* ── Sticky action sidebar ── */}
-            <div className="space-y-5 lg:sticky lg:top-24">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <aside className="space-y-5 lg:sticky lg:top-24">
+              <div className="paper-card p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900">Ready to apply?</h3>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tone.chip}`}>
-                    {isClosed ? 'Closed' : tone.label}
-                  </span>
+                  <h3 className="font-bold text-ink-900">Ready to apply?</h3>
+                  <span className={`text-xs font-bold px-2 py-1 rounded ${tone.chip}`}>{isClosed ? 'Closed' : tone.label}</span>
                 </div>
-                <div className="space-y-2.5">
+                <div className="grid gap-2.5 [&>*]:w-full [&>*]:justify-center">
                   <ApplyButton href={opp.applicationLink} title={opp.title} />
                   <SaveButton opportunityId={opp.id} />
-                  {(opp as any).pdfUrl && (
+                  {opp.pdfUrl && (
                     <a
-                      href={(opp as any).pdfUrl}
+                      href={opp.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 text-sm font-semibold text-ink-700 hover:bg-surface-50 transition-colors"
                     >
-                      <Download className="h-4 w-4 text-brand-600" /> Download PDF
+                      <Download className="h-4 w-4 text-accent-600" /> Download PDF
                     </a>
                   )}
                 </div>
+                <p className="text-[11px] text-ink-400 mt-4 leading-relaxed">
+                  You apply on the provider&apos;s official website. Xcel360 never charges application fees.
+                </p>
                 {!session && (
-                  <p className="text-xs text-gray-500 mt-4 leading-relaxed">
+                  <p className="text-xs text-ink-500 mt-3 leading-relaxed">
                     <Link href="/signup" className="text-brand-700 font-semibold hover:underline">Create a free account</Link>{' '}
-                    to save this opportunity and get automatic deadline reminders.
+                    to save this and get deadline reminders.
                   </p>
                 )}
               </div>
 
-              {/* Quick summary */}
-              <div className="bg-brand-50 rounded-2xl border border-brand-100 p-5">
-                <h3 className="font-semibold text-brand-900 mb-3">Quick Summary</h3>
+              <div className="rounded-2xl bg-ink-900 text-white p-5">
+                <h3 className="font-bold text-white mb-3">Quick summary</h3>
                 <dl className="space-y-2.5 text-sm">
-                  <div><dt className="text-gray-500 text-xs">Host</dt><dd className="font-medium text-gray-900">{opp.hostOrg}</dd></div>
-                  <div><dt className="text-gray-500 text-xs">Country</dt><dd className="font-medium text-gray-900">{opp.country}</dd></div>
-                  <div><dt className="text-gray-500 text-xs">Funding</dt><dd className="font-medium text-gray-900">{opp.fundingType}</dd></div>
-                  <div><dt className="text-gray-500 text-xs">Deadline</dt><dd className="font-medium text-gray-900">{formatDate(opp.deadline)}</dd></div>
-                  <div><dt className="text-gray-500 text-xs">Levels</dt><dd className="font-medium text-gray-900">{opp.programLevel.join(', ')}</dd></div>
+                  {[
+                    ['Host', opp.hostOrg],
+                    ['Country', opp.country],
+                    ['Funding', opp.fundingType],
+                    ['Deadline', formatDate(opp.deadline)],
+                    ['Levels', opp.programLevel.join(', ') || 'All levels'],
+                  ].map(([k, v]) => (
+                    <div key={k} className="flex justify-between gap-4 border-b border-white/10 pb-2 last:border-0 last:pb-0">
+                      <dt className="text-ink-300 text-xs">{k}</dt>
+                      <dd className="font-semibold text-right">{v}</dd>
+                    </div>
+                  ))}
                 </dl>
               </div>
 
-              <AdSlot placement="opportunity-detail-sidebar" />
-            </div>
+              <GoogleAd placement="detail-sidebar" shape="rectangle" />
+            </aside>
           </div>
 
           {/* ── Related opportunities ── */}
           {related.length > 0 && (
-            <section className="mt-12">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-brand-600" /> Similar opportunities
-                </h2>
-                <Link href="/opportunities" className="text-sm text-brand-600 font-medium hover:text-brand-800 transition-colors">
-                  View all →
+            <section className="mt-14">
+              <div className="flex items-end justify-between mb-5">
+                <div>
+                  <p className="eyebrow mb-1">Keep exploring</p>
+                  <h2 className="font-display text-2xl text-ink-900">Similar opportunities</h2>
+                </div>
+                <Link href="/opportunities" className="text-sm text-brand-700 font-semibold hover:underline">
+                  View all
                 </Link>
               </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {related.map((rel) => {
-                  const relDays = daysUntilDeadline(rel.deadline)
-                  return (
-                    <Link
-                      key={rel.id}
-                      href={`/opportunities/${rel.id}`}
-                      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all overflow-hidden group"
-                    >
-                      <div className="h-1 bg-gradient-to-r from-brand-600 to-brand-400" />
-                      <div className="p-5">
-                        <h3 className="font-semibold text-gray-900 text-sm group-hover:text-brand-700 transition-colors line-clamp-2 mb-1.5 leading-snug">
-                          {rel.title}
-                        </h3>
-                        <p className="text-xs text-gray-500 mb-3 truncate">{rel.hostOrg} · {rel.country}</p>
-                        <div className="flex items-center justify-between">
-                          <Badge variant="blue">{rel.fundingType}</Badge>
-                          <span className={`text-xs font-medium ${relDays <= 7 ? 'text-red-600' : 'text-gray-400'}`}>
-                            {relDays > 0 ? `${relDays}d left` : 'Closing soon'}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                })}
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {related.map((rel) => (
+                  <OpportunityCard key={rel.id} opp={rel} />
+                ))}
               </div>
             </section>
           )}

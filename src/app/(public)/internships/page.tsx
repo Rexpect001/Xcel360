@@ -7,6 +7,7 @@ import JobsClient from '@/components/jobs/JobsClient'
 import AdSlot from '@/components/ads/AdSlot'
 import PageHero from '@/components/layout/PageHero'
 import { opportunityListSelect } from '@/types/opportunity-list'
+import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
 export const metadata: Metadata = {
   title: 'Internships',
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 async function getInternships() {
   try {
     const all = await prisma.opportunity.findMany({
-      where: { status: 'OPEN', category: 'INTERNSHIP' },
+      where: liveOpportunityWhere({ category: 'INTERNSHIP' }),
       orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
       take: 250,
       select: opportunityListSelect,

@@ -16,13 +16,24 @@
   }
 
   body {
-    @apply bg-surface-50 text-gray-900 antialiased;
-    font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+    @apply bg-surface-50 text-ink-900 antialiased;
+    font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'cv11';
+    text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, .font-display {
-    font-family: var(--font-sora), 'Sora', var(--font-inter), system-ui, sans-serif;
-    letter-spacing: -0.02em;
+  /* Headlines: Fraunces at a tight optical size reads editorial, not template-y. */
+  h1, h2, .font-display {
+    font-family: var(--font-display), 'Fraunces', Georgia, serif;
+    font-variation-settings: 'opsz' 96, 'SOFT' 30;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+
+  /* Smaller headings stay in the UI face for scannability in cards and lists. */
+  h3, h4 {
+    font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
 
   * {
@@ -40,7 +51,23 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 active:bg-brand-900 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 bg-ink-900 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-ink-800 active:bg-ink-950 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 bg-accent-300 text-ink-900 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-accent-400 transition-all duration-200 shadow-accent disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-bold uppercase tracking-[0.18em] text-accent-600;
+  }
+
+  .pro-badge {
+    @apply inline-flex items-center rounded-md bg-emerald-600 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white leading-none;
+  }
+
+  .paper-card {
+    @apply bg-white rounded-2xl border border-surface-200 shadow-soft;
   }
 
   .btn-secondary {
@@ -52,7 +79,7 @@
   }
 
   .card {
-    @apply bg-white rounded-2xl border border-surface-200 shadow-sm hover:shadow-premium transition-shadow duration-200;
+    @apply bg-white rounded-2xl border border-surface-200 shadow-soft hover:shadow-premium transition-shadow duration-200;
   }
 
   .section {
@@ -64,11 +91,11 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-3 border border-surface-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 bg-white placeholder:text-gray-400;
+    @apply w-full px-4 py-3 border border-surface-200 rounded-xl text-sm text-ink-900 focus:outline-none focus:ring-2 focus:ring-accent-300 focus:border-accent-400 transition-all duration-200 bg-white placeholder:text-ink-300;
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-1.5;
+    @apply block text-sm font-semibold text-ink-700 mb-1.5;
   }
 
   .badge {
@@ -76,7 +103,7 @@
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-gray-900 tracking-tight;
+    @apply font-display text-3xl md:text-4xl font-semibold text-ink-900 tracking-tight;
   }
 
   .section-subtitle {
@@ -84,15 +111,15 @@
   }
 
   .admin-card {
-    @apply rounded-2xl border border-surface-200 bg-white shadow-sm;
+    @apply rounded-2xl border border-surface-200 bg-white shadow-soft;
   }
 
   .admin-panel {
-    @apply rounded-2xl border border-surface-200 bg-white shadow-sm overflow-hidden;
+    @apply rounded-2xl border border-surface-200 bg-white shadow-soft overflow-hidden;
   }
 
   .admin-section-title {
-    @apply text-sm font-semibold uppercase tracking-wider text-slate-500;
+    @apply text-xs font-bold uppercase tracking-[0.14em] text-ink-400;
   }
 
   .admin-table-head {
@@ -126,6 +153,24 @@
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
     @apply bg-gray-300 rounded-full;
+  }
+}
+
+/* Ad slots reserve their height so ads never shift the layout (CLS). */
+.ad-frame {
+  @apply relative w-full overflow-hidden rounded-xl border border-dashed border-surface-300 bg-surface-100/60;
+}
+.ad-frame::before {
+  content: 'Advertisement';
+  @apply absolute left-3 top-1.5 text-[10px] font-semibold uppercase tracking-widest text-ink-300;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

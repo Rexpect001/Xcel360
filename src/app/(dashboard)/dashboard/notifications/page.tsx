@@ -50,7 +50,7 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -59,7 +59,7 @@ export default function NotificationsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+          <h1 className="font-display text-3xl text-ink-900">Notifications</h1>
           <p className="text-gray-500 mt-1">{unreadCount} unread</p>
         </div>
         {unreadCount > 0 && (
@@ -104,7 +104,7 @@ export default function NotificationsPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="font-medium text-gray-900 text-sm">{notif.title}</div>
                     {!notif.read && (
-                      <div className="w-2 h-2 bg-brand-600 rounded-full flex-shrink-0 mt-1.5" />
+                      <div className="w-2 h-2 bg-ink-800 rounded-full flex-shrink-0 mt-1.5" />
                     )}
                   </div>
                   <p className="text-sm text-gray-600 mt-0.5">{notif.message}</p>

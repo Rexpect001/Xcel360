@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateAndStoreOpImage } from '@/lib/generateOpImage'
+import { parseDeadline } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -138,8 +139,8 @@ export async function POST(req: NextRequest) {
   // Deadline must be a valid future-ish date string if provided
   let deadline: Date | null = null
   if (body.deadline) {
-    deadline = new Date(String(body.deadline))
-    if (isNaN(deadline.getTime())) {
+    deadline = parseDeadline(body.deadline)
+    if (!deadline) {
       return NextResponse.json({ error: 'deadline must be a valid date string' }, { status: 400 })
     }
   }

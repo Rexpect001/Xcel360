@@ -280,7 +280,7 @@ export default function AdminUsersPage() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+          <h1 className="font-display text-3xl text-ink-900">Users</h1>
           {stats && <p className="text-gray-500 mt-1">{stats.total.toLocaleString()} total · {stats.active.toLocaleString()} active</p>}
         </div>
         <button onClick={previewPurge}
@@ -363,7 +363,7 @@ export default function AdminUsersPage() {
           <p className="text-gray-500 font-medium text-sm">Search above to find a specific user</p>
           <p className="text-gray-400 text-xs mt-1 mb-4">or load the full list to browse</p>
           <button onClick={showAll}
-            className="flex items-center gap-2 px-5 py-2.5 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
+            className="flex items-center gap-2 px-5 py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
             Show all {stats?.total ?? ''} users
           </button>
         </div>
@@ -377,7 +377,7 @@ export default function AdminUsersPage() {
 
       {/* ── Bulk bar ── */}
       {selected.size > 0 && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 bg-brand-700 text-white px-5 py-3 rounded-2xl shadow-lg">
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-ink-900 text-white px-5 py-3 rounded-2xl shadow-lg">
           <CheckSquare2 className="h-4 w-4 shrink-0" />
           <span className="text-sm font-semibold flex-1">{selected.size} selected</span>
           <button onClick={() => bulkAction('activate')} className="text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg font-medium">Activate</button>
@@ -635,7 +635,7 @@ export default function AdminUsersPage() {
             </div>
             <div className="flex gap-3 pt-1">
               <button onClick={() => setEditModal(null)} className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors">Cancel</button>
-              <button onClick={handleEditSave} disabled={editSaving} className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
+              <button onClick={handleEditSave} disabled={editSaving} className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
                 {editSaving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> : <><Pencil className="h-4 w-4" /> Save Changes</>}
               </button>
             </div>

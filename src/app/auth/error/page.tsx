@@ -32,7 +32,7 @@ function ErrorContent() {
         <div className="flex flex-col gap-3">
           <Link
             href="/signin"
-            className="w-full bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors"
+            className="w-full bg-ink-900 text-white py-3 rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors"
           >
             Try Again
           </Link>

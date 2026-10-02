@@ -49,7 +49,7 @@ export default function RegistrationClosedPage() {
 
             <a
               href="/certificate"
-              className="inline-flex items-center gap-2 bg-brand-600 text-white px-8 py-3.5 rounded-xl text-base font-semibold hover:bg-brand-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-ink-800 text-white px-8 py-3.5 rounded-xl text-base font-semibold hover:bg-ink-800 transition-colors"
             >
               <Award className="h-5 w-5" /> Access My Certificate
             </a>

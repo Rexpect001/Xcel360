@@ -5,6 +5,8 @@ const config: Config = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Display helpers (deadline tones, funding/category chips) live here
+    './src/lib/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -23,21 +25,37 @@ const config: Config = {
           900: '#002b5c',
           950: '#001d3f',
         },
+        // Scholar gold - the Xcel360 accent. Use ink text on 300-500, white on 600+.
         accent: {
-          50:  '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
+          50:  '#fdf8ec',
+          100: '#f9edcc',
+          200: '#f2d994',
+          300: '#e9c262',
+          400: '#dfad3f',
+          500: '#c9962b',
+          600: '#a67a1f',
+          700: '#82601b',
         },
+        // Ink - the deep navy used for headings, heroes and the dark chrome.
+        ink: {
+          50:  '#f2f5f9',
+          100: '#e3e9f1',
+          200: '#c5d1e0',
+          300: '#94a7c1',
+          400: '#5f7798',
+          500: '#3d5677',
+          600: '#2a4161',
+          700: '#1c3150',
+          800: '#132542',
+          900: '#0b1f3a',
+          950: '#06142a',
+        },
+        // Paper - warm neutral page background, less clinical than pure grey.
         surface: {
-          50:  '#f7f9fc',
-          100: '#eef3f8',
-          200: '#dbe5ef',
-          300: '#b9c9da',
+          50:  '#f8f7f3',
+          100: '#f1efe9',
+          200: '#e4e1d8',
+          300: '#c9c4b6',
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
@@ -62,8 +80,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['var(--font-sora)', 'Sora', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Fraunces', 'Georgia', 'serif'],
       },
       animation: {
         'float':       'float 6s ease-in-out infinite',
@@ -94,7 +112,7 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient':   'linear-gradient(140deg, #001d3f 0%, #002b5c 18%, #004ca3 42%, #006fec 66%, #2f86f2 84%, #4b95f5 100%)',
+        'hero-gradient':   'linear-gradient(160deg, #06142a 0%, #0b1f3a 45%, #132f55 100%)',
         'card-shine':      'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)',
       },
       boxShadow: {
@@ -102,7 +120,8 @@ const config: Config = {
         'glow':     '0 0 40px rgba(0, 111, 236, 0.22)',
         'glow-sm':  '0 0 20px rgba(0, 111, 236, 0.15)',
         'premium':  '0 12px 32px -18px rgba(15, 23, 42, 0.26), 0 1px 4px rgba(15,23,42,0.06)',
-        'accent':   '0 0 30px rgba(245, 158, 11, 0.25)',
+        'accent':   '0 8px 24px -10px rgba(201, 150, 43, 0.55)',
+        'soft':     '0 1px 2px rgba(11,31,58,0.04), 0 4px 16px -8px rgba(11,31,58,0.10)',
       },
     },
   },

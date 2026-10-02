@@ -230,16 +230,16 @@ export default function AdminResourcesPage() {
     setBulkLoading(false)
   }
 
-  if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" /></div>
+  if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" /></div>
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Resources & Templates</h1>
+          <h1 className="font-display text-3xl text-ink-900">Resources & Templates</h1>
           <p className="text-gray-500 mt-1">{resources.length} resources · shown on the public Resources page</p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-2 bg-brand-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
+        <button onClick={openAdd} className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
           <Plus className="h-4 w-4" /> Add Resource
         </button>
       </div>
@@ -411,7 +411,7 @@ export default function AdminResourcesPage() {
               <button onClick={() => handleDelete(detailRes.id)} className="flex items-center gap-1.5 px-4 py-2.5 border-2 border-red-100 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">
                 <Trash2 className="h-4 w-4" /> Delete
               </button>
-              <button onClick={() => openEdit(detailRes)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
+              <button onClick={() => openEdit(detailRes)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
                 <Pencil className="h-4 w-4" /> Edit Resource
               </button>
             </div>
@@ -446,14 +446,14 @@ export default function AdminResourcesPage() {
               <button
                 type="button"
                 onClick={() => { setUploadMode('file'); if (!editRes) resetUpload() }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${uploadMode === 'file' ? 'bg-brand-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${uploadMode === 'file' ? 'bg-ink-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
               >
                 <Upload className="h-4 w-4" /> Upload File
               </button>
               <button
                 type="button"
                 onClick={() => { setUploadMode('link'); if (!editRes) resetUpload() }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${uploadMode === 'link' ? 'bg-brand-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${uploadMode === 'link' ? 'bg-ink-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
               >
                 <Link className="h-4 w-4" /> External Link
               </button>
@@ -484,7 +484,7 @@ export default function AdminResourcesPage() {
                 </div>
               ) : uploadProgress === 'uploading' ? (
                 <div className="border-2 border-brand-200 rounded-xl p-6 bg-brand-50 flex items-center gap-4">
-                  <div className="w-8 h-8 border-3 border-brand-700 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <div className="w-8 h-8 border-3 border-ink-900 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-700">Uploading {uploadedFile?.name}…</p>
                     <p className="text-xs text-gray-400">{formatFileSize(uploadedFile?.size)}</p>
@@ -542,7 +542,7 @@ export default function AdminResourcesPage() {
             <button
               onClick={handleSave}
               disabled={saving || uploadProgress === 'uploading'}
-              className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60"
+              className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60"
             >
               {saving ? 'Saving...' : editRes ? 'Update' : 'Add Resource'}
             </button>

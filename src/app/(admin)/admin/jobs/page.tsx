@@ -448,7 +448,7 @@ export default function AdminJobsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Jobs & Internships</h1>
+          <h1 className="font-display text-3xl text-ink-900">Jobs & Internships</h1>
           <p className="text-sm text-gray-500 mt-0.5">{jobs.length} total · {jobs.filter(j=>j.category==='JOB').length} jobs · {jobs.filter(j=>j.category==='INTERNSHIP').length} internships</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -576,7 +576,7 @@ export default function AdminJobsPage() {
             {detailJob.eligibility && <div><dt className="text-xs text-gray-500 mb-1">Requirements</dt><dd className="text-gray-600 text-xs">{detailJob.eligibility}</dd></div>}
           </dl>
           <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-            <button onClick={() => { setDetailJob(null); openEdit(detailJob) }} className="flex items-center gap-1.5 px-3 py-2 bg-brand-700 text-white rounded-xl text-sm font-medium">
+            <button onClick={() => { setDetailJob(null); openEdit(detailJob) }} className="flex items-center gap-1.5 px-3 py-2 bg-ink-900 text-white rounded-xl text-sm font-medium">
               <Pencil className="h-3.5 w-3.5" /> Edit
             </button>
             <button onClick={() => { handleDelete(detailJob.id); setDetailJob(null) }} className="flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium">
@@ -602,7 +602,7 @@ export default function AdminJobsPage() {
               </ul>
             </div>
             <div className="flex gap-3 pt-2 border-t border-gray-100">
-              <button onClick={confirmImport} className="flex items-center gap-2 bg-brand-700 text-white px-4 py-2 rounded-xl text-sm font-semibold">
+              <button onClick={confirmImport} className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2 rounded-xl text-sm font-semibold">
                 <Upload className="h-4 w-4" /> Confirm Import
               </button>
               <button onClick={() => setImportPreview(null)} className="px-4 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">Cancel</button>
@@ -757,7 +757,7 @@ export default function AdminJobsPage() {
 
           <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
             <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={saving} className="flex items-center gap-2 px-5 py-2 bg-brand-700 text-white rounded-xl text-sm font-medium hover:bg-brand-800 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="flex items-center gap-2 px-5 py-2 bg-ink-900 text-white rounded-xl text-sm font-medium hover:bg-ink-800 disabled:opacity-50">
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
               {editJob ? 'Update' : 'Post'}
             </button>

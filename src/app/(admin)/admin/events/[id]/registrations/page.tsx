@@ -67,7 +67,7 @@ export default function AdminEventRegistrationsPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">Registrations</h1>
+          <h1 className="font-display text-3xl text-ink-900">Registrations</h1>
           {event && (
             <p className="text-gray-500 mt-0.5 text-sm">
               {event.title} &middot; {eventDate}
@@ -77,7 +77,7 @@ export default function AdminEventRegistrationsPage() {
         {registrations.length > 0 && (
           <button
             onClick={downloadCSV}
-            className="flex items-center gap-2 bg-brand-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors"
+            className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
           >
             <Download className="h-4 w-4" /> Download CSV
           </button>

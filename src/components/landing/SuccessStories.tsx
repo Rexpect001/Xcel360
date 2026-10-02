@@ -48,7 +48,7 @@ export default function SuccessStories({ stories }: { stories: Story[] }) {
                 “{story.quote}”
               </blockquote>
               <figcaption className="mt-5 pt-4 border-t border-gray-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                <div className="w-10 h-10 rounded-full bg-ink-900 flex items-center justify-center text-white font-bold text-sm shrink-0">
                   {story.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">

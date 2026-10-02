@@ -1,16 +1,14 @@
 'use client'
-import { useState, useMemo, useEffect, lazy, Suspense } from 'react'
+import { useState, useMemo, useEffect, lazy, Suspense, Fragment } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, GraduationCap, Briefcase, Building2 } from 'lucide-react'
-import { Calendar, MapPin } from 'lucide-react'
-import Link from 'next/link'
-import Badge from '@/components/ui/Badge'
+import { Search, SlidersHorizontal, X, LayoutGrid, Map, GraduationCap, Briefcase, Building2 } from 'lucide-react'
 import Pagination from '@/components/ui/Pagination'
-import { formatDate, daysUntilDeadline, deadlineLabel, getFundingBadgeColor, cn } from '@/lib/utils'
+import OpportunityCard from '@/components/opportunities/OpportunityCard'
+import GoogleAd from '@/components/ads/GoogleAd'
+import { daysUntilDeadline, cn } from '@/lib/utils'
+import { matchesLevel } from '@/lib/opportunity-display'
 import { tokenizeQuery, searchScore } from '@/lib/opportunitySearch'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
-import { useSession } from 'next-auth/react'
-import { toast } from 'react-hot-toast'
 import type { OpportunityListItem } from '@/types/opportunity-list'
 
 const ScholarshipMap = lazy(() => import('./ScholarshipMap'))
@@ -22,7 +20,6 @@ interface Props {
 }
 
 export default function OpportunitiesClient({ initialOpportunities }: Props) {
-  const { data: session } = useSession()
   // Deep-linkable filters - hero search, "Choose Your Path" and category cards
   // land here with ?search=, ?level=, ?field=, ?funding=, ?country=, ?soon=
   const searchParams = useSearchParams()
@@ -34,12 +31,11 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     field: searchParams.get('field') ?? '',
     country: searchParams.get('country') ?? '',
     fundingType: searchParams.get('funding') ?? '',
-    sortBy: searchParams.get('search') ? 'relevance' : 'deadline',
+    sortBy: searchParams.get('sort') ?? (searchParams.get('search') ? 'relevance' : 'deadline'),
   })
   const [showFilters, setShowFilters] = useState(
     Boolean(searchParams.get('level') || searchParams.get('field') || searchParams.get('funding') || searchParams.get('country') || soonDays)
   )
-  const [saving, setSaving] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const [page, setPage] = useState(1)
 
@@ -65,7 +61,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     }
 
     if (filters.programLevel) {
-      result = result.filter((o) => o.programLevel.includes(filters.programLevel))
+      result = result.filter((o) => matchesLevel(o.programLevel, filters.programLevel))
     }
     if (filters.field) {
       result = result.filter((o) => o.field === filters.field)
@@ -95,7 +91,9 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
     } else if (filters.sortBy === 'featured') {
       result = [...result].sort((a, b) => Number(b.featured) - Number(a.featured))
     } else {
-      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
+      // Soonest first; rolling (no deadline) listings go last
+      const t = (d: Date | string | null) => (d ? new Date(d).getTime() : Number.MAX_SAFE_INTEGER)
+      result = [...result].sort((a, b) => t(a.deadline) - t(b.deadline))
     }
 
     return result
@@ -120,27 +118,6 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
 
   const hasFilters = search || category !== 'ALL' || filters.programLevel || filters.field || filters.country || filters.fundingType
 
-  const handleSave = async (opportunityId: string) => {
-    if (!session) {
-      toast.error('Sign in to save opportunities')
-      return
-    }
-    setSaving(opportunityId)
-    try {
-      const res = await fetch('/api/saved', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ opportunityId }),
-      })
-      if (res.ok) toast.success('Saved to your dashboard!')
-      else toast.error('Already saved or error occurred')
-    } catch {
-      toast.error('Something went wrong')
-    } finally {
-      setSaving(null)
-    }
-  }
-
   const CATEGORY_TABS = [
     { key: 'ALL' as const, label: 'All', icon: null },
     { key: 'SCHOLARSHIP' as const, label: 'Scholarships', icon: <GraduationCap className="h-4 w-4" /> },
@@ -157,8 +134,8 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
             className={cn(
               'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors border',
               category === key
-                ? 'bg-brand-700 text-white border-brand-700'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300 hover:text-brand-700'
+                ? 'bg-ink-900 text-white border-ink-900'
+                : 'bg-white text-ink-600 border-surface-200 hover:border-ink-300 hover:text-ink-900'
             )}>
             {icon}{label}
           </button>
@@ -174,14 +151,14 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
             placeholder="Search anything - keywords, field, country, eligibility..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
+            className="w-full pl-10 pr-4 py-3 border border-surface-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent-400 bg-white shadow-soft"
           />
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
             'flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium transition-colors',
-            showFilters ? 'bg-brand-700 text-white border-brand-700' : 'bg-white text-gray-700 border-gray-200 hover:border-brand-300'
+            showFilters ? 'bg-ink-900 text-white border-ink-900' : 'bg-white text-ink-700 border-surface-200 hover:border-ink-300'
           )}
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -192,13 +169,13 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
         <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white">
           <button
             onClick={() => setViewMode('list')}
-            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-brand-700 text-white' : 'text-gray-600 hover:bg-gray-50')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-surface-50')}
           >
             <LayoutGrid className="h-4 w-4" /> List
           </button>
           <button
             onClick={() => setViewMode('map')}
-            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-brand-700 text-white' : 'text-gray-600 hover:bg-gray-50')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-surface-50')}
           >
             <Map className="h-4 w-4" /> Map
           </button>
@@ -273,7 +250,7 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
       )}
 
       {/* Results count */}
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-ink-500 mb-4" aria-live="polite">
         {filtered.length} opportunit{filtered.length !== 1 ? 'ies' : 'y'} found
         {viewMode === 'list' && totalPages > 1 && (
           <span className="text-gray-400"> · page {page} of {totalPages}</span>
@@ -287,133 +264,27 @@ export default function OpportunitiesClient({ initialOpportunities }: Props) {
         </Suspense>
       )}
 
-      {/* Grid */}
+      {/* Grid - shared snapshot cards with an ad after every 6th result */}
       {viewMode === 'list' && filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <Search className="h-12 w-12 mx-auto mb-3 opacity-30" />
-          <p className="text-lg font-medium text-gray-500">No results found</p>
-          <p className="text-sm mt-1">Try adjusting your search or filters</p>
-          <button onClick={clearFilters} className="mt-4 text-brand-600 text-sm font-medium">Clear filters</button>
+        <div className="text-center py-20 paper-card">
+          <Search className="h-10 w-10 mx-auto mb-3 text-ink-200" />
+          <p className="text-lg font-semibold text-ink-800">No results yet</p>
+          <p className="text-sm mt-1 text-ink-500">Try fewer keywords, or clear a filter.</p>
+          <button onClick={clearFilters} className="mt-4 text-brand-700 text-sm font-semibold hover:underline">Clear all filters</button>
         </div>
       ) : viewMode === 'list' ? (
         <>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {paginated.map((opp) => {
-            const days = daysUntilDeadline(opp.deadline)
-            return (
-              <div
-                key={opp.id}
-                className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
-              >
-                {(opp as any).imageUrl ? (
-                  <div className="h-40 overflow-hidden relative flex-shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={(opp as any).imageUrl}
-                      alt={opp.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                    <div className="absolute top-2 left-2 flex gap-1.5">
-                      {(opp as any).category === 'JOB' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-sm">
-                          <Briefcase className="h-3 w-3" />Job
-                        </span>
-                      )}
-                      {(opp as any).category === 'INTERNSHIP' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-purple-500/90 text-white backdrop-blur-sm">
-                          <Building2 className="h-3 w-3" />Internship
-                        </span>
-                      )}
-                    </div>
-                    <div className="absolute bottom-2 right-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${getFundingBadgeColor(opp.fundingType)} backdrop-blur-sm`}>
-                        {opp.fundingType}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="h-1.5 bg-gradient-to-r from-brand-600 to-brand-400 flex-shrink-0" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {paginated.map((opp, i) => (
+              <Fragment key={opp.id}>
+                <OpportunityCard opp={opp} />
+                {(i + 1) % 6 === 0 && i < paginated.length - 1 && (
+                  <GoogleAd placement="listing-infeed" className="sm:col-span-2 lg:col-span-3" />
                 )}
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {!(opp as any).imageUrl && (opp as any).category === 'JOB' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-                          <Briefcase className="h-3 w-3" />Job
-                        </span>
-                      )}
-                      {!(opp as any).imageUrl && (opp as any).category === 'INTERNSHIP' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700">
-                          <Building2 className="h-3 w-3" />Internship
-                        </span>
-                      )}
-                      {!(opp as any).imageUrl && (
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getFundingBadgeColor(opp.fundingType)}`}>
-                          {opp.fundingType}
-                        </span>
-                      )}
-                    </div>
-                    {opp.status === 'OPEN' ? (
-                      <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Open</span>
-                    ) : (
-                      <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">Closed</span>
-                    )}
-                  </div>
-
-                  <Link href={`/opportunities/${opp.id}`} className="flex-1">
-                    <h3 className="font-semibold text-gray-900 leading-snug group-hover:text-brand-700 transition-colors line-clamp-2 mb-1">
-                      {opp.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-3">{opp.hostOrg}</p>
-
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {opp.programLevel.slice(0, 2).map((l) => <Badge key={l} variant="blue">{l}</Badge>)}
-                      <Badge variant="gray">{opp.field}</Badge>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-4">
-                      <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{opp.country}</span>
-                      <span className={`flex items-center gap-1 font-medium ${deadlineLabel(days).color.split(' ')[0]}`}>
-                        <Calendar className="h-3.5 w-3.5" />
-                        {deadlineLabel(days).text}
-                      </span>
-                    </div>
-                  </Link>
-
-                  <div className="flex items-center gap-2 mt-auto pt-4 border-t border-gray-50">
-                    <Link
-                      href={`/opportunities/${opp.id}`}
-                      className="flex-1 text-center py-2 text-sm font-medium text-brand-700 hover:text-brand-800 transition-colors"
-                    >
-                      View details
-                    </Link>
-                    <button
-                      onClick={() => handleSave(opp.id)}
-                      disabled={saving === opp.id}
-                      className="p-2 rounded-lg hover:bg-brand-50 text-gray-400 hover:text-brand-600 transition-colors"
-                      title="Save opportunity"
-                    >
-                      <Bookmark className="h-4 w-4" />
-                    </button>
-                    {opp.applicationLink && (
-                      <a
-                        href={opp.applicationLink.startsWith('http') ? opp.applicationLink : `https://${opp.applicationLink}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                        title="Apply"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+              </Fragment>
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       ) : null}
     </div>

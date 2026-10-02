@@ -73,7 +73,7 @@ function MultiSelect({
               onClick={() => toggle(item)}
               className={`inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full border font-medium transition-all ${
                 active
-                  ? 'bg-brand-700 text-white border-brand-700'
+                  ? 'bg-ink-900 text-white border-ink-900'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400 hover:text-brand-700'
               }`}
             >
@@ -155,7 +155,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -169,7 +169,7 @@ export default function ProfilePage() {
         >
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+        <h1 className="font-display text-3xl text-ink-900">My Profile</h1>
         <p className="text-gray-500 mt-1 text-sm">
           Update your preferences to get personalised scholarship matches.
         </p>
@@ -195,7 +195,7 @@ export default function ProfilePage() {
                   onClick={() => setForm((f) => ({ ...f, level: active ? null : lvl }))}
                   className={`inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-full border font-medium transition-all ${
                     active
-                      ? 'bg-brand-700 text-white border-brand-700'
+                      ? 'bg-ink-900 text-white border-ink-900'
                       : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400 hover:text-brand-700'
                   }`}
                 >
@@ -412,7 +412,7 @@ export default function ProfilePage() {
                   />
                   <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                     form[key as keyof ProfileData]
-                      ? 'bg-brand-700 border-brand-700'
+                      ? 'bg-ink-900 border-ink-900'
                       : 'border-gray-300 group-hover:border-brand-400'
                   }`}>
                     {form[key as keyof ProfileData] && <Check className="h-3 w-3 text-white" />}
@@ -432,7 +432,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 bg-ink-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-ink-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {saving ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

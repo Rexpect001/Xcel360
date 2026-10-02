@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { parseDeadline } from '@/lib/utils'
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -14,7 +15,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // Convert deadline string to Date if present
     if (fields.deadline) {
-      fields.deadline = new Date(fields.deadline)
+      fields.deadline = parseDeadline(fields.deadline)
     }
 
     const opp = await db.opportunity.update({ where: { id: params.id }, data: fields })

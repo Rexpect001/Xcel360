@@ -82,7 +82,7 @@ export default async function ActivityLogPage() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Activity Log</h1>
+        <h1 className="font-display text-3xl text-ink-900">Activity Log</h1>
         <p className="text-gray-500 mt-1">Last 200 platform events  -  all admin and user actions.</p>
       </div>
 

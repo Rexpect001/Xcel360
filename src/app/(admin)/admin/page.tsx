@@ -2,10 +2,11 @@ export const dynamic = 'force-dynamic'
 import { getAuth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowUpRight, Activity, Briefcase } from 'lucide-react'
+import { Users, BookOpen, Bookmark, FileText, Calendar, UserCheck, TrendingUp, ArrowUpRight, Activity, Briefcase, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import RevalidateButton from '@/components/admin/RevalidateButton'
+import DashHeader from '@/components/dashboard/DashHeader'
 
 const ACTION_BADGE: Record<string, string> = {
   LOGIN: 'bg-success-100 text-success-700',
@@ -32,6 +33,13 @@ export default async function AdminPage() {
   if (!isAdminRole(session.user.role)) redirect('/')
 
   const db = prisma as any
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const [liveCount, expiredOpen, invalidDates] = await Promise.all([
+    prisma.opportunity.count({ where: { status: 'OPEN', OR: [{ deadline: null }, { deadline: { gte: today } }] } }),
+    prisma.opportunity.count({ where: { status: 'OPEN', deadline: { lt: today } } }),
+    prisma.opportunity.count({ where: { deadline: { lt: new Date('2025-01-01') } } }),
+  ])
   const [users, scholarships, jobs, internships, saved, applications, events, blogPosts, mentors, recentActivity] = await Promise.all([
     prisma.user.count(),
     db.opportunity.count({ where: { category: 'SCHOLARSHIP' } }),
@@ -111,11 +119,35 @@ export default async function AdminPage() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">Welcome back</p>
-        <h1 className="text-3xl font-bold text-slate-900">Admin Overview</h1>
-        <p className="mt-1 text-slate-500">Manage all content and users from one place.</p>
+      <DashHeader
+        eyebrow={`Welcome back, ${session.user.name?.split(' ')[0] ?? 'Admin'}`}
+        title="Admin overview"
+        subtitle="Everything on Xcel360 at a glance. Post, review and keep listings fresh."
+        actions={
+          <>
+            <Link href="/admin/opportunities" className="btn-primary !py-2.5"><Plus className="h-4 w-4" /> Post a scholarship</Link>
+            <Link href="/" target="_blank" className="btn-ghost border border-surface-200">View site</Link>
+          </>
+        }
+      />
+
+      {/* Listing health */}
+      <div className="mb-10 grid sm:grid-cols-3 gap-3">
+        <div className="paper-card p-5">
+          <p className="text-xs font-bold uppercase tracking-wider text-ink-400">Live on the site</p>
+          <p className="font-display text-3xl text-ink-900 mt-2">{liveCount.toLocaleString()}</p>
+          <p className="text-xs text-ink-500 mt-1">Open with a deadline today or later (or rolling).</p>
+        </div>
+        <div className="paper-card p-5">
+          <p className="text-xs font-bold uppercase tracking-wider text-ink-400">Expired, still marked open</p>
+          <p className={`font-display text-3xl mt-2 ${expiredOpen > 0 ? 'text-amber-700' : 'text-ink-900'}`}>{expiredOpen.toLocaleString()}</p>
+          <p className="text-xs text-ink-500 mt-1">Hidden from visitors. The daily job closes these automatically.</p>
+        </div>
+        <div className="paper-card p-5">
+          <p className="text-xs font-bold uppercase tracking-wider text-ink-400">Invalid dates (before 2025)</p>
+          <p className={`font-display text-3xl mt-2 ${invalidDates > 0 ? 'text-red-700' : 'text-ink-900'}`}>{invalidDates.toLocaleString()}</p>
+          <p className="text-xs text-ink-500 mt-1">{invalidDates > 0 ? 'Remove with scripts/purge-outdated-opportunities.mjs' : 'All clean.'}</p>
+        </div>
       </div>
 
       {/* Stat cards */}
@@ -130,7 +162,7 @@ export default async function AdminPage() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-3xl font-bold text-slate-900 leading-none">{s.value}</div>
+                  <div className="font-display text-3xl font-semibold text-ink-900 leading-none">{s.value}</div>
                   <div className="text-xs font-medium mt-1.5 text-slate-500">{s.label}</div>
                 </div>
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${s.tone}`}>
@@ -144,7 +176,7 @@ export default async function AdminPage() {
 
       {/* Section heading */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-1 h-4 rounded-full bg-brand-600" />
+        <div className="w-1 h-4 rounded-full bg-ink-800" />
         <h2 className="admin-section-title">Manage Content</h2>
       </div>
 

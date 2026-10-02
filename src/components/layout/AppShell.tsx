@@ -2,9 +2,10 @@
 
 /**
  * AppShell - the single unified shell for BOTH the user dashboard and the
- * admin panel. One sidebar, one mobile top bar, one set of interaction
- * patterns. Parents pass serializable nav descriptors (icon keys, not
- * components) so server layouts can use it too.
+ * admin panel. One sidebar (grouped, collapsible sections with PRO badges),
+ * one mobile top bar, one set of interaction patterns. Parents pass
+ * serializable nav descriptors (icon keys, not components) so server layouts
+ * can use it too.
  */
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -15,8 +16,10 @@ import {
   GraduationCap, BookOpen, Users2, CalendarDays, BookMarked, Briefcase,
   Award, UserCheck, Users, BarChart3, Activity, FolderOpen, Settings,
   ContactRound, Mail, BadgeCheck, LogOut, Menu, X, ArrowLeft, ShieldCheck,
+  SquareKanban, PenLine, LibraryBig, Headset, Sparkles, ChevronDown, Search,
   type LucideIcon,
 } from 'lucide-react'
+import Logo from '@/components/brand/Logo'
 import { cn } from '@/lib/utils'
 
 // Icon registry - parents reference icons by these string keys so props stay
@@ -44,15 +47,29 @@ const ICONS = {
   contacts: ContactRound,
   mail: Mail,
   badgeCheck: BadgeCheck,
+  kanban: SquareKanban,
+  pen: PenLine,
+  library: LibraryBig,
+  headset: Headset,
+  sparkles: Sparkles,
+  search: Search,
 } as const
 
 export type IconKey = keyof typeof ICONS
+
+export interface NavChild {
+  href: string
+  label: string
+}
 
 export interface NavItem {
   href: string
   label: string
   icon: IconKey
   exact?: boolean
+  badge?: 'PRO' | 'NEW'
+  /** Sub-pages rendered as a collapsible tree under this item. */
+  children?: NavChild[]
 }
 
 export interface NavGroup {
@@ -61,11 +78,11 @@ export interface NavGroup {
 }
 
 interface AppShellProps {
-  /** Shown under the logo, e.g. "Admin Panel". Omit for the plain dashboard. */
+  /** Shown under the logo, e.g. "Admin". Omit for the plain dashboard. */
   brandTag?: string
   /** Nav sections rendered in order. */
   navGroups: NavGroup[]
-  /** User card at the top of the sidebar. */
+  /** User card at the bottom of the sidebar. */
   user: {
     name: string
     email: string
@@ -75,31 +92,79 @@ interface AppShellProps {
   }
   /** Optional link rendered above the sign-out button (e.g. back to dashboard). */
   backLink?: { href: string; label: string }
-  /** Render the sign-out button (dashboard) or omit it (admin has its own flow). */
+  /** Optional promo card at the foot of the sidebar (e.g. Upgrade to Pro). */
+  promo?: { title: string; text: string; href: string; cta: string }
   showSignOut?: boolean
   children: React.ReactNode
 }
 
-function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
+function matches(pathname: string, href: string, exact?: boolean) {
+  const path = href.split('?')[0]
+  return exact ? pathname === path : pathname === path || pathname.startsWith(path + '/')
+}
+
+function Badge({ kind }: { kind: 'PRO' | 'NEW' }) {
+  return <span className={kind === 'PRO' ? 'pro-badge' : 'pro-badge !bg-accent-500'}>{kind}</span>
+}
+
+function NavEntry({ item }: { item: NavItem }) {
   const pathname = usePathname()
   const Icon: LucideIcon = ICONS[item.icon]
-  const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+  const childActive = item.children?.some((c) => matches(pathname, c.href)) ?? false
+  const selfActive = matches(pathname, item.href, item.exact ?? !!item.children)
+  const [open, setOpen] = useState(childActive || selfActive)
+
+  useEffect(() => { if (childActive) setOpen(true) }, [childActive])
+
+  const rowCls = (active: boolean) =>
+    cn(
+      'flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all w-full',
+      active
+        ? 'bg-white text-ink-900 font-semibold shadow-soft ring-1 ring-surface-200'
+        : 'text-ink-600 hover:bg-white/70 hover:text-ink-900'
+    )
+
+  if (!item.children?.length) {
+    return (
+      <Link href={item.href} aria-current={selfActive ? 'page' : undefined} className={rowCls(selfActive)}>
+        <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive ? 'text-accent-600' : 'text-ink-400')} />
+        <span className="flex-1 truncate">{item.label}</span>
+        {item.badge && <Badge kind={item.badge} />}
+      </Link>
+    )
+  }
 
   return (
-    <Link
-      href={item.href}
-      onClick={onNavigate}
-      aria-current={isActive ? 'page' : undefined}
-      className={cn(
-        'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
-        isActive
-          ? 'bg-brand-700 text-white shadow-sm'
-          : 'text-gray-600 hover:bg-brand-50 hover:text-brand-800'
+    <div>
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={rowCls(selfActive || childActive)}>
+        <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive || childActive ? 'text-accent-600' : 'text-ink-400')} />
+        <span className="flex-1 truncate text-left">{item.label}</span>
+        {item.badge && <Badge kind={item.badge} />}
+        <ChevronDown className={cn('h-4 w-4 text-ink-400 transition-transform', open && 'rotate-180')} />
+      </button>
+      {open && (
+        <ul className="ml-[21px] mt-1 mb-1.5 border-l border-surface-300">
+          {item.children.map((c) => {
+            const active = matches(pathname, c.href)
+            return (
+              <li key={c.href} className="relative">
+                <span aria-hidden className="absolute left-0 top-1/2 w-3 border-t border-surface-300" />
+                <Link
+                  href={c.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'block ml-4 pl-2 pr-3 py-2 rounded-lg text-[13px] transition-colors',
+                    active ? 'text-ink-900 font-semibold bg-white ring-1 ring-surface-200' : 'text-ink-500 hover:text-ink-900'
+                  )}
+                >
+                  {c.label}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
       )}
-    >
-      <Icon className="h-4 w-4 shrink-0" />
-      {item.label}
-    </Link>
+    </div>
   )
 }
 
@@ -108,6 +173,7 @@ export default function AppShell({
   navGroups,
   user,
   backLink,
+  promo,
   showSignOut = true,
   children,
 }: AppShellProps) {
@@ -124,75 +190,65 @@ export default function AppShell({
   }, [mobileOpen])
 
   const sidebar = (mobile = false) => (
-    <div className={cn('flex flex-col h-full overflow-y-auto bg-white', mobile && 'p-2')}>
+    <div className="flex flex-col h-full bg-surface-50">
       {/* Brand */}
-      <div className="flex items-center gap-2.5 px-4 py-5 shrink-0">
-        <div className="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center shadow-glow-sm shrink-0">
-          <GraduationCap className="h-5 w-5 text-white" />
-        </div>
-        <div className="min-w-0">
-          <div className="text-base font-bold text-gray-900 leading-tight">
-            Xcel<span className="text-brand-600">360</span>
-          </div>
-          {brandTag && <div className="text-[11px] font-medium text-gray-400">{brandTag}</div>}
-        </div>
+      <div className="flex items-center gap-2 px-5 h-16 shrink-0 border-b border-surface-200">
+        <Link href="/" aria-label="Xcel360 home">
+          <Logo tag={brandTag} markClassName="h-8 w-8" />
+        </Link>
         {mobile && (
           <button
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
-            className="ml-auto p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            className="ml-auto p-1.5 rounded-lg text-ink-400 hover:bg-surface-100 hover:text-ink-700 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         )}
       </div>
 
-      {/* User card */}
-      <div className="mx-3 mb-4 p-3 bg-brand-50 border border-brand-100/60 rounded-xl shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-brand-700 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+      {/* Nav groups */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-4">
+        {navGroups.map((group, gi) => (
+          <div key={group.title} className={cn(gi > 0 && 'mt-6')}>
+            <p className="text-[11px] font-bold text-ink-400 uppercase tracking-[0.14em] px-3 mb-2">{group.title}</p>
+            <nav className="space-y-1" aria-label={group.title}>
+              {group.items.map((item) => <NavEntry key={item.href + item.label} item={item} />)}
+            </nav>
+          </div>
+        ))}
+
+        {promo && (
+          <Link href={promo.href} className="mt-6 block rounded-2xl bg-ink-900 p-4 text-white hover:bg-ink-800 transition-colors">
+            <p className="flex items-center gap-1.5 text-sm font-semibold"><Sparkles className="h-4 w-4 text-accent-300" /> {promo.title}</p>
+            <p className="text-xs text-ink-200 mt-1 leading-relaxed">{promo.text}</p>
+            <span className="mt-3 inline-block rounded-lg bg-accent-300 px-3 py-1.5 text-xs font-bold text-ink-900">{promo.cta}</span>
+          </Link>
+        )}
+      </div>
+
+      {/* User + footer actions */}
+      <div className="px-3 py-3 border-t border-surface-200 shrink-0 space-y-1">
+        <div className="flex items-center gap-3 px-2 py-2">
+          <div className="w-9 h-9 bg-ink-900 text-accent-300 rounded-full flex items-center justify-center font-bold text-sm shrink-0">
             {user.name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
-          <div className="min-w-0">
-            <div className="text-sm font-semibold text-gray-900 truncate">{user.name}</div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-semibold text-ink-900 truncate">{user.name}</div>
             {user.badgeLabel ? (
-              <span className={cn(
-                'inline-flex items-center gap-1 text-xs font-semibold px-1.5 py-0.5 rounded-md mt-0.5',
-                user.badgeClass ?? 'bg-gray-100 text-gray-600'
-              )}>
+              <span className={cn('inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.5 rounded mt-0.5', user.badgeClass ?? 'bg-surface-100 text-ink-600')}>
                 {user.admin && <ShieldCheck className="h-3 w-3" />}
                 {user.badgeLabel}
               </span>
             ) : (
-              <div className="text-xs text-gray-500 truncate">{user.email}</div>
+              <div className="text-xs text-ink-400 truncate">{user.email}</div>
             )}
           </div>
         </div>
-      </div>
-
-      {/* Nav groups */}
-      {navGroups.map((group, gi) => (
-        <div key={group.title} className={cn('px-3 shrink-0', gi > 0 && 'mt-4')}>
-          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1.5">
-            {group.title}
-          </p>
-          <nav className="space-y-0.5">
-            {group.items.map((item) => (
-              <NavLink key={item.href} item={item} onNavigate={() => setMobileOpen(false)} />
-            ))}
-          </nav>
-        </div>
-      ))}
-
-      <div className="flex-1 min-h-4" />
-
-      {/* Footer actions */}
-      <div className="px-3 py-3 border-t border-gray-100 shrink-0 space-y-0.5">
         {backLink && (
           <Link
             href={backLink.href}
-            onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-ink-500 hover:bg-white hover:text-ink-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {backLink.label}
@@ -201,7 +257,7 @@ export default function AppShell({
         {showSignOut && (
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut className="h-4 w-4" /> Sign out
           </button>
@@ -211,45 +267,37 @@ export default function AppShell({
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-30">
+      <aside className="hidden md:flex flex-col w-[264px] border-r border-surface-200 fixed inset-y-0 left-0 z-30">
         {sidebar()}
       </aside>
 
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
-          <div className="relative w-72 max-w-[85vw] bg-white h-full flex flex-col shadow-xl">
+          <div className="absolute inset-0 bg-ink-950/50" onClick={() => setMobileOpen(false)} />
+          <div className="relative w-[290px] max-w-[85vw] h-full flex flex-col shadow-xl">
             {sidebar(true)}
           </div>
         </div>
       )}
 
       {/* Main column */}
-      <main className="md:ml-64 flex-1 flex flex-col min-h-screen min-w-0">
+      <main className="md:ml-[264px] flex-1 flex flex-col min-h-screen min-w-0 bg-white">
         {/* Mobile top bar */}
-        <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 flex items-center gap-3">
+        <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-surface-200 px-4 h-14 flex items-center gap-3">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-surface-100 text-ink-700 transition-colors"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-brand-700 rounded-md flex items-center justify-center">
-              <GraduationCap className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-bold text-gray-900 text-sm">
-              Xcel<span className="text-brand-600">360</span>
-              {brandTag && <span className="text-gray-400 font-medium"> · {brandTag}</span>}
-            </span>
-          </div>
+          <Logo tag={brandTag} markClassName="h-7 w-7" className="[&_span.font-display]:text-lg" />
         </div>
 
-        <div className="flex-1 p-4 md:p-8">{children}</div>
+        <div className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1400px] w-full">{children}</div>
       </main>
     </div>
   )

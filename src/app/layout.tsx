@@ -1,10 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter, Sora } from 'next/font/google'
+import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 
-const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
-const sora = Sora({ subsets: ['latin'], display: 'swap', variable: '--font-sora' })
+// Brand type: Fraunces (editorial serif) for headlines, Plus Jakarta Sans for UI/body.
+const sans = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
+const display = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display',
+  axes: ['opsz', 'SOFT'],
+})
+
+const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 
@@ -71,7 +80,7 @@ export const metadata: Metadata = {
     canonical: BASE,
   },
   icons: {
-    icon: '/icon.svg',
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
     apple: '/apple-icon.svg',
   },
   verification: {
@@ -81,9 +90,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${sora.variable}`}>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
+      <head>
+        <meta name="theme-color" content="#0b1f3a" />
+        {ADSENSE_CLIENT && <meta name="google-adsense-account" content={ADSENSE_CLIENT} />}
+      </head>
       <body className="font-sans">
         {children}
+        {ADSENSE_CLIENT && (
+          <Script
+            id="adsense"
+            async
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          />
+        )}
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </body>
     </html>

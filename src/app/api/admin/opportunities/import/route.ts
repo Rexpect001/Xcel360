@@ -2,20 +2,24 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { parseDeadline } from '@/lib/utils'
 
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin()
-    const rows: any[] = await req.json()
+    const rawRows: any[] = await req.json()
 
-    if (!Array.isArray(rows) || rows.length === 0) {
+    if (!Array.isArray(rawRows) || rawRows.length === 0) {
       return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
     }
+
+    // Normalise deadlines up front so year-less dates never land as 2001
+    const rows = rawRows.map((r: any) => ({ ...r, deadline: parseDeadline(r?.deadline) }))
 
     // ── Dedup within incoming batch by title+deadline ──
     const seenInBatch = new Set<string>()
     const uniqueRows = rows.filter((r: any) => {
-      const key = `${r.title?.toLowerCase().trim()}|${r.deadline}`
+      const key = `${r.title?.toLowerCase().trim()}|${r.deadline ? r.deadline.toISOString().split('T')[0] : ''}`
       if (!r.title?.trim() || seenInBatch.has(key)) return false
       seenInBatch.add(key)
       return true
@@ -28,7 +32,7 @@ export async function POST(req: NextRequest) {
       select: { title: true, deadline: true },
     })
     const existingKeys = new Set(
-      existing.map((e: any) => `${e.title.toLowerCase().trim()}|${new Date(e.deadline).toISOString().split('T')[0]}`)
+      existing.map((e: any) => `${e.title.toLowerCase().trim()}|${e.deadline ? new Date(e.deadline).toISOString().split('T')[0] : ''}`)
     )
 
     const deduped = uniqueRows.filter((r: any) => {

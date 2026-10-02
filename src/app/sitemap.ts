@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
+import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 
@@ -20,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic opportunity pages
   const opportunities = await prisma.opportunity
     .findMany({
-      where: { status: 'OPEN' },
+      where: liveOpportunityWhere(),
       select: { id: true, updatedAt: true },
       orderBy: { updatedAt: 'desc' },
     })

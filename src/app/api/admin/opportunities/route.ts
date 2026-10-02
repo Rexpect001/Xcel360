@@ -8,6 +8,7 @@ import { opportunitySchema, validateInput } from '@/lib/security/validation'
 import { createSecureResponse, handlePreflight } from '@/lib/security/headers'
 import { logAction } from '@/lib/security/audit'
 import { generateAndStoreOpImage } from '@/lib/generateOpImage'
+import { parseDeadline } from '@/lib/utils'
 
 const APP_URL = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data
 
-    const deadlineDate = data.deadline ? new Date(data.deadline) : null
+    const deadlineDate = parseDeadline(data.deadline)
 
     // Check for duplicate: same title (skip deadline check if null)
     const db2 = prisma as any

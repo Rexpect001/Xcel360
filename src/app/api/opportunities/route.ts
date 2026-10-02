@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import prisma from '@/lib/prisma'
 import { rateLimitMiddleware } from '@/lib/security/rate-limiter'
 import { createSecureResponse, handlePreflight } from '@/lib/security/headers'
+import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
 export async function OPTIONS(req: NextRequest) {
   return handlePreflight(req) || createSecureResponse({}, 200, req)
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
       return createSecureResponse({ error: 'Invalid pagination parameters' }, 400, req)
     }
 
-    const where: any = { status: 'OPEN' }
+    const where: any = liveOpportunityWhere()
 
     if (search) {
       // Sanitize search input

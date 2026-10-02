@@ -11,8 +11,8 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-surface-50">
+        <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -35,6 +35,12 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         badgeLabel: isPrivileged ? roleInfo?.label ?? role : undefined,
         badgeClass: roleInfo?.color,
         admin: isPrivileged,
+      }}
+      promo={{
+        title: 'Xcel360 Pro',
+        text: 'Writing tools, tracker and templates are free during early access.',
+        href: '/dashboard/pro',
+        cta: 'See what is included',
       }}
       showSignOut
     >

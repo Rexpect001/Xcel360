@@ -74,6 +74,7 @@ function EligibilityList({ text }: { text: string }) {
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Modal from '@/components/ui/Modal'
+import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import { PROGRAM_LEVELS, FIELDS, FUNDING_TYPES, COUNTRIES } from '@/types'
 // xlsx is lazy-loaded only when export/import is triggered  -  avoids 500KB upfront parse
 
@@ -220,7 +221,8 @@ export default function AdminOpportunitiesPage() {
       setModalOpen(false)
       fetchOpps(search)
     } else {
-      toast.error('Error saving opportunity')
+      const data = await res.json().catch(() => ({}))
+      toast.error(data?.error ?? 'Error saving opportunity')
     }
     setSaving(false)
   }
@@ -676,14 +678,14 @@ export default function AdminOpportunitiesPage() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Opportunities</h1>
+          <h1 className="font-display text-3xl text-ink-900">Scholarships</h1>
           <p className="text-gray-500 mt-1">{total} total</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => { setShowPosterPanel(v => !v); if (!showPosterPanel) loadPosterActivity() }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-colors ${
-              showPosterPanel ? 'bg-brand-700 text-white border-brand-700' : 'bg-white text-brand-700 border-brand-200 hover:bg-brand-50'
+              showPosterPanel ? 'bg-ink-900 text-white border-ink-900' : 'bg-white text-brand-700 border-brand-200 hover:bg-brand-50'
             }`}
           >
             <Users className="h-4 w-4" />
@@ -741,7 +743,7 @@ export default function AdminOpportunitiesPage() {
           </button>
           <button
             onClick={openAdd}
-            className="flex items-center gap-2 bg-brand-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors"
+            className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors"
           >
             <Plus className="h-4 w-4" /> Add Opportunity
           </button>
@@ -820,7 +822,7 @@ export default function AdminOpportunitiesPage() {
 
       {/* ── Bulk action bar ── */}
       {selected.size > 0 && (
-        <div className="mb-3 flex items-center gap-3 bg-brand-700 text-white px-4 py-3 rounded-2xl">
+        <div className="mb-3 flex items-center gap-3 bg-ink-900 text-white px-4 py-3 rounded-2xl">
           <span className="text-sm font-semibold">{selected.size} selected</span>
           <div className="flex-1" />
           <button
@@ -866,7 +868,7 @@ export default function AdminOpportunitiesPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-4 border-brand-700 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
@@ -1054,7 +1056,7 @@ export default function AdminOpportunitiesPage() {
               <button
                 onClick={confirmImport}
                 disabled={importPreview.parsed.length === 0}
-                className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-50 transition-colors"
+                className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-50 transition-colors"
               >
                 Import {importPreview.parsed.length} Opportunities
               </button>
@@ -1179,7 +1181,7 @@ export default function AdminOpportunitiesPage() {
             <div className="flex gap-3 pt-1 border-t border-gray-100">
               <button
                 onClick={() => { setDetailOpp(null); openEdit(detailOpp) }}
-                className="flex items-center gap-2 flex-1 justify-center py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors"
+                className="flex items-center gap-2 flex-1 justify-center py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors"
               >
                 <Pencil className="h-4 w-4" /> Edit Opportunity
               </button>
@@ -1303,7 +1305,7 @@ export default function AdminOpportunitiesPage() {
                     onClick={() => toggleProgramLevel(level)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       form.programLevel.includes(level)
-                        ? 'bg-brand-700 text-white'
+                        ? 'bg-ink-900 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -1434,6 +1436,31 @@ export default function AdminOpportunitiesPage() {
             </label>
           </div>
 
+          {/* Live preview - exactly how the listing card will appear on the site */}
+          <div className="rounded-2xl border border-surface-200 bg-surface-50 p-4">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-ink-400 mb-3">Live preview</p>
+            {form.deadline && new Date(form.deadline).getTime() < Date.now() - 864e5 && (
+              <p className="mb-3 rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs font-semibold text-red-700">
+                This deadline is in the past, so the listing will be hidden from public pages.
+              </p>
+            )}
+            <div className="max-w-sm">
+              <OpportunityCard
+                opp={{
+                  id: editOpp?.id ?? 'preview',
+                  title: form.title || 'Scholarship title',
+                  hostOrg: form.hostOrg || 'Host organisation',
+                  country: form.country || 'Country',
+                  fundingType: form.fundingType,
+                  deadline: form.deadline || null,
+                  programLevel: form.programLevel,
+                  eligibility: form.eligibility,
+                  category: 'SCHOLARSHIP',
+                }}
+              />
+            </div>
+          </div>
+
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setModalOpen(false)}
@@ -1444,7 +1471,7 @@ export default function AdminOpportunitiesPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 disabled:opacity-60 transition-colors"
+              className="flex-1 py-3 bg-ink-900 text-white rounded-xl font-semibold text-sm hover:bg-ink-800 disabled:opacity-60 transition-colors"
             >
               {saving ? 'Saving...' : editOpp ? 'Update' : 'Create'}
             </button>

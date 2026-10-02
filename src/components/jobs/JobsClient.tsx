@@ -69,7 +69,8 @@ export default function JobsClient({ initialJobs, mode }: Props) {
     } else if (filters.sortBy === 'featured') {
       result = [...result].sort((a, b) => Number(b.featured) - Number(a.featured))
     } else {
-      result = [...result].sort((a, b) => new Date(a.deadline ?? 0).getTime() - new Date(b.deadline ?? 0).getTime())
+      const t = (d: Date | string | null) => (d ? new Date(d).getTime() : Number.MAX_SAFE_INTEGER)
+      result = [...result].sort((a, b) => t(a.deadline) - t(b.deadline))
     }
 
     return result
@@ -129,7 +130,7 @@ export default function JobsClient({ initialJobs, mode }: Props) {
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
             'flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium transition-colors',
-            showFilters ? 'bg-brand-700 text-white border-brand-700' : 'bg-white text-gray-700 border-gray-200 hover:border-brand-300'
+            showFilters ? 'bg-ink-900 text-white border-ink-900' : 'bg-white text-gray-700 border-gray-200 hover:border-brand-300'
           )}
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -139,13 +140,13 @@ export default function JobsClient({ initialJobs, mode }: Props) {
         <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white">
           <button
             onClick={() => setViewMode('list')}
-            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-brand-700 text-white' : 'text-gray-600 hover:bg-gray-50')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'list' ? 'bg-ink-900 text-white' : 'text-gray-600 hover:bg-gray-50')}
           >
             <LayoutGrid className="h-4 w-4" /> List
           </button>
           <button
             onClick={() => setViewMode('map')}
-            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-brand-700 text-white' : 'text-gray-600 hover:bg-gray-50')}
+            className={cn('flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors', viewMode === 'map' ? 'bg-ink-900 text-white' : 'text-gray-600 hover:bg-gray-50')}
           >
             <Map className="h-4 w-4" /> Map
           </button>

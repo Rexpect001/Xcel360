@@ -67,3 +67,21 @@ export function getFundingBadgeColor(fundingType: string): string {
     default: return 'bg-gray-100 text-gray-700'
   }
 }
+
+/**
+ * Parse a deadline string safely. V8 fills in 2001 when a date string has no
+ * year ("15 January" -> 2001-01-15), which is how stale 2001 deadlines got
+ * into the database. Year-less or pre-2005 results are re-anchored to the next
+ * occurrence of that day/month. Returns null for empty or unparseable input.
+ */
+export function parseDeadline(input: unknown): Date | null {
+  if (input === null || input === undefined || input === '') return null
+  const d = input instanceof Date ? new Date(input.getTime()) : new Date(String(input))
+  if (isNaN(d.getTime())) return null
+  if (d.getFullYear() < 2005) {
+    const now = new Date()
+    d.setFullYear(now.getFullYear())
+    if (d.getTime() < now.getTime() - 24 * 60 * 60 * 1000) d.setFullYear(now.getFullYear() + 1)
+  }
+  return d
+}

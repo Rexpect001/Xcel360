@@ -142,7 +142,7 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
           </div>
           <button
             onClick={handleShare}
-            className="w-full py-2.5 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-ink-900 text-white rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors flex items-center justify-center gap-2"
           >
             <Share2 className="h-4 w-4" /> Share with friends
           </button>

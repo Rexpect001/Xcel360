@@ -1,57 +1,56 @@
 import Link from 'next/link'
-import { GraduationCap, Twitter, Linkedin, Instagram, Mail } from 'lucide-react'
+import { Mail, Youtube, MessageCircle } from 'lucide-react'
+import Logo from '@/components/brand/Logo'
 
 const footerLinks = {
+  Opportunities: [
+    { label: 'Scholarships', href: '/opportunities' },
+    { label: 'Closing this month', href: '/opportunities?soon=30' },
+    { label: 'Jobs', href: '/jobs' },
+    { label: 'Internships', href: '/internships' },
+    { label: 'How to search', href: '/how-to-search' },
+  ],
   Platform: [
-    { label: 'Opportunities', href: '/opportunities' },
-    { label: 'Mentorship', href: '/mentorship' },
-    { label: 'Events', href: '/events' },
     { label: 'Resources', href: '/resources' },
+    { label: 'Events', href: '/events' },
+    { label: 'Programs', href: '/programs' },
+    { label: 'News', href: '/news' },
+    { label: 'Mentorship', href: '/mentorship' },
   ],
   Company: [
     { label: 'About', href: '/about' },
-    { label: 'Success Stories', href: '/success-stories' },
+    { label: 'Success stories', href: '/success-stories' },
     { label: 'Contact', href: '/contact' },
-  ],
-  Account: [
-    { label: 'Create Account', href: '/signup' },
-    { label: 'Sign In', href: '/signin' },
-    { label: 'Dashboard', href: '/dashboard' },
-  ],
-  Legal: [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Privacy policy', href: '/privacy' },
+    { label: 'Terms of service', href: '/terms' },
   ],
 }
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-950 text-gray-400">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
-          {/* Brand */}
+    <footer className="bg-ink-950 text-ink-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-12">
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-brand-700 rounded-lg flex items-center justify-center">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">
-                Xcel<span className="text-brand-400">360</span>
-              </span>
+            <Link href="/" aria-label="Xcel360 home">
+              <Logo tone="light" />
             </Link>
-            <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
-              Helping students worldwide discover scholarships, track deadlines, and access the mentorship they need to succeed.
+            <p className="mt-5 text-sm leading-relaxed max-w-xs text-ink-300">
+              Verified scholarships, honest deadlines and the tools to write a winning application. Built for ambitious African students.
             </p>
-            <div className="flex items-center gap-3 mt-6">
-              <a href="#" className="p-2 rounded-lg hover:bg-gray-800 transition-colors"><Twitter className="h-4 w-4" /></a>
-              <a href="#" className="p-2 rounded-lg hover:bg-gray-800 transition-colors"><Linkedin className="h-4 w-4" /></a>
-              <a href="#" className="p-2 rounded-lg hover:bg-gray-800 transition-colors"><Instagram className="h-4 w-4" /></a>
-              <a href="mailto:hello@xcel360.com" className="p-2 rounded-lg hover:bg-gray-800 transition-colors"><Mail className="h-4 w-4" /></a>
+            <div className="flex items-center gap-2 mt-6">
+              <a href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp channel" className="p-2 rounded-lg border border-ink-800 hover:border-ink-600 hover:text-white transition-colors">
+                <MessageCircle className="h-4 w-4" />
+              </a>
+              <a href="https://www.youtube.com/@Xcel_360" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="p-2 rounded-lg border border-ink-800 hover:border-ink-600 hover:text-white transition-colors">
+                <Youtube className="h-4 w-4" />
+              </a>
+              <a href="mailto:hello@thexcel360.com" aria-label="Email" className="p-2 rounded-lg border border-ink-800 hover:border-ink-600 hover:text-white transition-colors">
+                <Mail className="h-4 w-4" />
+              </a>
             </div>
           </div>
 
-          {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="text-white font-semibold text-sm mb-4">{category}</h3>
@@ -68,12 +67,9 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">© {new Date().getFullYear()} Xcel360. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-xs hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="text-xs hover:text-white transition-colors">Terms of Service</Link>
-          </div>
+        <div className="border-t border-ink-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
+          <p>© {new Date().getFullYear()} Xcel360. All rights reserved.</p>
+          <p>Always apply through the official provider&apos;s website. Xcel360 never charges application fees.</p>
         </div>
       </div>
     </footer>

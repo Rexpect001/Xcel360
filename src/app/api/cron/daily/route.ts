@@ -9,8 +9,8 @@ import prisma from '@/lib/prisma'
 
 /**
  * Consolidated daily cron - Vercel's free Hobby tier allows at most 2 cron
- * jobs, so the three fast jobs (deadline reminders, campaign batches, weekly
- * digest) run together here. The long-running auto-discovery job stays on its
+ * jobs, so the fast jobs (deadline reminders, campaign batches, closing
+ * expired opportunities, weekly digest) run together here. The long-running auto-discovery job stays on its
  * own route (/api/cron/auto-discover).
  *
  * Each job is isolated: a failure in one never blocks the others, and every
@@ -53,7 +53,21 @@ export async function GET(req: Request) {
     results.emailCampaigns = { ok: false, error: err instanceof Error ? err.message : 'Unknown' }
   }
 
-  // 3. Weekly digest batch (internally no-ops once this week's run completes)
+  // 3. Close opportunities whose deadline has passed (reversible - status only)
+  try {
+    const cutoff = new Date()
+    cutoff.setHours(0, 0, 0, 0)
+    const closed = await prisma.opportunity.updateMany({
+      where: { status: 'OPEN', deadline: { lt: cutoff } },
+      data: { status: 'CLOSED' },
+    })
+    results.closeExpired = { ok: true, closed: closed.count }
+  } catch (err) {
+    console.error('[cron/daily] close-expired failed', err)
+    results.closeExpired = { ok: false, error: err instanceof Error ? err.message : 'Unknown' }
+  }
+
+  // 4. Weekly digest batch (internally no-ops once this week's run completes)
   try {
     results.weeklyDigest = await sendWeeklyDigestBatch(100)
   } catch (err) {

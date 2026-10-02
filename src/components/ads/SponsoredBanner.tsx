@@ -71,7 +71,7 @@ export default function SponsoredBanner() {
             </div>
 
             {ad.link && (
-              <span className="shrink-0 inline-flex items-center gap-1.5 bg-brand-700 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl group-hover:bg-brand-800 transition-colors">
+              <span className="shrink-0 inline-flex items-center gap-1.5 bg-ink-900 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl group-hover:bg-ink-800 transition-colors">
                 {ad.cta || 'Learn more'} <ArrowRight className="h-3.5 w-3.5" />
               </span>
             )}

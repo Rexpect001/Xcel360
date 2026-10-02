@@ -160,7 +160,7 @@ export default function SiteSettingsPage() {
     <div className="max-w-2xl">
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-1">Configuration</p>
-        <h1 className="text-3xl font-bold text-slate-900">Site Settings</h1>
+        <h1 className="font-display text-3xl text-ink-900">Site Settings</h1>
         <p className="mt-1 text-slate-500">Control site-wide features without touching code.</p>
       </div>
 
@@ -258,7 +258,7 @@ export default function SiteSettingsPage() {
             <button
               onClick={saveAnnouncement}
               disabled={savingAnnouncement}
-              className="inline-flex items-center gap-2 bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 disabled:opacity-60 transition-colors"
+              className="inline-flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 disabled:opacity-60 transition-colors"
             >
               {savingAnnouncement ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {savingAnnouncement ? 'Saving…' : 'Save Announcement'}
@@ -377,7 +377,7 @@ export default function SiteSettingsPage() {
                     {adText && <p className="text-xs text-slate-500 truncate">{adText}</p>}
                   </div>
                   {adLink && (
-                    <span className="shrink-0 bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">
+                    <span className="shrink-0 bg-ink-900 text-white text-xs font-semibold px-4 py-2 rounded-xl">
                       {adCta || 'Learn more'}
                     </span>
                   )}
@@ -388,7 +388,7 @@ export default function SiteSettingsPage() {
             <button
               onClick={saveAd}
               disabled={savingAd}
-              className="inline-flex items-center gap-2 bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 disabled:opacity-60 transition-colors"
+              className="inline-flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 disabled:opacity-60 transition-colors"
             >
               {savingAd ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {savingAd ? 'Saving…' : 'Save Advert'}
@@ -420,7 +420,7 @@ export default function SiteSettingsPage() {
             <button
               onClick={saveContact}
               disabled={savingContact}
-              className="inline-flex items-center gap-2 bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 disabled:opacity-60 transition-colors shrink-0"
+              className="inline-flex items-center gap-2 bg-ink-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-ink-800 disabled:opacity-60 transition-colors shrink-0"
             >
               {savingContact ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               Save

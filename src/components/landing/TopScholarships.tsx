@@ -1,118 +1,70 @@
-'use client'
 import Link from 'next/link'
-import { MapPin, ArrowRight, Sparkles } from 'lucide-react'
-import { daysUntilDeadline } from '@/lib/utils'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { deadlineInfo, fundingTone } from '@/lib/opportunity-display'
+import { cn } from '@/lib/utils'
 
 type Scholarship = {
   id: string; title: string; hostOrg: string; country: string
   fundingType: string; deadline: Date | string | null
-  field: string; programLevel: string[]; createdAt: Date | string
+  programLevel: string[]; createdAt: Date | string
 }
 
-const FUNDING_COLORS: Record<string, string> = {
-  'Fully Funded':  'bg-emerald-50 text-emerald-700 border-emerald-100',
-  'Fully funded':  'bg-emerald-50 text-emerald-700 border-emerald-100',
-  'Partial':       'bg-amber-50 text-amber-700 border-amber-100',
-  'Tuition only':  'bg-blue-50 text-blue-700 border-blue-100',
-  'Stipend only':  'bg-violet-50 text-violet-700 border-violet-100',
-  'Other':         'bg-gray-100 text-gray-600 border-gray-200',
-}
-
-function isNew(createdAt: Date | string) {
-  return (Date.now() - new Date(createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000
-}
-
-function deadlineChip(deadline: Date | string | null) {
-  if (!deadline) return { text: 'Rolling', classes: 'bg-gray-100 text-gray-600' }
-  const days = daysUntilDeadline(deadline)
-  const date = new Date(deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-  if (days !== null && days <= 0) return { text: 'Closed', classes: 'bg-gray-100 text-gray-500' }
-  if (days !== null && days <= 7) return { text: `${date} · ${days}d`, classes: 'bg-red-50 text-red-700 border border-red-100' }
-  if (days !== null && days <= 30) return { text: `${date} · ${days}d`, classes: 'bg-orange-50 text-orange-700 border border-orange-100' }
-  return { text: date, classes: 'bg-brand-50 text-brand-700 border border-brand-100' }
-}
-
-/** OpportunityDesk-style deadline-led feed of the latest listings. */
+/** Deadline-first feed of the newest listings - scannable like a notice board. */
 export default function TopScholarships({ scholarships }: { scholarships: Scholarship[] }) {
   if (scholarships.length === 0) return null
-
-  const shown = scholarships.slice(0, 12)
 
   return (
     <section className="py-16 sm:py-20 bg-surface-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between gap-4 mb-7">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">
-                Updated daily
-              </span>
-            </div>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900">
-              Latest on the desk
-            </h2>
-            <p className="text-sm text-gray-500 mt-2">
-              Fresh scholarships and opportunities - apply before they close.
+            <p className="eyebrow mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Just posted
             </p>
+            <h2 className="font-display text-3xl sm:text-4xl text-ink-900">Latest scholarships</h2>
+            <p className="text-sm text-ink-500 mt-2">Newest first. The date on the left is the application deadline.</p>
           </div>
-          <Link
-            href="/opportunities"
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 border border-brand-200 bg-brand-50/60 px-4 py-2 rounded-xl hover:bg-brand-50 transition-colors whitespace-nowrap"
-          >
+          <Link href="/opportunities?sort=newest" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-ink-700 hover:text-ink-900 whitespace-nowrap">
             View all <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50 overflow-hidden">
-          {shown.map((s) => {
-            const chip = deadlineChip(s.deadline)
-            const fresh = isNew(s.createdAt)
-            return (
-              <Link
-                key={s.id}
-                href={`/opportunities/${s.id}`}
-                className="group flex items-center gap-4 px-4 sm:px-6 py-4 hover:bg-brand-50/40 transition-colors"
-              >
-                {/* Deadline chip - OpportunityDesk style, deadline first */}
-                <span className={`shrink-0 w-28 text-center text-[11px] font-bold px-2 py-1.5 rounded-lg ${chip.classes}`}>
-                  {chip.text}
-                </span>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-gray-900 text-sm sm:text-[15px] truncate group-hover:text-brand-700 transition-colors">
-                      {s.title}
-                    </h3>
-                    {fresh && (
-                      <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-100 shrink-0">
-                        <Sparkles className="h-2.5 w-2.5" /> NEW
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate flex items-center gap-1.5">
-                    {s.hostOrg}
-                    <span className="text-gray-300">·</span>
-                    <MapPin className="h-3 w-3 shrink-0" />
-                    {s.country}
-                  </p>
-                </div>
-
-                <span className={`hidden md:inline-block shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${FUNDING_COLORS[s.fundingType] ?? FUNDING_COLORS.Other}`}>
-                  {s.fundingType}
-                </span>
-                <ArrowRight className="h-4 w-4 text-gray-300 group-hover:text-brand-600 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </Link>
-            )
-          })}
+        <div className="paper-card overflow-hidden">
+          <div className="hidden md:grid grid-cols-[130px_minmax(0,1fr)_150px_130px_24px] gap-4 px-6 py-2.5 border-b border-surface-100 bg-surface-50 text-[10.5px] font-bold uppercase tracking-wider text-ink-400">
+            <span>Deadline</span><span>Scholarship</span><span>Level</span><span>Funding</span><span />
+          </div>
+          <ul className="divide-y divide-surface-100">
+            {scholarships.map((s) => {
+              const dl = deadlineInfo(s.deadline)
+              return (
+                <li key={s.id}>
+                  <Link
+                    href={`/opportunities/${s.id}`}
+                    className="group grid grid-cols-[92px_minmax(0,1fr)_20px] md:grid-cols-[130px_minmax(0,1fr)_150px_130px_24px] items-center gap-4 px-4 sm:px-6 py-4 hover:bg-surface-50 transition-colors"
+                  >
+                    <span className="leading-tight">
+                      <span className="block text-[13px] font-bold text-ink-900">{dl.date}</span>
+                      <span className={cn('block text-[11px] font-semibold mt-0.5', dl.tone)}>{dl.label}</span>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-semibold text-ink-900 text-[15px] truncate group-hover:text-brand-700 transition-colors">{s.title}</span>
+                      <span className="block text-xs text-ink-400 mt-0.5 truncate">{s.hostOrg} · {s.country}</span>
+                    </span>
+                    <span className="hidden md:block text-xs font-medium text-ink-600 truncate">{s.programLevel.slice(0, 2).join(', ') || 'All levels'}</span>
+                    <span className="hidden md:block">
+                      <span className={cn('inline-block text-[11px] font-bold px-2 py-1 rounded', fundingTone(s.fundingType))}>{s.fundingType}</span>
+                    </span>
+                    <ArrowUpRight className="h-4 w-4 text-ink-200 group-hover:text-ink-700 transition-colors" />
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
         </div>
 
         <div className="mt-6 text-center sm:hidden">
-          <Link
-            href="/opportunities"
-            className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 rounded-xl text-white bg-brand-700 hover:bg-brand-800 transition-colors"
-          >
-            Browse all opportunities <ArrowRight className="h-4 w-4" />
+          <Link href="/opportunities" className="btn-primary">
+            Browse all scholarships <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>

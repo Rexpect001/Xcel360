@@ -157,7 +157,7 @@ export default async function JobDetailPage({ params }: { params: { id: string }
               <div className="bg-white rounded-2xl border border-gray-100 p-5">
                 <h3 className="font-semibold text-gray-900 mb-3">Track this job</h3>
                 <p className="text-sm text-gray-500 mb-4">Save it to your dashboard and get deadline reminders.</p>
-                <Link href="/signup" className="block w-full text-center bg-brand-700 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-800 transition-colors">
+                <Link href="/signup" className="block w-full text-center bg-ink-900 text-white py-3 rounded-xl font-semibold text-sm hover:bg-ink-800 transition-colors">
                   Create Free Account
                 </Link>
               </div>

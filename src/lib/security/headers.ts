@@ -8,9 +8,12 @@ export const securityHeaders = {
     "default-src 'self'",
     "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' blob: data: https://*.tile.openstreetmap.org https://cdnjs.cloudflare.com",
+    // Dashboard/admin show Vercel Blob posters and YouTube thumbnails
+    "img-src 'self' blob: data: https:",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://*.tile.openstreetmap.org",
+    // Video Hub embeds YouTube (privacy-enhanced domain)
+    "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

@@ -74,7 +74,7 @@ export default function CertificatePage() {
               />
             </div>
             <button type="submit" disabled={loading}
-              className="mt-5 w-full flex items-center justify-center gap-2 bg-brand-700 text-white py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors disabled:opacity-50">
+              className="mt-5 w-full flex items-center justify-center gap-2 bg-ink-900 text-white py-3 rounded-xl font-semibold hover:bg-ink-800 transition-colors disabled:opacity-50">
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
               Find My Certificates
             </button>
@@ -107,7 +107,7 @@ export default function CertificatePage() {
                       {c.pdfUrl && (
                         <>
                           <a href={c.pdfUrl} target="_blank" rel="noreferrer"
-                            className="flex items-center gap-2 bg-brand-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-800 transition-colors">
+                            className="flex items-center gap-2 bg-ink-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-ink-800 transition-colors">
                             <ExternalLink className="h-4 w-4" /> View
                           </a>
                           <a href={c.pdfUrl} download

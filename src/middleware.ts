@@ -52,5 +52,5 @@ export const config = {
   // NOTE: /api/auth/ must be excluded so NextAuth sign-in callbacks can complete.
   // settings/ is excluded because the announcement bar and popup read public
   // (non-sensitive) site settings for anonymous visitors.
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|tools/|settings/|unsubscribe$|subscribe$|og|events/|certificate/|verify/).*)'],
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|tools/|settings/|unsubscribe$|subscribe$|contact$|og|events/|certificate/|verify/).*)'],
 }

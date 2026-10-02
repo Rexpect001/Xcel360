@@ -1,9 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { Bell, CheckCircle, ArrowRight, MessageCircle, Youtube } from 'lucide-react'
+import { CheckCircle, ArrowRight, MessageCircle, Youtube } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import Link from 'next/link'
 
+/** Closing band: weekly email digest + the two community channels. */
 export default function EmailCapture() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -26,82 +26,70 @@ export default function EmailCapture() {
   }
 
   return (
-    <section className="relative py-20 overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #f8faff 50%, #fffbf5 100%)' }}>
-      <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: 'radial-gradient(circle, rgba(3,105,161,0.07) 1px, transparent 1px)',
-        backgroundSize: '28px 28px',
-      }} />
+    <section className="bg-ink-900 text-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-center">
+        <div>
+          <p className="eyebrow !text-accent-300 mb-3">The Friday digest</p>
+          <h2 className="font-display text-3xl sm:text-4xl text-white">New scholarships in your inbox, once a week.</h2>
+          <p className="text-ink-200 mt-3 max-w-xl">
+            A short list of the best new opportunities and the deadlines closing soon. No spam, unsubscribe in one click.
+          </p>
 
-      <div className="relative max-w-xl mx-auto px-4 text-center">
-
-        {/* Icon */}
-        <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 shadow-sm text-white"
-          style={{ background: 'linear-gradient(135deg, #004ca3, #005fc9)' }}>
-          <Bell className="h-5 w-5" />
+          {submitted ? (
+            <p className="mt-7 inline-flex items-center gap-2.5 rounded-xl bg-emerald-500/15 border border-emerald-400/30 px-5 py-3.5 text-sm font-semibold text-emerald-200">
+              <CheckCircle className="h-5 w-5" /> You&apos;re subscribed. See you Friday.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="mt-7 flex flex-col sm:flex-row gap-2.5 max-w-lg">
+              <label htmlFor="digest-email" className="sr-only">Email address</label>
+              <input
+                id="digest-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="flex-1 rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-ink-300 focus:outline-none focus:ring-2 focus:ring-accent-300"
+              />
+              <button type="submit" disabled={loading} className="btn-gold">
+                {loading ? 'Subscribing…' : <>Subscribe <ArrowRight className="h-4 w-4" /></>}
+              </button>
+            </form>
+          )}
         </div>
 
-        {/* Heading  -  smaller */}
-        <h2 className="text-xl md:text-2xl font-bold tracking-tight mb-2" style={{ color: '#0f172a' }}>
-          Never miss a scholarship
-        </h2>
-        <p className="text-sm mb-7" style={{ color: '#475569' }}>
-          Be the first to know when new opportunities are posted.
-        </p>
-
-        {/* Email form */}
-        {submitted ? (
-          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl mb-8"
-            style={{ background: '#ecfdf5', border: '1.5px solid #bbf7d0' }}>
-            <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-            <span className="font-medium text-sm" style={{ color: '#065f46' }}>You&apos;re subscribed!</span>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-8">
-            <input
-              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              required
-              className="flex-1 px-5 py-3.5 rounded-2xl text-sm focus:outline-none bg-white placeholder:text-gray-400"
-              style={{ border: '1.5px solid #b9d4fd', boxShadow: '0 2px 12px rgba(3,105,161,0.08)', color: '#0f172a' }}
-            />
-            <button type="submit" disabled={loading}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50 whitespace-nowrap"
-              style={{ background: 'linear-gradient(135deg, #004ca3, #005fc9)', boxShadow: '0 4px 16px rgba(3,105,161,0.2)' }}>
-              {loading ? 'Subscribing...' : <><ArrowRight className="h-4 w-4" />Get Alerts</>}
-            </button>
-          </form>
-        )}
-
-        {/* Divider */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 h-px" style={{ background: '#e2e8f0' }} />
-          <span className="text-xs font-medium" style={{ color: '#94a3b8' }}>or stay connected via</span>
-          <div className="flex-1 h-px" style={{ background: '#e2e8f0' }} />
-        </div>
-
-        {/* WhatsApp + YouTube */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
+        <div className="grid gap-3">
+          <a
             href="https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30"
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 w-full sm:w-auto justify-center"
-            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 3px 12px rgba(22,163,74,0.2)' }}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 hover:bg-white/[0.08] transition-colors"
           >
-            <MessageCircle className="h-4 w-4 flex-shrink-0" />
-            Join WhatsApp Channel
-          </Link>
-          <Link
+            <span className="w-11 h-11 rounded-xl bg-[#25D366] flex items-center justify-center shrink-0">
+              <MessageCircle className="h-5 w-5 text-white" />
+            </span>
+            <span className="flex-1">
+              <span className="block font-semibold">WhatsApp channel</span>
+              <span className="block text-xs text-ink-300 mt-0.5">Daily opportunity drops, straight to your phone</span>
+            </span>
+            <ArrowRight className="h-4 w-4 text-ink-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+          </a>
+          <a
             href="https://www.youtube.com/@Xcel_360"
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 w-full sm:w-auto justify-center"
-            style={{ background: 'linear-gradient(135deg, #dc2626, #ef4444)', boxShadow: '0 3px 12px rgba(220,38,38,0.2)' }}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 hover:bg-white/[0.08] transition-colors"
           >
-            <Youtube className="h-4 w-4 flex-shrink-0" />
-            Watch on YouTube
-          </Link>
+            <span className="w-11 h-11 rounded-xl bg-[#FF0000] flex items-center justify-center shrink-0">
+              <Youtube className="h-5 w-5 text-white" />
+            </span>
+            <span className="flex-1">
+              <span className="block font-semibold">YouTube</span>
+              <span className="block text-xs text-ink-300 mt-0.5">Application walkthroughs and interview prep</span>
+            </span>
+            <ArrowRight className="h-4 w-4 text-ink-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+          </a>
         </div>
-
       </div>
     </section>
   )

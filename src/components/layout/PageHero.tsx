@@ -9,21 +9,27 @@ interface PageHeroProps {
 }
 
 /**
- * Shared page header band for public pages.
- * Brand gradient + Sora display font, consistent across the site.
+ * Shared page header band for public pages: deep ink with a fine grid,
+ * Fraunces headline and a gold eyebrow. Deliberately quiet so content leads.
  */
 export default function PageHero({ eyebrow, title, subtitle, children, className }: PageHeroProps) {
   return (
-    <section className={cn('relative bg-hero-gradient text-white pt-28 pb-16 overflow-hidden', className)}>
-      {/* soft glow accents */}
-      <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-brand-400/20 blur-3xl" />
+    <section className={cn('relative bg-hero-gradient text-white pt-28 pb-14 overflow-hidden', className)}>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+          maskImage: 'linear-gradient(180deg, black 0%, transparent 85%)',
+          WebkitMaskImage: 'linear-gradient(180deg, black 0%, transparent 85%)',
+        }}
+      />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {eyebrow && (
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-200 mb-3">{eyebrow}</p>
-        )}
-        <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">{title}</h1>
-        {subtitle && <p className="mt-4 max-w-2xl text-lg text-brand-100">{subtitle}</p>}
+        {eyebrow && <p className="eyebrow !text-accent-300 mb-3">{eyebrow}</p>}
+        <h1 className="font-display text-4xl md:text-5xl tracking-tight text-white">{title}</h1>
+        {subtitle && <p className="mt-4 max-w-2xl text-base md:text-lg text-ink-200 leading-relaxed">{subtitle}</p>}
         {children}
       </div>
     </section>

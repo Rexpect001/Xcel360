@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { isAdminRole, ROLE_ACCESS, ROLE_LABELS } from '@/lib/permissions'
 import type { UserRole } from '@/lib/permissions'
 import AppShell from '@/components/layout/AppShell'
-import { adminNavForRole } from '@/lib/nav'
+import SessionProvider from '@/components/providers/SessionProvider'
+import { adminNavGroups } from '@/lib/nav'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getAuth()
@@ -14,9 +15,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const allowedSections = ROLE_ACCESS[role] ?? []
 
   return (
+    <SessionProvider>
     <AppShell
-      brandTag="Admin Panel"
-      navGroups={[{ title: 'Manage', items: adminNavForRole(allowedSections) }]}
+      brandTag="Admin"
+      navGroups={adminNavGroups(allowedSections)}
       user={{
         name: session.user.name ?? session.user.email ?? 'Admin',
         email: session.user.email ?? '',
@@ -29,5 +31,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     >
       {children}
     </AppShell>
+    </SessionProvider>
   )
 }

@@ -39,7 +39,7 @@ export default function ApplyButton({ href, title }: { href: string | null; titl
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="inline-flex items-center gap-2 bg-brand-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
+        className="inline-flex items-center gap-2 bg-ink-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-ink-800 transition-colors"
       >
         Apply Now <ExternalLink className="h-4 w-4" />
       </a>
@@ -75,14 +75,14 @@ export default function ApplyButton({ href, title }: { href: string | null; titl
             <div className="space-y-3">
               <Link
                 href={`/signup?redirect=/opportunities`}
-                className="flex items-center justify-center gap-2 w-full bg-brand-700 text-white py-3 rounded-xl font-semibold hover:bg-brand-800 transition-colors"
+                className="flex items-center justify-center gap-2 w-full bg-ink-900 text-white py-3 rounded-xl font-semibold hover:bg-ink-800 transition-colors"
               >
                 <UserPlus className="h-4 w-4" />
                 Create Free Account
               </Link>
               <Link
                 href={`/signin?redirect=/opportunities`}
-                className="flex items-center justify-center gap-2 w-full border-2 border-brand-700 text-brand-700 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
+                className="flex items-center justify-center gap-2 w-full border-2 border-ink-900 text-brand-700 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
               >
                 <LogIn className="h-4 w-4" />
                 Sign In

@@ -47,6 +47,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+      { protocol: 'https', hostname: 'thexcel360.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
     ],
   },
 
@@ -63,11 +66,14 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+              // Google AdSense needs its loader plus the ad-serving/quality domains
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://www.googletagservices.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' blob: data: https://*.tile.openstreetmap.org https://cdnjs.cloudflare.com",
+              // Posters/covers live on Vercel Blob; ads and YouTube thumbnails are served over https
+              "img-src 'self' blob: data: https:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://*.tile.openstreetmap.org",
+              "connect-src 'self' https://*.tile.openstreetmap.org https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google",
+              "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://*.doubleclick.net https://*.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

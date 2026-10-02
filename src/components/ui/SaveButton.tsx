@@ -54,8 +54,8 @@ export default function SaveButton({ opportunityId }: { opportunityId: string })
       disabled={loading}
       className={`inline-flex items-center gap-2 border-2 px-6 py-3 rounded-xl font-semibold transition-colors disabled:opacity-60 ${
         saved
-          ? 'border-brand-700 bg-brand-700 text-white hover:bg-brand-800'
-          : 'border-brand-700 text-brand-700 hover:bg-brand-50'
+          ? 'border-ink-900 bg-ink-900 text-white hover:bg-ink-800'
+          : 'border-ink-900 text-brand-700 hover:bg-brand-50'
       }`}
     >
       {loading ? (
