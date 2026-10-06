@@ -33,13 +33,13 @@ export default function DeadlinesPage() {
     <div>
       <div className="mb-6">
         <h1 className="font-display text-3xl text-ink-900">Deadline Tracker</h1>
-        <p className="text-gray-500 mt-1">{upcoming.length} upcoming deadline{upcoming.length !== 1 ? 's' : ''}</p>
+        <p className="text-ink-500 mt-1">{upcoming.length} upcoming deadline{upcoming.length !== 1 ? 's' : ''}</p>
       </div>
 
       {upcoming.length === 0 && past.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-          <Calendar className="h-12 w-12 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-500 mb-4">No deadlines to track. Start by saving and tracking scholarships.</p>
+        <div className="bg-white rounded-2xl border border-surface-200 p-16 text-center">
+          <Calendar className="h-12 w-12 text-ink-200 mx-auto mb-3" />
+          <p className="text-ink-500 mb-4">No deadlines to track. Start by saving and tracking scholarships.</p>
           <Link
             href="/opportunities"
             className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
@@ -69,19 +69,19 @@ export default function DeadlinesPage() {
                       <Clock className={`h-5 w-5 ${isModerate ? 'text-orange-600' : 'text-green-600'}`} />
                     )}
                   </div>
-                  {i < upcoming.length - 1 && <div className="w-0.5 bg-gray-200 flex-1 my-1 min-h-4" />}
+                  {i < upcoming.length - 1 && <div className="w-0.5 bg-surface-200 flex-1 my-1 min-h-4" />}
                 </div>
 
                 {/* Card */}
                 <div
                   className={`flex-1 bg-white rounded-2xl border p-5 mb-2 ${
-                    isUrgent ? 'border-red-200' : isModerate ? 'border-orange-200' : 'border-gray-100'
+                    isUrgent ? 'border-red-200' : isModerate ? 'border-orange-200' : 'border-surface-200'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 leading-snug">{app.opportunity.title}</h3>
-                      <p className="text-sm text-gray-500 mt-0.5">{app.opportunity.hostOrg}</p>
+                      <h3 className="font-semibold text-ink-900 leading-snug">{app.opportunity.title}</h3>
+                      <p className="text-sm text-ink-500 mt-0.5">{app.opportunity.hostOrg}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div
@@ -101,7 +101,7 @@ export default function DeadlinesPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                  <div className="flex items-center gap-4 mt-3 text-xs text-ink-500">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {formatDate(app.opportunity.deadline)}
@@ -121,15 +121,15 @@ export default function DeadlinesPage() {
 
           {past.length > 0 && (
             <div className="mt-6">
-              <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Past Deadlines</h2>
+              <h2 className="text-sm font-medium text-ink-400 uppercase tracking-wider mb-3">Past Deadlines</h2>
               {past.map((app) => (
                 <div key={app.id} className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="h-5 w-5 text-gray-400" />
+                  <div className="w-10 h-10 rounded-xl bg-surface-100 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="h-5 w-5 text-ink-400" />
                   </div>
-                  <div className="flex-1 bg-white rounded-2xl border border-gray-100 p-5 mb-2 opacity-60">
-                    <h3 className="font-medium text-gray-700">{app.opportunity.title}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">Deadline: {formatDate(app.opportunity.deadline)}</p>
+                  <div className="flex-1 bg-white rounded-2xl border border-surface-200 p-5 mb-2 opacity-60">
+                    <h3 className="font-medium text-ink-700">{app.opportunity.title}</h3>
+                    <p className="text-xs text-ink-400 mt-0.5">Deadline: {formatDate(app.opportunity.deadline)}</p>
                   </div>
                 </div>
               ))}

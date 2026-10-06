@@ -10,7 +10,7 @@ const typeConfig: Record<NotificationType, { icon: React.ElementType; color: str
   DEADLINE_REMINDER: { icon: Calendar, color: 'bg-orange-100 text-orange-600' },
   NEW_OPPORTUNITY: { icon: Sparkles, color: 'bg-blue-100 text-blue-600' },
   APPLICATION_UPDATE: { icon: CheckCheck, color: 'bg-green-100 text-green-600' },
-  GENERAL: { icon: Info, color: 'bg-gray-100 text-gray-600' },
+  GENERAL: { icon: Info, color: 'bg-surface-100 text-ink-600' },
 }
 
 export default function NotificationsPage() {
@@ -60,7 +60,7 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl text-ink-900">Notifications</h1>
-          <p className="text-gray-500 mt-1">{unreadCount} unread</p>
+          <p className="text-ink-500 mt-1">{unreadCount} unread</p>
         </div>
         {unreadCount > 0 && (
           <button
@@ -73,10 +73,10 @@ export default function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-          <BellOff className="h-12 w-12 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-500 mb-2">No notifications yet.</p>
-          <p className="text-sm text-gray-400">
+        <div className="bg-white rounded-2xl border border-surface-200 p-16 text-center">
+          <BellOff className="h-12 w-12 text-ink-200 mx-auto mb-3" />
+          <p className="text-ink-500 mb-2">No notifications yet.</p>
+          <p className="text-sm text-ink-400">
             We'll alert you about deadlines and new scholarships that match your profile.
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function NotificationsPage() {
                 onClick={() => !notif.read && markRead(notif.id)}
                 className={`flex gap-4 p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-sm ${
                   notif.read
-                    ? 'bg-white border-gray-100 opacity-70'
+                    ? 'bg-white border-surface-200 opacity-70'
                     : 'bg-blue-50/50 border-brand-100 hover:bg-blue-50'
                 }`}
               >
@@ -102,13 +102,13 @@ export default function NotificationsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="font-medium text-gray-900 text-sm">{notif.title}</div>
+                    <div className="font-medium text-ink-900 text-sm">{notif.title}</div>
                     {!notif.read && (
                       <div className="w-2 h-2 bg-brand-700 rounded-full flex-shrink-0 mt-1.5" />
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mt-0.5">{notif.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">{formatRelativeDate(notif.createdAt)}</p>
+                  <p className="text-sm text-ink-600 mt-0.5">{notif.message}</p>
+                  <p className="text-xs text-ink-400 mt-1">{formatRelativeDate(notif.createdAt)}</p>
                 </div>
               </div>
             )

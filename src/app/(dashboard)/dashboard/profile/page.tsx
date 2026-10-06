@@ -62,7 +62,7 @@ function MultiSelect({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+      <label className="block text-sm font-medium text-ink-700 mb-2">{label}</label>
       <div className="flex flex-wrap gap-2">
         {options.map((item) => {
           const active = selected.includes(item)
@@ -74,7 +74,7 @@ function MultiSelect({
               className={`inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full border font-medium transition-all ${
                 active
                   ? 'bg-brand-600 text-white border-brand-600'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400 hover:text-brand-700'
+                  : 'bg-white text-ink-600 border-surface-200 hover:border-brand-400 hover:text-brand-700'
               }`}
             >
               {active && <Check className="h-3 w-3" />}
@@ -165,12 +165,12 @@ export default function ProfilePage() {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-4 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-ink-500 hover:text-ink-800 mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Link>
         <h1 className="font-display text-3xl text-ink-900">My Profile</h1>
-        <p className="text-gray-500 mt-1 text-sm">
+        <p className="text-ink-500 mt-1 text-sm">
           Update your preferences to get personalised scholarship matches.
         </p>
       </div>
@@ -178,12 +178,12 @@ export default function ProfilePage() {
       <form onSubmit={handleSave} className="space-y-6">
 
         {/* Study level */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
               <BookOpen className="h-4 w-4 text-brand-700" />
             </div>
-            <h2 className="font-semibold text-gray-900">Study Level</h2>
+            <h2 className="font-semibold text-ink-900">Study Level</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {PROGRAM_LEVELS.map((lvl) => {
@@ -196,7 +196,7 @@ export default function ProfilePage() {
                   className={`inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-full border font-medium transition-all ${
                     active
                       ? 'bg-brand-600 text-white border-brand-600'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400 hover:text-brand-700'
+                      : 'bg-white text-ink-600 border-surface-200 hover:border-brand-400 hover:text-brand-700'
                   }`}
                 >
                   {active && <Check className="h-3.5 w-3.5" />}
@@ -208,12 +208,12 @@ export default function ProfilePage() {
         </div>
 
         {/* Target countries */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
               <Globe className="h-4 w-4 text-brand-700" />
             </div>
-            <h2 className="font-semibold text-gray-900">Target Countries</h2>
+            <h2 className="font-semibold text-ink-900">Target Countries</h2>
           </div>
           <MultiSelect
             label="Where would you like to study?"
@@ -224,12 +224,12 @@ export default function ProfilePage() {
         </div>
 
         {/* Target fields */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
               <User className="h-4 w-4 text-brand-700" />
             </div>
-            <h2 className="font-semibold text-gray-900">Fields of Interest</h2>
+            <h2 className="font-semibold text-ink-900">Fields of Interest</h2>
           </div>
           <MultiSelect
             label="What subjects are you interested in?"
@@ -240,59 +240,59 @@ export default function ProfilePage() {
         </div>
 
         {/* Bio */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h2 className="font-semibold text-gray-900 mb-3">Short Bio <span className="text-gray-400 font-normal">(optional)</span></h2>
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
+          <h2 className="font-semibold text-ink-900 mb-3">Short Bio <span className="text-ink-400 font-normal">(optional)</span></h2>
           <textarea
             rows={3}
             placeholder="A brief description of your background and goals..."
             value={form.bio ?? ''}
             onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value || null }))}
-            className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+            className="w-full text-sm border border-surface-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
           />
         </div>
 
         {/* Education Background */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
               <Award className="h-4 w-4 text-brand-700" />
             </div>
-            <h2 className="font-semibold text-gray-900">Education Background</h2>
+            <h2 className="font-semibold text-ink-900">Education Background</h2>
           </div>
-          <p className="text-xs text-gray-500 mb-4 ml-10">
+          <p className="text-xs text-ink-500 mb-4 ml-10">
             Helps our matching engine find scholarships that fit your exact qualification.
           </p>
           <div className="space-y-4">
             {/* Course of study */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Course of Study <span className="text-gray-400 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                Course of Study <span className="text-ink-400 font-normal">(optional)</span>
               </label>
               <div className="relative">
-                <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400" />
                 <input
                   type="text"
                   placeholder="e.g., Mechanical Engineering"
                   value={form.courseOfStudy ?? ''}
                   onChange={(e) => setForm((f) => ({ ...f, courseOfStudy: e.target.value || null }))}
-                  className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  className="w-full text-sm border border-surface-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">The exact course you studied or are studying - this powers your match score</p>
+              <p className="text-xs text-ink-500 mt-1">The exact course you studied or are studying - this powers your match score</p>
             </div>
 
             {/* Degree + graduation year */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Degree Graduated With <span className="text-gray-400 font-normal">(optional)</span>
+                <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                  Degree Graduated With <span className="text-ink-400 font-normal">(optional)</span>
                 </label>
                 <div className="relative">
-                  <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none" />
                   <select
                     value={form.degree ?? ''}
                     onChange={(e) => setForm((f) => ({ ...f, degree: e.target.value || null }))}
-                    className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white appearance-none"
+                    className="w-full text-sm border border-surface-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white appearance-none"
                   >
                     <option value="">Select degree...</option>
                     {DEGREES.map((d) => (
@@ -302,17 +302,17 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Graduation Year <span className="text-gray-400 font-normal">(optional)</span>
+                <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                  Graduation Year <span className="text-ink-400 font-normal">(optional)</span>
                 </label>
                 <div className="relative">
-                  <CalendarRange className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <CalendarRange className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400 pointer-events-none" />
                   <select
                     value={form.graduationYear ?? ''}
                     onChange={(e) =>
                       setForm((f) => ({ ...f, graduationYear: e.target.value ? parseInt(e.target.value, 10) : null }))
                     }
-                    className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white appearance-none"
+                    className="w-full text-sm border border-surface-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white appearance-none"
                   >
                     <option value="">Select year...</option>
                     {GRAD_YEARS.map((y) => (
@@ -320,69 +320,69 @@ export default function ProfilePage() {
                     ))}
                   </select>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Actual or expected</p>
+                <p className="text-xs text-ink-500 mt-1">Actual or expected</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Personal Info */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
               <User className="h-4 w-4 text-brand-700" />
             </div>
-            <h2 className="font-semibold text-gray-900">Personal Information</h2>
+            <h2 className="font-semibold text-ink-900">Personal Information</h2>
           </div>
           <div className="space-y-4">
             {/* WhatsApp Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                WhatsApp Number <span className="text-gray-400 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                WhatsApp Number <span className="text-ink-400 font-normal">(optional)</span>
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400" />
                 <input
                   type="tel"
                   placeholder="+234 812 345 6789"
                   value={form.whatsappNumber ?? ''}
                   onChange={(e) => setForm((f) => ({ ...f, whatsappNumber: e.target.value || null }))}
-                  className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  className="w-full text-sm border border-surface-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Add your WhatsApp number to connect with mentors and opportunities</p>
+              <p className="text-xs text-ink-500 mt-1">Add your WhatsApp number to connect with mentors and opportunities</p>
             </div>
 
             {/* School/University */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                School/University <span className="text-gray-400 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                School/University <span className="text-ink-400 font-normal">(optional)</span>
               </label>
               <div className="relative">
-                <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400" />
                 <input
                   type="text"
                   placeholder="e.g., University of Lagos"
                   value={form.school ?? ''}
                   onChange={(e) => setForm((f) => ({ ...f, school: e.target.value || null }))}
-                  className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  className="w-full text-sm border border-surface-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             {/* Department */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Department/Field of Study <span className="text-gray-400 font-normal">(optional)</span>
+              <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                Department/Field of Study <span className="text-ink-400 font-normal">(optional)</span>
               </label>
               <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-400" />
                 <input
                   type="text"
                   placeholder="e.g., Computer Science"
                   value={form.department ?? ''}
                   onChange={(e) => setForm((f) => ({ ...f, department: e.target.value || null }))}
-                  className="w-full text-sm border border-gray-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  className="w-full text-sm border border-surface-200 rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -390,12 +390,12 @@ export default function ProfilePage() {
         </div>
 
         {/* Notifications */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
               <Bell className="h-4 w-4 text-brand-700" />
             </div>
-            <h2 className="font-semibold text-gray-900">Notification Preferences</h2>
+            <h2 className="font-semibold text-ink-900">Notification Preferences</h2>
           </div>
           <div className="space-y-3">
             {[
@@ -413,14 +413,14 @@ export default function ProfilePage() {
                   <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                     form[key as keyof ProfileData]
                       ? 'bg-brand-600 border-brand-600'
-                      : 'border-gray-300 group-hover:border-brand-400'
+                      : 'border-surface-300 group-hover:border-brand-400'
                   }`}>
                     {form[key as keyof ProfileData] && <Check className="h-3 w-3 text-white" />}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{label}</div>
-                  <div className="text-xs text-gray-500">{description}</div>
+                  <div className="text-sm font-medium text-ink-900">{label}</div>
+                  <div className="text-xs text-ink-500">{description}</div>
                 </div>
               </label>
             ))}
@@ -443,7 +443,7 @@ export default function ProfilePage() {
           </button>
           <Link
             href="/dashboard"
-            className="px-6 py-3 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+            className="px-6 py-3 rounded-xl font-semibold text-ink-600 hover:bg-surface-100 transition-colors"
           >
             Cancel
           </Link>

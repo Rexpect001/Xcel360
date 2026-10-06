@@ -120,14 +120,14 @@ function NavEntry({ item }: { item: NavItem }) {
     cn(
       'flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all w-full',
       active
-        ? 'bg-white text-ink-900 font-semibold shadow-soft ring-1 ring-surface-200'
-        : 'text-ink-600 hover:bg-white/70 hover:text-ink-900'
+        ? 'bg-brand-600 text-white font-semibold shadow-accent'
+        : 'text-ink-600 hover:bg-surface-50 hover:text-ink-900'
     )
 
   if (!item.children?.length) {
     return (
       <Link href={item.href} aria-current={selfActive ? 'page' : undefined} className={rowCls(selfActive)}>
-        <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive ? 'text-accent-600' : 'text-ink-400')} />
+        <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive ? 'text-accent-200' : 'text-ink-400')} />
         <span className="flex-1 truncate">{item.label}</span>
         {item.badge && <Badge kind={item.badge} />}
       </Link>
@@ -137,10 +137,10 @@ function NavEntry({ item }: { item: NavItem }) {
   return (
     <div>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={rowCls(selfActive || childActive)}>
-        <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive || childActive ? 'text-accent-600' : 'text-ink-400')} />
+        <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive || childActive ? 'text-accent-200' : 'text-ink-400')} />
         <span className="flex-1 truncate text-left">{item.label}</span>
         {item.badge && <Badge kind={item.badge} />}
-        <ChevronDown className={cn('h-4 w-4 text-ink-400 transition-transform', open && 'rotate-180')} />
+        <ChevronDown className={cn('h-4 w-4 transition-transform', selfActive || childActive ? 'text-brand-100' : 'text-ink-400', open && 'rotate-180')} />
       </button>
       {open && (
         <ul className="ml-[21px] mt-1 mb-1.5 border-l border-surface-300">
@@ -154,7 +154,7 @@ function NavEntry({ item }: { item: NavItem }) {
                   aria-current={active ? 'page' : undefined}
                   className={cn(
                     'block ml-4 pl-2 pr-3 py-2 rounded-lg text-[13px] transition-colors',
-                    active ? 'text-ink-900 font-semibold bg-white ring-1 ring-surface-200' : 'text-ink-500 hover:text-ink-900'
+                    active ? 'text-brand-700 font-semibold bg-brand-50' : 'text-ink-500 hover:text-ink-900 hover:bg-surface-50'
                   )}
                 >
                   {c.label}
@@ -190,9 +190,9 @@ export default function AppShell({
   }, [mobileOpen])
 
   const sidebar = (mobile = false) => (
-    <div className="flex flex-col h-full bg-surface-50">
+    <div className="flex flex-col h-full bg-white">
       {/* Brand */}
-      <div className="flex items-center gap-2 px-5 h-16 shrink-0 border-b border-surface-200">
+      <div className="flex items-center gap-2 px-5 h-[68px] shrink-0">
         <Link href="/" aria-label="Xcel360 home">
           <Logo tag={brandTag} />
         </Link>
@@ -208,7 +208,7 @@ export default function AppShell({
       </div>
 
       {/* Nav groups */}
-      <div className="flex-1 overflow-y-auto scrollbar-thin px-3 py-4">
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4 pt-1">
         {navGroups.map((group, gi) => (
           <div key={group.title} className={cn(gi > 0 && 'mt-6')}>
             <p className="text-[11px] font-bold text-ink-400 uppercase tracking-[0.14em] px-3 mb-2">{group.title}</p>
@@ -218,19 +218,24 @@ export default function AppShell({
           </div>
         ))}
 
-        {promo && (
-          <Link href={promo.href} className="mt-6 block rounded-2xl bg-brand-600 p-4 text-white hover:bg-brand-700 transition-colors">
-            <p className="flex items-center gap-1.5 text-sm font-semibold"><Sparkles className="h-4 w-4 text-accent-200" /> {promo.title}</p>
-            <p className="text-xs text-brand-100 mt-1 leading-relaxed">{promo.text}</p>
-            <span className="mt-3 inline-block rounded-lg bg-accent-300 px-3 py-1.5 text-xs font-bold text-ink-900">{promo.cta}</span>
-          </Link>
-        )}
       </div>
 
       {/* User + footer actions */}
-      <div className="px-3 py-3 border-t border-surface-200 shrink-0 space-y-1">
-        <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-9 h-9 bg-brand-600 text-accent-200 rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+      <div className="px-3 pb-3 pt-2 shrink-0 space-y-2 border-t border-surface-100">
+        {promo && (
+          <Link href={promo.href} className="block rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-3 text-white hover:to-brand-900 transition-colors">
+            <p className="flex items-center gap-2 text-sm font-semibold">
+              <span className="h-7 w-7 rounded-full bg-white/15 flex items-center justify-center shrink-0"><Sparkles className="h-3.5 w-3.5 text-accent-200" /></span>
+              <span className="min-w-0">
+                <span className="block truncate">{promo.title}</span>
+                <span className="block text-[11px] font-normal text-brand-100 truncate">{promo.text}</span>
+              </span>
+            </p>
+            <span className="mt-2.5 flex items-center justify-between rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-ink-900">{promo.cta}<ChevronDown className="h-3.5 w-3.5 -rotate-90 text-ink-400" /></span>
+          </Link>
+        )}
+        <div className="flex items-center gap-3 px-2.5 py-2 rounded-2xl bg-surface-50 ring-1 ring-surface-200">
+          <div className="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">
             {user.name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           <div className="min-w-0 flex-1">
@@ -244,32 +249,35 @@ export default function AppShell({
               <div className="text-xs text-ink-400 truncate">{user.email}</div>
             )}
           </div>
+          {showSignOut && (
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              aria-label="Sign out"
+              title="Sign out"
+              className="h-8 w-8 shrink-0 inline-flex items-center justify-center rounded-full text-ink-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          )}
         </div>
         {backLink && (
           <Link
             href={backLink.href}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-ink-500 hover:bg-white hover:text-ink-900 transition-colors"
+            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-ink-500 hover:bg-surface-50 hover:text-ink-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {backLink.label}
           </Link>
-        )}
-        {showSignOut && (
-          <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors"
-          >
-            <LogOut className="h-4 w-4" /> Sign out
-          </button>
         )}
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-surface-100 flex">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-[264px] border-r border-surface-200 fixed inset-y-0 left-0 z-30">
+      <aside className="hidden md:flex flex-col w-[256px] fixed top-3 bottom-3 left-3 z-30 rounded-3xl overflow-hidden ring-1 ring-surface-200 shadow-soft">
         {sidebar()}
       </aside>
 
@@ -284,7 +292,7 @@ export default function AppShell({
       )}
 
       {/* Main column */}
-      <main className="md:ml-[264px] flex-1 flex flex-col min-h-screen min-w-0 bg-white">
+      <main className="md:ml-[268px] flex-1 flex flex-col min-h-screen min-w-0">
         {/* Mobile top bar */}
         <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-surface-200 px-4 h-14 flex items-center gap-3">
           <button
