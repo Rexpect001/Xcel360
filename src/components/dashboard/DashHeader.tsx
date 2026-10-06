@@ -17,7 +17,7 @@ export default function DashHeader({ eyebrow, title, subtitle, pro, actions, cla
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
         <h1 className="font-display text-3xl sm:text-[2.1rem] text-ink-900 flex items-center gap-3">
           {title}
-          {pro && <span className="pro-badge !text-[11px] !px-2 !py-1">PRO</span>}
+          {pro && <span className="pro-badge !text-[11px] !px-2 !py-1">NEW</span>}
         </h1>
         {subtitle && <p className="text-ink-500 mt-2 max-w-2xl">{subtitle}</p>}
       </div>

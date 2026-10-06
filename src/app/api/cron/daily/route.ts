@@ -6,6 +6,7 @@ import { sendDeadlineReminders } from '@/lib/notifications'
 import { sendWeeklyDigestBatch } from '@/lib/weekly-digest'
 import { runCampaignSend } from '@/lib/email-utils'
 import prisma from '@/lib/prisma'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 /**
  * Consolidated daily cron - Vercel's free Hobby tier allows at most 2 cron
@@ -61,6 +62,7 @@ export async function GET(req: Request) {
       where: { status: 'OPEN', deadline: { lt: cutoff } },
       data: { status: 'CLOSED' },
     })
+    if (closed.count > 0) revalidateOpportunityPages()
     results.closeExpired = { ok: true, closed: closed.count }
   } catch (err) {
     console.error('[cron/daily] close-expired failed', err)

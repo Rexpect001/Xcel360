@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { parseDeadline } from '@/lib/utils'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 export async function POST(req: NextRequest) {
   try {
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (created > 0) revalidateOpportunityPages()
     return NextResponse.json({ created, failed, duplicates, errors: errors.slice(0, 10) })
   } catch (err) {
     console.error('[import]', err)

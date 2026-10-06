@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 const EMAIL_RE = /[^\s@]+@[^\s@]+\.[^\s@]+/
 
@@ -40,5 +41,6 @@ export async function POST() {
   if (ids.length === 0) return NextResponse.json({ deleted: 0, message: 'Nothing to clean up.' })
 
   await db.opportunity.deleteMany({ where: { id: { in: ids } } })
+  revalidateOpportunityPages()
   return NextResponse.json({ deleted: ids.length, message: `Removed ${ids.length} opportunities with no way to apply.` })
 }

@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { runDiscovery } from '@/lib/agent/discover'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 /**
  * Auto-Discovery Cron  -  runs every 8 hours via Vercel Cron
@@ -20,6 +21,7 @@ export async function GET(req: Request) {
   try {
     const report = await runDiscovery()
     const duration = ((Date.now() - start) / 1000).toFixed(1)
+    if (report.saved > 0) revalidateOpportunityPages()
 
     console.log(`[AUTO-DISCOVER] ✓ ${report.saved} saved, ${report.skipped} skipped, ${report.errors} errors  -  ${duration}s`)
     if (report.missingKeys.length) {

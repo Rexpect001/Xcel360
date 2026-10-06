@@ -53,7 +53,7 @@ export default function ApplicationsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display text-3xl text-ink-900 flex items-center gap-3">Application tracker <span className="pro-badge !text-[11px] !px-2 !py-1">PRO</span></h1>
+        <h1 className="font-display text-3xl text-ink-900 flex items-center gap-3">Application tracker</h1>
         <p className="text-gray-500 mt-1">{apps.length} application{apps.length !== 1 ? 's' : ''} tracked</p>
       </div>
 

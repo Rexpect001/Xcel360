@@ -1,4 +1,5 @@
 export const revalidate = 900
+export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'

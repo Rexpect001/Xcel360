@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { parseDeadline } from '@/lib/utils'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -19,6 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const opp = await db.opportunity.update({ where: { id: params.id }, data: fields })
+    revalidateOpportunityPages()
     return NextResponse.json(opp)
   } catch (e: any) {
     console.error('[OPPORTUNITY PATCH ERROR]', e?.message)
@@ -30,6 +32,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   try {
     await requireAdmin()
     await prisma.opportunity.delete({ where: { id: params.id } })
+    revalidateOpportunityPages()
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Error' }, { status: 400 })

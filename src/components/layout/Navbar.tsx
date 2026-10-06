@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   Menu, X, ChevronDown, Bell, LogOut, User, LayoutDashboard, Shield,
-  GraduationCap, Briefcase, Star, Users, Award, Youtube, MessageCircle, Info, CirclePlay,
+  GraduationCap, Briefcase, Star, Award, Youtube, MessageCircle, Info, CirclePlay,
   type LucideIcon,
 } from 'lucide-react'
 import Logo from '@/components/brand/Logo'
@@ -31,11 +31,10 @@ const NAV: NavEntry[] = [
   { label: 'News', href: '/news' },
   {
     label: 'About',
-    match: ['/about', '/how-to-search', '/mentorship', '/success-stories', '/mentor-apply'],
+    match: ['/about', '/how-to-search', '/success-stories'],
     items: [
       { href: '/about', label: 'About Xcel360', icon: Info, desc: 'Our story and mission' },
       { href: '/how-to-search', label: 'How to search', icon: CirclePlay, desc: 'A 60-second walkthrough' },
-      { href: '/mentorship', label: 'Mentorship', icon: Users, desc: 'Guidance from scholars and alumni' },
       { href: '/success-stories', label: 'Success stories', icon: Award, desc: 'Wins from our community' },
       { href: 'https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30', label: 'WhatsApp channel', icon: MessageCircle, desc: 'Daily opportunity drops', external: true },
       { href: 'https://www.youtube.com/@Xcel_360', label: 'YouTube', icon: Youtube, desc: 'Application walkthroughs', external: true },

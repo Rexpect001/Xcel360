@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 // Safe, public site settings - consumed by the announcement bar and footer.
 // NEVER return admin-only or sensitive keys here.
@@ -17,6 +17,7 @@ const PUBLIC_KEYS = [
   'ad_home_link',
   'ad_home_cta',
   'ad_home_image',
+  'edifier_ad_enabled',
 ] as const
 
 export async function GET() {
@@ -46,7 +47,8 @@ export async function GET() {
         image: map.ad_home_image ?? '',
       },
       contactEmail: map.contact_email || 'hello@thexcel360.com',
+      edifierAdEnabled: map.edifier_ad_enabled === 'true',
     },
-    { headers: { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' } }
+    { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=300' } }
   )
 }

@@ -11,7 +11,7 @@ import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
 export const metadata: Metadata = {
-  title: 'Xcel360  -  Find Scholarships, Get Mentorship & Study Abroad',
+  title: 'Xcel360  -  Find Scholarships and Build Stronger Applications',
   description:
     'Find fully funded scholarships you qualify for, track every deadline, and write stronger applications. Xcel360 is built for ambitious African students.',
   alternates: { canonical: '/' },
@@ -30,7 +30,7 @@ const orgJsonLd = {
     'https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30',
   ],
   description:
-    'Xcel360 helps African students discover fully funded scholarships, track deadlines, and connect with mentors to study abroad.',
+    'Xcel360 helps African students discover fully funded scholarships, track deadlines, and prepare stronger applications.',
 }
 
 // Enables Google's sitelinks search box and gives AI crawlers a clear,

@@ -6,6 +6,7 @@ import { getAuth } from '@/lib/auth'
 const PUBLIC_PATHS = [
   '/',
   '/opportunities',
+  '/scholarships',
   '/events',
   '/resources',
   '/mentorship',

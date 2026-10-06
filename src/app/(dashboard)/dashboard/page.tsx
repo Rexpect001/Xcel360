@@ -177,7 +177,7 @@ export default async function DashboardPage() {
           <section className="rounded-2xl bg-brand-600 text-white p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-white">Writing tools</h2>
-              <span className="pro-badge">PRO</span>
+              <span className="pro-badge">NEW</span>
             </div>
             <p className="text-xs text-brand-100 mt-1">Draft your documents in minutes, in your own words.</p>
             <div className="mt-4 grid grid-cols-2 gap-2">

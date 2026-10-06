@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
 export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -19,6 +20,8 @@ export async function PATCH(req: NextRequest) {
     update: { value: String(value) },
     create: { key, value: String(value) },
   })
+
+  revalidatePath('/api/settings/public')
 
   return NextResponse.json(setting)
 }

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 // POST /api/admin/opportunities/bulk
 // body: { action: 'delete' | 'feature' | 'unfeature' | 'open' | 'close', ids: string[] }
@@ -17,22 +18,27 @@ export async function POST(req: NextRequest) {
     switch (action) {
       case 'delete':
         await prisma.opportunity.deleteMany({ where: { id: { in: ids } } })
+        revalidateOpportunityPages()
         return NextResponse.json({ ok: true, affected: ids.length })
 
       case 'feature':
         await prisma.opportunity.updateMany({ where: { id: { in: ids } }, data: { featured: true } })
+        revalidateOpportunityPages()
         return NextResponse.json({ ok: true, affected: ids.length })
 
       case 'unfeature':
         await prisma.opportunity.updateMany({ where: { id: { in: ids } }, data: { featured: false } })
+        revalidateOpportunityPages()
         return NextResponse.json({ ok: true, affected: ids.length })
 
       case 'open':
         await prisma.opportunity.updateMany({ where: { id: { in: ids } }, data: { status: 'OPEN' } })
+        revalidateOpportunityPages()
         return NextResponse.json({ ok: true, affected: ids.length })
 
       case 'close':
         await prisma.opportunity.updateMany({ where: { id: { in: ids } }, data: { status: 'CLOSED' } })
+        revalidateOpportunityPages()
         return NextResponse.json({ ok: true, affected: ids.length })
 
       default:

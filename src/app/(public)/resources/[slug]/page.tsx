@@ -1,4 +1,5 @@
 export const revalidate = 3600
+export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'

@@ -6,11 +6,13 @@ import { toast } from 'react-hot-toast'
 import { Copy, Download, Loader2, RefreshCw, Sparkles, FileText } from 'lucide-react'
 import { WRITING_TOOLS, type ToolId } from '@/lib/writing-tools'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 const DRAFT_KEY = (id: string) => `xcel360_tool_${id}`
 
 export default function WritingToolForm({ toolId }: { toolId: ToolId }) {
   const tool = WRITING_TOOLS[toolId]
+  const startup = toolId.startsWith('startup-')
   const { data: session } = useSession()
   const [values, setValues] = useState<Record<string, string>>({})
   const [output, setOutput] = useState('')
@@ -19,11 +21,12 @@ export default function WritingToolForm({ toolId }: { toolId: ToolId }) {
   // Restore an unfinished draft, then prefill blanks from the profile
   useEffect(() => {
     let saved: Record<string, string> = {}
-    try { saved = JSON.parse(localStorage.getItem(DRAFT_KEY(toolId)) || '{}') } catch { /* ignore */ }
+    try { saved = JSON.parse(sessionStorage.getItem(DRAFT_KEY(toolId)) || '{}') } catch { /* ignore */ }
     const defaults: Record<string, string> = {}
     for (const f of tool.fields) if (f.type === 'select' && f.options) defaults[f.id] = f.options[0]
     setValues({ ...defaults, ...saved })
 
+    if (!tool.fields.some((field) => field.prefill)) return
     fetch('/api/profile')
       .then((r) => (r.ok ? r.json() : null))
       .then((p) => {
@@ -52,7 +55,7 @@ export default function WritingToolForm({ toolId }: { toolId: ToolId }) {
   const update = (id: string, value: string) => {
     setValues((v) => {
       const next = { ...v, [id]: value }
-      try { localStorage.setItem(DRAFT_KEY(toolId), JSON.stringify(next)) } catch { /* ignore */ }
+      try { sessionStorage.setItem(DRAFT_KEY(toolId), JSON.stringify(next)) } catch { /* ignore */ }
       return next
     })
   }
@@ -112,8 +115,14 @@ export default function WritingToolForm({ toolId }: { toolId: ToolId }) {
   return (
     <div className="grid xl:grid-cols-2 gap-6 items-start">
       <form onSubmit={generate} className="paper-card p-5 sm:p-6 space-y-4">
+        {toolId === 'cv' && (
+          <div className="rounded-xl border border-brand-100 bg-brand-50 p-4 text-sm text-ink-700">
+            Start with the programme or role you want. Your answers stay in this browser tab until it closes; they are sent to the AI service only when you generate a draft. <Link href="/resources" className="font-semibold text-brand-700 underline">See the public CV guides</Link>.
+          </div>
+        )}
         {tool.fields.map((f) => (
           <div key={f.id}>
+            {f.section && <h2 className="pt-3 mb-3 border-t border-surface-200 font-bold text-ink-900">{f.section}</h2>}
             <label htmlFor={f.id} className="label">
               {f.label} {f.required && <span className="text-red-500">*</span>}
             </label>
@@ -142,13 +151,21 @@ export default function WritingToolForm({ toolId }: { toolId: ToolId }) {
                 className="input-field"
               />
             )}
+            {f.help && <p className="mt-1.5 text-xs leading-relaxed text-ink-500">{f.help}</p>}
           </div>
         ))}
+        {toolId === 'cv' && (
+          <div className="rounded-xl bg-surface-50 p-4 text-xs leading-relaxed text-ink-600">
+            Before you submit: does each major bullet explain what you did, which skill or method you used, and the result? Are awards and conferences relevant to the target? Verify every date, grade, publication status, and referee detail yourself.
+          </div>
+        )}
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Writing your draft…</> : <><Sparkles className="h-4 w-4 text-accent-200" /> Generate draft</>}
         </button>
         <p className="text-xs text-ink-400 leading-relaxed">
-          Drafts use only what you enter. Gaps are marked like [add GPA] so nothing is made up. Always edit the draft in your own voice before submitting.
+          {startup
+            ? 'Treat this as a plan to test. The AI cannot verify demand or market facts for you. Save and edit your draft before making decisions.'
+            : 'Drafts use only what you enter. Gaps are marked like [add GPA] so nothing is made up. Always edit the draft in your own voice before submitting.'}
         </p>
       </form>
 

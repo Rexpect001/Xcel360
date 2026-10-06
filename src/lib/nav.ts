@@ -8,15 +8,15 @@ import type { NavGroup, NavItem } from '@/components/layout/AppShell'
 
 export const OVERVIEW_NAV: NavItem[] = [
   { href: '/dashboard',               label: 'Dashboard',     icon: 'dashboard', exact: true },
-  { href: '/dashboard/saved',         label: 'Saved',         icon: 'bookmark' },
-  { href: '/dashboard/applications',  label: 'Tracker',       icon: 'kanban', badge: 'PRO' },
+  { href: '/dashboard/saved',         label: 'Pipeline',      icon: 'kanban' },
+  { href: '/dashboard/applications',  label: 'Tracker',       icon: 'kanban' },
   { href: '/dashboard/deadlines',     label: 'Deadlines',     icon: 'calendar' },
   { href: '/dashboard/notifications', label: 'Notifications', icon: 'bell' },
 ]
 
 export const MATERIALS_NAV: NavItem[] = [
   {
-    href: '/dashboard/tools', label: 'Writing Tools', icon: 'pen', badge: 'PRO',
+    href: '/dashboard/tools', label: 'Writing Tools', icon: 'pen',
     children: [
       { href: '/dashboard/tools/cv',           label: 'CV Builder' },
       { href: '/dashboard/tools/sop',          label: 'SOP Generator' },
@@ -25,7 +25,7 @@ export const MATERIALS_NAV: NavItem[] = [
     ],
   },
   {
-    href: '/dashboard/library', label: 'Resources', icon: 'library', badge: 'PRO',
+    href: '/dashboard/library', label: 'Resources', icon: 'library',
     children: [
       { href: '/dashboard/library/templates', label: 'Templates Library' },
       { href: '/dashboard/library/videos',    label: 'Video Hub' },
@@ -34,6 +34,7 @@ export const MATERIALS_NAV: NavItem[] = [
 ]
 
 export const SERVICES_NAV: NavItem[] = [
+  { href: '/dashboard/launchpad', label: 'Launchpad', icon: 'sparkles', badge: 'NEW' },
   {
     href: '/dashboard/services', label: 'Services', icon: 'headset',
     children: [

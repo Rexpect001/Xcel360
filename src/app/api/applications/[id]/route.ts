@@ -2,11 +2,18 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { ApplicationStatus } from '@prisma/client'
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await requireAuth()
     const { status, notes } = await req.json()
+    if (status !== undefined && !Object.values(ApplicationStatus).includes(status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+    }
+    if (notes !== undefined && (typeof notes !== 'string' || notes.length > 3000)) {
+      return NextResponse.json({ error: 'Notes are too long' }, { status: 400 })
+    }
 
     const app = await prisma.application.update({
       where: { id: params.id, userId: session.user.id },

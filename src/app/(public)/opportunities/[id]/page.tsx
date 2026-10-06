@@ -1,4 +1,5 @@
 export const revalidate = 3600
+export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
@@ -8,6 +9,7 @@ const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
   if (!opp) return { title: 'Scholarship Not Found' }
+  const imageUrl = opp.imageUrl?.includes('/api/og') ? null : opp.imageUrl
 
   const description = opp.description
     ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? '...' : '')
@@ -33,13 +35,13 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       url: `${BASE}/opportunities/${opp.id}`,
       type: 'article',
       // Use uploaded image if available; skip auto-generated OG otherwise
-      ...(opp.imageUrl ? { images: [{ url: opp.imageUrl, alt: opp.title }] } : {}),
+      ...(imageUrl ? { images: [{ url: imageUrl, alt: opp.title }] } : {}),
     },
     twitter: {
-      card: opp.imageUrl ? 'summary_large_image' : 'summary',
+      card: imageUrl ? 'summary_large_image' : 'summary',
       title: opp.title,
       description,
-      ...(opp.imageUrl ? { images: [opp.imageUrl] } : {}),
+      ...(imageUrl ? { images: [imageUrl] } : {}),
     },
   }
 }
@@ -48,7 +50,7 @@ import { formatDate, daysUntilDeadline } from '@/lib/utils'
 import ShareButtons from '@/components/ui/ShareButtons'
 import {
   Calendar, MapPin, FileText, CheckCircle, Download,
-  Sparkles, Building2, GraduationCap, Clock,
+  Building2, GraduationCap, Clock,
 } from 'lucide-react'
 import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import GoogleAd from '@/components/ads/GoogleAd'
@@ -57,8 +59,8 @@ import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
-import { getAuth } from '@/lib/auth'
-import { scoreOpportunity } from '@/lib/matching'
+import OpportunityMatch from '@/components/opportunities/OpportunityMatch'
+import GuestPrompt from '@/components/opportunities/GuestPrompt'
 import type { ReactNode } from 'react'
 
 // Renders inline **bold** markers safely
@@ -146,10 +148,7 @@ function deadlineTone(days: number, closed: boolean) {
 }
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
-  const [opp, session] = await Promise.all([
-    prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null),
-    getAuth(),
-  ])
+  const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
   if (!opp) notFound()
 
   const isClosed = opp.status === 'CLOSED' || (opp.deadline !== null && opp.deadline.getTime() < Date.now())
@@ -157,16 +156,6 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
   const tone = deadlineTone(days, isClosed)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
   const pageUrl = `${appUrl}/opportunities/${opp.id}`
-
-  // Personalised match score for signed-in users
-  let match: { score: number; reasons: string[] } | null = null
-  if (session?.user?.id) {
-    const profile = await prisma.profile.findUnique({ where: { userId: session.user.id } }).catch(() => null)
-    if (profile) {
-      const scored = scoreOpportunity(opp, profile)
-      if (scored.score >= 40) match = scored
-    }
-  }
 
   // Related opportunities - same field or destination, still open
   const related = await prisma.opportunity.findMany({
@@ -244,13 +233,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
               <Building2 className="h-4 w-4 shrink-0" /> {opp.hostOrg}
             </p>
 
-            {match && (
-              <div className="mt-5 inline-flex flex-wrap items-center gap-2 rounded-xl px-4 py-2.5 bg-white/10 border border-white/15">
-                <Sparkles className="h-4 w-4 text-accent-200" />
-                <span className="text-sm font-semibold">{match.score}% match for you</span>
-                {match.reasons.length > 0 && <span className="text-xs text-brand-100">· {match.reasons.join(', ')}</span>}
-              </div>
-            )}
+            <OpportunityMatch opportunityId={opp.id} />
           </div>
         </div>
 
@@ -340,7 +323,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                     ))}
                   </ul>
                   <p className="mt-4 text-xs text-ink-500">
-                    Need a CV, SOP or cover letter? Xcel360 Pro writing tools draft them for you.{' '}
+                    Need a CV, SOP or cover letter? Xcel360 writing tools draft them for you.{' '}
                     <Link href="/dashboard/tools" className="font-semibold text-brand-700 hover:underline">Open writing tools</Link>
                   </p>
                 </section>
@@ -375,12 +358,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 <p className="text-[11px] text-ink-400 mt-4 leading-relaxed">
                   You apply on the provider&apos;s official website. Xcel360 never charges application fees.
                 </p>
-                {!session && (
-                  <p className="text-xs text-ink-500 mt-3 leading-relaxed">
-                    <Link href="/signup" className="text-brand-700 font-semibold hover:underline">Create a free account</Link>{' '}
-                    to save this and get deadline reminders.
-                  </p>
-                )}
+                <GuestPrompt />
               </div>
 
               <div className="rounded-2xl bg-brand-600 text-white p-5">

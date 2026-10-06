@@ -23,24 +23,17 @@ function markShown() {
   } catch {}
 }
 
-export default function EdifierAdPopup() {
+export default function EdifierAdPopup({ enabled }: { enabled: boolean }) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (!shouldShow()) return
-    // Check server toggle before showing
-    fetch('/api/settings/edifier-ad')
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d.enabled) return
-        const t = setTimeout(() => {
-          setVisible(true)
-          markShown()
-        }, 1800)
-        return () => clearTimeout(t)
-      })
-      .catch(() => {})
-  }, [])
+    if (!enabled || !shouldShow()) return
+    const timer = setTimeout(() => {
+      setVisible(true)
+      markShown()
+    }, 1800)
+    return () => clearTimeout(timer)
+  }, [enabled])
 
   if (!visible) return null
 

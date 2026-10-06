@@ -10,6 +10,9 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Mentorship is paused; keep old links useful without exposing its page.
+      { source: '/mentorship', destination: '/resources', permanent: false },
+      { source: '/mentor-apply', destination: '/resources', permanent: false },
       // Public certificate page lives at /certificate  -  forward the common
       // plural so users who type /certificates don't hit a 404.
       {

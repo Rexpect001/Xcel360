@@ -17,28 +17,19 @@ const DISMISS_KEY = 'xcel360_announcement_dismissed'
  * Dismissible per-message: when the admin changes the text, the bar
  * reappears for visitors who dismissed the previous message.
  */
-export default function AnnouncementBar() {
-  const [announcement, setAnnouncement] = useState<Announcement | null>(null)
+export default function AnnouncementBar({ announcement }: { announcement: Announcement | null }) {
   const [dismissed, setDismissed] = useState(true)
 
   useEffect(() => {
-    fetch('/api/settings/public')
-      .then((r) => r.json())
-      .then((data) => {
-        const a = data?.announcement as Announcement | undefined
-        if (a?.enabled && a.text) {
-          setAnnouncement(a)
-          try {
-            setDismissed(localStorage.getItem(DISMISS_KEY) === a.text)
-          } catch {
-            setDismissed(false)
-          }
-        }
-      })
-      .catch(() => {})
-  }, [])
+    if (!announcement?.enabled || !announcement.text) return
+    try {
+      setDismissed(localStorage.getItem(DISMISS_KEY) === announcement.text)
+    } catch {
+      setDismissed(false)
+    }
+  }, [announcement])
 
-  if (!announcement || dismissed) return null
+  if (!announcement?.enabled || !announcement.text || dismissed) return null
 
   const dismiss = () => {
     setDismissed(true)

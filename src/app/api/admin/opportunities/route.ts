@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 import { notifyMatchingUsers } from '@/lib/notifications'
 import { rateLimitMiddleware } from '@/lib/security/rate-limiter'
 import { opportunitySchema, validateInput } from '@/lib/security/validation'
@@ -169,6 +170,7 @@ export async function POST(req: NextRequest) {
 
     // Notify matching users (non-blocking)
     notifyMatchingUsers(opp.id).catch(console.error)
+    revalidateOpportunityPages()
 
     return createSecureResponse(opp, 201, req)
   } catch (error: any) {

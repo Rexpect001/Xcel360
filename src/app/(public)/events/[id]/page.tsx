@@ -1,4 +1,5 @@
 export const revalidate = 3600
+export async function generateStaticParams() { return [] }
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { Calendar, Clock, User, Video, MapPin, ArrowLeft, Users, Sparkles } from 'lucide-react'
@@ -11,6 +12,7 @@ const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const event = await prisma.event.findUnique({ where: { id: params.id } })
   if (!event) return { title: 'Event Not Found' }
+  const imageUrl = event.coverImage?.includes('/api/og') ? null : event.coverImage
   const description = event.description
     ? event.description.slice(0, 155).trim()
     : `Join the ${event.type}  -  ${event.title} hosted by Xcel360.`
@@ -22,13 +24,13 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       title: event.title, description, url: `${BASE}/events/${event.id}`, type: 'article',
       // Use the stored static cover if one exists; skip the auto-generated OG
       // renderer otherwise rather than hitting it on every social unfurl.
-      ...(event.coverImage ? { images: [{ url: event.coverImage, width: 1200, height: 630, alt: event.title }] } : {}),
+      ...(imageUrl ? { images: [{ url: imageUrl, width: 1200, height: 630, alt: event.title }] } : {}),
     },
     twitter: {
-      card: event.coverImage ? 'summary_large_image' : 'summary',
+      card: imageUrl ? 'summary_large_image' : 'summary',
       title: event.title,
       description,
-      ...(event.coverImage ? { images: [event.coverImage] } : {}),
+      ...(imageUrl ? { images: [imageUrl] } : {}),
     },
   }
 }

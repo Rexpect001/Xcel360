@@ -60,7 +60,7 @@ function cacheSet(key: string, png: Uint8Array) {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const CACHE_HEADERS = {
   'Content-Type': 'image/png',
-  'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+  'Cache-Control': 'private, no-store',
 }
 
 function pngResponse(png: Uint8Array) {
@@ -69,6 +69,11 @@ function pngResponse(png: Uint8Array) {
 
 // ── Main handler ──────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
+  const secret = process.env.CRON_SECRET
+  if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) {
+    return new Response('Forbidden', { status: 403, headers: { 'Cache-Control': 'no-store' } })
+  }
+
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     req.headers.get('x-real-ip') ??

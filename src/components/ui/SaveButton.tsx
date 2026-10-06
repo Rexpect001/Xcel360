@@ -20,11 +20,12 @@ export default function SaveButton({ opportunityId }: { opportunityId: string })
     setLoading(true)
     try {
       if (saved) {
-        await fetch('/api/saved', {
+        const res = await fetch('/api/saved', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ opportunityId }),
         })
+        if (!res.ok) throw new Error('Could not remove saved opportunity')
         setSaved(false)
         toast.success('Removed from saved')
       } else {
@@ -36,9 +37,11 @@ export default function SaveButton({ opportunityId }: { opportunityId: string })
         if (res.status === 409) {
           setSaved(true)
           toast('Already in your saved list')
-        } else {
+        } else if (res.ok) {
           setSaved(true)
           toast.success('Saved! View in your dashboard.')
+        } else {
+          throw new Error('Could not save opportunity')
         }
       }
     } catch {

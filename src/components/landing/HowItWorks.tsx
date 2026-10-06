@@ -23,7 +23,7 @@ const steps = [
     icon: Trophy,
     step: '04',
     title: 'Succeed',
-    text: 'Learn from mentors, guides and success stories - then become one yourself.',
+    text: 'Use guides and CV tools to prepare a stronger application, then share what you learn.',
   },
 ]
 

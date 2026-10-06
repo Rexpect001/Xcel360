@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowUpRight, FileSearch, MessagesSquare, Users, GraduationCap, Mic, Headset } from 'lucide-react'
+import { ArrowUpRight, FileSearch, MessagesSquare, GraduationCap, Mic, Headset } from 'lucide-react'
 import DashHeader from '@/components/dashboard/DashHeader'
 
 const SERVICES = [
@@ -23,13 +23,6 @@ const SERVICES = [
     text: 'Mock interview with feedback for Chevening, Commonwealth, Rhodes and university panels.',
     href: '/dashboard/services/advisor?topic=Interview%20preparation',
     cta: 'Prepare with us',
-  },
-  {
-    icon: Users,
-    title: 'Mentorship',
-    text: 'Get matched with scholars who have won the awards you are applying for.',
-    href: '/mentorship',
-    cta: 'Find a mentor',
   },
   {
     icon: GraduationCap,

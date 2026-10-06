@@ -15,7 +15,12 @@ export async function generateAndStoreOpImage(
 ): Promise<string | null> {
   try {
     const ogUrl = `${appUrl}/api/og?id=${recordId}&type=${type}&simple=true`
-    const res = await fetch(ogUrl)
+    const secret = process.env.CRON_SECRET
+    if (!secret) return null
+    const res = await fetch(ogUrl, {
+      headers: { Authorization: `Bearer ${secret}` },
+      cache: 'no-store',
+    })
     if (!res.ok || !res.body) return null
 
     const blob = await put(

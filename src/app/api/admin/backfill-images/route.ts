@@ -22,13 +22,15 @@ export async function POST() {
       ],
     },
     select: { id: true, category: true },
+    orderBy: { id: 'asc' },
+    take: 5,
   })
 
   let updated = 0
   let failed = 0
 
-  // Process in batches of 5 so we don't slam Vercel Blob or hit the
-  // 60 s function timeout on large backlogs.
+  // Bound the entire request to five records per table. A small concurrency
+  // batch alone does not protect a function from a thousands-row backlog.
   const BATCH = 5
   for (let i = 0; i < opps.length; i += BATCH) {
     const batch = opps.slice(i, i + BATCH)
@@ -42,9 +44,6 @@ export async function POST() {
           await db.opportunity.update({ where: { id: opp.id }, data: { imageUrl: staticUrl } })
           updated++
         } else {
-          // Fall back to the dynamic URL  -  better than nothing
-          const fallback = `${APP_URL}/api/og?id=${opp.id}&type=${typeParam}&simple=true`
-          await db.opportunity.update({ where: { id: opp.id }, data: { imageUrl: fallback } })
           failed++
         }
       })
@@ -61,6 +60,8 @@ export async function POST() {
       ],
     },
     select: { id: true },
+    orderBy: { id: 'asc' },
+    take: 5,
   })
 
   let eventsUpdated = 0
@@ -83,6 +84,6 @@ export async function POST() {
   return NextResponse.json({
     opportunities: { updated, failed },
     events: { updated: eventsUpdated, failed: eventsFailed },
-    message: `${updated} opportunity image(s) and ${eventsUpdated} event cover(s) uploaded to CDN.`,
+    message: `${updated} opportunity image(s) and ${eventsUpdated} event cover(s) uploaded to CDN (up to 5 of each per run).`,
   })
 }

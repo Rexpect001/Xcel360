@@ -37,10 +37,10 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         admin: isPrivileged,
       }}
       promo={{
-        title: 'Xcel360 Pro',
-        text: 'Writing tools, tracker and templates are free during early access.',
-        href: '/dashboard/pro',
-        cta: 'See what is included',
+        title: 'Xcel360 Launchpad',
+        text: 'Plan and test a startup idea with guided AI tools.',
+        href: '/dashboard/launchpad',
+        cta: 'Explore Launchpad',
       }}
       showSignOut
     >

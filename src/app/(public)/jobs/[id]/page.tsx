@@ -1,4 +1,5 @@
 export const revalidate = 3600
+export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
@@ -9,13 +10,14 @@ import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Briefcase, DollarSig
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
-import { getAuth } from '@/lib/auth'
+import GuestPrompt from '@/components/opportunities/GuestPrompt'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const job = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
   if (!job) return { title: 'Job Not Found' }
+  const imageUrl = job.imageUrl?.includes('/api/og') ? null : job.imageUrl
   const description = job.description?.slice(0, 155).trim() ?? `${job.jobType ?? 'Job'} at ${job.company ?? job.hostOrg} in ${job.country}.`
   return {
     title: job.title,
@@ -26,22 +28,19 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       title: job.title, description, url: `${BASE}/jobs/${job.id}`, type: 'article',
       // Use the stored static card if one exists; skip the auto-generated OG
       // renderer otherwise rather than hitting it on every social unfurl.
-      ...(job.imageUrl ? { images: [{ url: job.imageUrl, width: 1200, height: 630, alt: job.title }] } : {}),
+      ...(imageUrl ? { images: [{ url: imageUrl, width: 1200, height: 630, alt: job.title }] } : {}),
     },
     twitter: {
-      card: job.imageUrl ? 'summary_large_image' : 'summary',
+      card: imageUrl ? 'summary_large_image' : 'summary',
       title: job.title,
       description,
-      ...(job.imageUrl ? { images: [job.imageUrl] } : {}),
+      ...(imageUrl ? { images: [imageUrl] } : {}),
     },
   }
 }
 
 export default async function JobDetailPage({ params }: { params: { id: string } }) {
-  const [job, session] = await Promise.all([
-    prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null),
-    getAuth(),
-  ])
+  const job = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
   if (!job || job.category === 'SCHOLARSHIP') notFound()
 
   const days = daysUntilDeadline(job.deadline)
@@ -153,15 +152,7 @@ export default async function JobDetailPage({ params }: { params: { id: string }
               </dl>
             </div>
 
-            {!session && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="font-semibold text-gray-900 mb-3">Track this job</h3>
-                <p className="text-sm text-gray-500 mb-4">Save it to your dashboard and get deadline reminders.</p>
-                <Link href="/signup" className="block w-full text-center bg-brand-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-700 transition-colors">
-                  Create Free Account
-                </Link>
-              </div>
-            )}
+            <GuestPrompt kind="job" />
           </div>
         </div>
       </div>

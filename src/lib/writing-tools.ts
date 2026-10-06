@@ -1,15 +1,17 @@
 /**
- * Xcel360 Pro writing tools - shared definitions used by both the dashboard
+ * Xcel360 writing and startup tools - shared definitions used by both the dashboard
  * forms and the /api/pro/writing route. The server only ever reads the field
  * ids declared here, so the prompt shape is fixed and user input stays data.
  */
 
-export type ToolId = 'cv' | 'sop' | 'cover-letter' | 'cold-email'
+export type ToolId = 'cv' | 'sop' | 'cover-letter' | 'cold-email' | 'startup-idea' | 'startup-interviews' | 'startup-roadmap'
 
 export interface ToolField {
   id: string
   label: string
   type: 'text' | 'textarea' | 'select'
+  section?: string
+  help?: string
   placeholder?: string
   options?: string[]
   required?: boolean
@@ -31,19 +33,28 @@ export interface ToolDef {
 export const WRITING_TOOLS: Record<ToolId, ToolDef> = {
   cv: {
     id: 'cv',
-    name: 'CV Builder',
-    tagline: 'Turn your experience into a clean, scholarship-ready academic CV.',
+    name: 'Academic CV Builder',
+    tagline: 'Answer focused questions, then turn your own evidence into an academic CV.',
     outputLabel: 'Your CV draft',
     task:
-      'Write a two-page academic CV for a scholarship or graduate-school application. Use clear section headings (Profile, Education, Research & Projects, Experience, Leadership & Volunteering, Awards, Skills, Publications if any, Referees: "Available on request"). Use reverse chronological order and concise achievement bullets that start with a strong verb and include numbers where the applicant gave them. Plain text with simple headings and "- " bullets so it pastes cleanly into Word or Google Docs.',
+      'Write a tailored academic CV for the stated scholarship, graduate programme, or role. Prioritise the strongest relevant evidence rather than forcing a fixed length. Use reverse chronological order, clear headings, and concise bullets showing action, method or skill, and result where the applicant supplied them. Put research and thesis evidence early for research-focused applications; include teaching, leadership, awards, conferences, certifications, publications, and referees only when supported and relevant. Do not invent metrics, publications, credentials, duties, dates, or referee details. Omit empty sections. Do not include private details such as date of birth, marital status, or a photograph unless explicitly required by the target. Return only the CV in plain text, with headings and "- " bullets.',
     fields: [
-      { id: 'name', label: 'Full name', type: 'text', required: true, prefill: 'name', max: 120 },
-      { id: 'contact', label: 'Email, phone, city, LinkedIn', type: 'text', placeholder: 'ada@email.com · +234 800 000 0000 · Lagos · linkedin.com/in/ada', max: 300 },
-      { id: 'target', label: 'What is this CV for?', type: 'text', required: true, placeholder: 'Chevening Masters in Public Health, UK', max: 200 },
-      { id: 'education', label: 'Education', type: 'textarea', required: true, prefill: 'school', placeholder: 'B.Sc Microbiology, University of Ibadan, 2019-2023, Second Class Upper (4.21/5)…', max: 2000 },
-      { id: 'experience', label: 'Work, research and internships', type: 'textarea', placeholder: 'Role, organisation, dates, what you did and what changed because of it…', max: 4000 },
-      { id: 'leadership', label: 'Leadership, volunteering, awards', type: 'textarea', max: 2000 },
-      { id: 'skills', label: 'Skills, tools, languages, certifications', type: 'textarea', max: 1000 },
+      { id: 'name', section: 'Goal and contact', label: 'Full name', type: 'text', required: true, prefill: 'name', max: 120 },
+      { id: 'target', label: 'Which scholarship, programme, research field, or role is this CV for?', type: 'text', required: true, placeholder: 'MSc Public Health scholarship; focus on epidemiology', max: 240 },
+      { id: 'criteria', label: 'What does the selection committee ask for?', type: 'textarea', help: 'Paste the relevant requirements or selection criteria, not the whole advert.', max: 1800 },
+      { id: 'contact', label: 'Professional email, phone, city, and useful profile link', type: 'text', placeholder: 'ada@email.com; Lagos; linkedin.com/in/ada', max: 320 },
+      { id: 'education', section: 'Academic foundation', label: 'For each degree: qualification, field, university, dates, grade, and honours', type: 'textarea', required: true, prefill: 'school', placeholder: 'BSc Microbiology, University of Ibadan, 2019-2023; Second Class Upper, 4.21/5.00', max: 2500 },
+      { id: 'researchInterests', label: 'Which specific research interests fit this application?', type: 'textarea', help: 'Name focused topics you can explain. Leave blank for a non-research role.', max: 900 },
+      { id: 'thesis', section: 'Research and projects', label: 'What was your thesis or strongest project?', type: 'textarea', help: 'Give its title, question, your contribution, methods/tools, and findings. Say what is still unknown.', max: 2200 },
+      { id: 'research', label: 'What other research have you done?', type: 'textarea', help: 'For each project: your role, dates, methods, skills used, and result. Leave blank if none.', max: 2500 },
+      { id: 'publications', label: 'Publications, presentations, or manuscripts', type: 'textarea', help: 'Only list real work. Give title, authors, venue, year, and status (published, accepted, under review).', max: 1600 },
+      { id: 'teaching', section: 'Experience and impact', label: 'Have you taught, tutored, or supervised others?', type: 'textarea', help: 'Who did you teach, what subject, what did you do, and what changed?', max: 1400 },
+      { id: 'experience', label: 'Relevant work, internships, and service', type: 'textarea', required: true, help: 'For each role: organisation, years, the problem, your action, tools or skills used, and an honest result. Coursework and class projects count if you have no formal job.', max: 4200 },
+      { id: 'leadership', label: 'Leadership and volunteering with outcomes', type: 'textarea', help: 'Pick the strongest relevant examples; describe your contribution and result.', max: 1800 },
+      { id: 'awards', section: 'Supporting evidence', label: 'What are your most relevant academic awards or honours?', type: 'textarea', help: 'Prioritise up to three strong awards and give the year and basis for each.', max: 1100 },
+      { id: 'conferences', label: 'Relevant conferences, certifications, and memberships', type: 'textarea', help: 'State your role or what you learned; leave unrelated items out.', max: 1300 },
+      { id: 'skills', label: 'Technical tools, methods, and languages you can actually use', type: 'textarea', help: 'Name your level or evidence of use where helpful.', max: 1300 },
+      { id: 'referees', label: 'Referees, only if requested and they have agreed', type: 'textarea', help: 'Name, role, institution, professional email, and relationship. Otherwise leave blank.', max: 900 },
     ],
   },
   sop: {
@@ -96,10 +107,52 @@ export const WRITING_TOOLS: Record<ToolId, ToolDef> = {
       { id: 'attachments', label: 'Attachments you will include', type: 'text', placeholder: 'CV, transcript, research proposal', max: 200 },
     ],
   },
+  'startup-idea': {
+    id: 'startup-idea',
+    name: 'Idea validator',
+    tagline: 'Turn a startup idea into clear assumptions and small tests.',
+    outputLabel: 'Your idea validation plan',
+    task: 'Assess this startup idea as a set of hypotheses, not a proven business. Return sections: Problem, Likely customer, Current alternatives, Riskiest assumptions, Five low-cost tests, Success signals, Next decision. Label every unverified claim as an assumption. Do not invent market size, competitors, customers, revenue or research.',
+    fields: [
+      { id: 'idea', label: 'Describe your idea in one or two sentences', type: 'textarea', required: true, max: 1000 },
+      { id: 'customer', label: 'Who would use or pay for it?', type: 'textarea', required: true, max: 800 },
+      { id: 'problem', label: 'What problem have you observed?', type: 'textarea', required: true, max: 1200 },
+      { id: 'evidence', label: 'What evidence do you already have?', type: 'textarea', placeholder: 'Conversations, surveys, pilots or direct observations. Leave blank if none.', max: 1500 },
+      { id: 'location', label: 'Where would you start?', type: 'text', max: 120 },
+    ],
+  },
+  'startup-interviews': {
+    id: 'startup-interviews',
+    name: 'Customer interview guide',
+    tagline: 'Ask questions that reveal real problems without leading people.',
+    outputLabel: 'Your interview guide',
+    task: 'Create a 20-minute customer discovery interview guide. Include a short introduction, 8 open questions about past behavior and the current problem, follow-up probes, what to record, and how to identify weak evidence. Avoid pitching the solution or asking whether people would buy it.',
+    fields: [
+      { id: 'idea', label: 'Your startup idea', type: 'textarea', required: true, max: 1000 },
+      { id: 'customer', label: 'Who will you interview?', type: 'textarea', required: true, max: 800 },
+      { id: 'problem', label: 'What problem are you testing?', type: 'textarea', required: true, max: 1000 },
+      { id: 'unknowns', label: 'What are you most unsure about?', type: 'textarea', max: 1000 },
+    ],
+  },
+  'startup-roadmap': {
+    id: 'startup-roadmap',
+    name: '30-day startup roadmap',
+    tagline: 'Build a practical first month around learning and measurable milestones.',
+    outputLabel: 'Your 30-day plan',
+    task: 'Create a four-week startup roadmap for an early founder. For each week give a goal, at most three concrete actions, a deliverable, and a decision point. Prioritize customer discovery before building. Fit the plan to the founder’s stated time and budget. Do not assume resources or traction that were not supplied.',
+    fields: [
+      { id: 'idea', label: 'Your startup idea', type: 'textarea', required: true, max: 1000 },
+      { id: 'stage', label: 'What have you done so far?', type: 'textarea', required: true, max: 1200 },
+      { id: 'customer', label: 'Target customer', type: 'textarea', required: true, max: 800 },
+      { id: 'time', label: 'Hours available each week', type: 'text', required: true, max: 50 },
+      { id: 'budget', label: 'Budget and resources', type: 'textarea', max: 800 },
+    ],
+  },
 }
 
-export const TOOL_ORDER: ToolId[] = ['cv', 'sop', 'cover-letter', 'cold-email']
+export const TOOL_ORDER = ['cv', 'sop', 'cover-letter', 'cold-email'] as const
+export const STARTUP_TOOL_ORDER = ['startup-idea', 'startup-interviews', 'startup-roadmap'] as const
 
 export function isToolId(v: unknown): v is ToolId {
-  return typeof v === 'string' && v in WRITING_TOOLS
+  return typeof v === 'string' && Object.prototype.hasOwnProperty.call(WRITING_TOOLS, v)
 }
