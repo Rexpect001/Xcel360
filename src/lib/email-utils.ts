@@ -141,7 +141,7 @@ export async function logEmailBatch(
 // mid-send, progress is saved  -  a later Resume or cron run continues exactly
 // where it stopped, so no recipient is ever sent to twice and none are skipped.
 
-const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
+const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@thexcel360.com>'
 const RESEND_CHUNK = 100
 const SENDCHAMP_CHUNK = 10
 const TIME_BUDGET_MS = 50_000 // stay safely under the 60s function limit

@@ -1,6 +1,6 @@
 import { sendMail } from '@/lib/mailer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 /**
  * Notify a participant that their certificate is ready.

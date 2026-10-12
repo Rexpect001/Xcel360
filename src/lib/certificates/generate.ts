@@ -7,7 +7,7 @@ import { sendCertificateReadyEmail } from './email'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = prisma as any
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 /** Heuristically pull institution / course-department from custom registration answers. */
 export function extractInstitutionCourse(registration: {

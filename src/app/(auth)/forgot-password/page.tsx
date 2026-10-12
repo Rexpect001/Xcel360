@@ -133,7 +133,7 @@ function ForgotPasswordContent() {
           <p className="text-xs text-gray-400">
             Can&apos;t access your email?{' '}
             <a
-              href="mailto:support@xcel360.com?subject=Account%20Recovery%20Request&body=Hi%20Xcel360%20team%2C%0A%0AI%20cannot%20access%20the%20email%20linked%20to%20my%20account%20and%20need%20help%20recovering%20it.%0A%0AName%3A%20%0AEmail%20on%20account%20(if%20known)%3A%20%0AAny%20other%20details%3A%20"
+              href="mailto:support@thexcel360.com?subject=Account%20Recovery%20Request&body=Hi%20Xcel360%20team%2C%0A%0AI%20cannot%20access%20the%20email%20linked%20to%20my%20account%20and%20need%20help%20recovering%20it.%0A%0AName%3A%20%0AEmail%20on%20account%20(if%20known)%3A%20%0AAny%20other%20details%3A%20"
               className="text-brand-500 hover:text-brand-700 underline"
             >
               Contact support

@@ -115,7 +115,7 @@ export default function EdifierAdPopup({ enabled }: { enabled: boolean }) {
 
             <div className="flex gap-2">
               <a
-                href="https://edifier.xcel360.com/register"
+                href="https://edifier.thexcel360.com/register"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold text-white py-2.5 rounded-lg transition-colors"
@@ -126,7 +126,7 @@ export default function EdifierAdPopup({ enabled }: { enabled: boolean }) {
                 Join as Student
               </a>
               <a
-                href="https://edifier.xcel360.com/volunteer"
+                href="https://edifier.thexcel360.com/volunteer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold text-white py-2.5 rounded-lg transition-colors"

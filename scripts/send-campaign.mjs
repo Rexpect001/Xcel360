@@ -37,7 +37,7 @@ const testIdx = args.indexOf('--test')
 const testEmail = testIdx !== -1 ? args[testIdx + 1] : null
 const confirmed = args.includes('--yes')
 const fromIdx = args.indexOf('--from')
-const FROM = fromIdx !== -1 ? args[fromIdx + 1] : (process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>')
+const FROM = fromIdx !== -1 ? args[fromIdx + 1] : (process.env.EMAIL_FROM ?? 'Xcel360 <noreply@thexcel360.com>')
 
 function parseFrom(from) {
   const m = from.match(/^(.+?)\s*<(.+?)>$/)

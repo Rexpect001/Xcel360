@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static public pages. /programs is excluded - it redirects to /events, and a

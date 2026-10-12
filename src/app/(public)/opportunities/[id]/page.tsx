@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
@@ -154,7 +154,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
   const isClosed = opp.status === 'CLOSED' || (opp.deadline !== null && opp.deadline.getTime() < Date.now())
   const days = daysUntilDeadline(opp.deadline)
   const tone = deadlineTone(days, isClosed)
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
   const pageUrl = `${appUrl}/opportunities/${opp.id}`
 
   // Related opportunities - same field or destination, still open

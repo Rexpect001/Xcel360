@@ -7,7 +7,7 @@ import Link from 'next/link'
 import RegisterForm from './RegisterForm'
 import CountdownTimer from '@/components/events/CountdownTimer'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const event = await prisma.event.findUnique({ where: { id: params.id } })

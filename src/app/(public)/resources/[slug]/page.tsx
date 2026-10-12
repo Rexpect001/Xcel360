@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import { ArrowLeft, BookOpen, Calendar, Tag, Clock } from 'lucide-react'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } }).catch(() => null)

@@ -5,7 +5,7 @@ import { formatDate } from '@/lib/utils'
 
 const DAILY_LIMIT = 100
 const STATE_KEY = 'weekly_digest_state'
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 interface DigestState {
   week: string

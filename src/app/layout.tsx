@@ -10,8 +10,9 @@ const sans = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans
 const display = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-display', weight: ['500', '600', '700', '800'] })
 
 const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT
+const ADSENSE_ACCOUNT = ADSENSE_CLIENT || 'ca-pub-7270136170155691'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE),
@@ -89,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <head>
         <meta name="theme-color" content="#2266b1" />
-        {ADSENSE_CLIENT && <meta name="google-adsense-account" content={ADSENSE_CLIENT} />}
+        <meta name="google-adsense-account" content={ADSENSE_ACCOUNT} />
       </head>
       <body className="font-sans">
         {children}

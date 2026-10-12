@@ -12,7 +12,7 @@ import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const job = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)

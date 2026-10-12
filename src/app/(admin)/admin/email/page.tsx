@@ -321,7 +321,7 @@ const BASE_TEMPLATES = [
     <p style="font-size:16px;line-height:1.7;">[Opening paragraph  -  introduce the announcement and why it matters to your audience.]</p>
     <p style="font-size:16px;line-height:1.7;">[Supporting paragraph  -  add more context, details, or key information here.]</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">[Call to Action]</a>
+      <a href="https://thexcel360.com" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">[Call to Action]</a>
     </div>
     <p style="font-size:16px;line-height:1.7;">Warm regards,<br/><strong>The Xcel360 Team</strong></p>
   </div>
@@ -358,7 +358,7 @@ const BASE_TEMPLATES = [
     </div>
     <p style="font-size:16px;line-height:1.7;">[Describe the scholarship  -  what it covers, who it is for, and why this is a great opportunity.]</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com/opportunities" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">View &amp; Apply Now</a>
+      <a href="https://thexcel360.com/opportunities" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">View &amp; Apply Now</a>
     </div>
     <p style="font-size:14px;color:#6b7280;line-height:1.7;">Don't wait  -  deadlines fill up fast. Share this with someone who might benefit.</p>
     <p style="font-size:16px;line-height:1.7;margin-top:24px;">Best of luck,<br/><strong>The Xcel360 Team</strong></p>
@@ -397,7 +397,7 @@ const BASE_TEMPLATES = [
     </div>
     <p style="font-size:16px;line-height:1.7;">[Closing  -  next steps, how to get involved, or a call to action.]</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com/programs" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Learn More</a>
+      <a href="https://thexcel360.com/programs" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 32px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Learn More</a>
     </div>
     <p style="font-size:16px;line-height:1.7;">With excitement,<br/><strong>The Xcel360 Team</strong></p>
   </div>
@@ -512,9 +512,9 @@ const BASE_TEMPLATES = [
     </div>
     <p style="font-size:16px;line-height:1.7;">It's completely free to join. Create your account in under a minute and start exploring opportunities that could change your future.</p>
     <div style="text-align:center;margin:36px 0;">
-      <a href="https://xcel360.com/signup" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Create Your Free Account</a>
+      <a href="https://thexcel360.com/signup" style="display:inline-block;background:#005fc9;color:#ffffff;padding:14px 36px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:16px;">Create Your Free Account</a>
     </div>
-    <p style="font-size:14px;color:#6b7280;line-height:1.7;text-align:center;">Already curious? Browse opportunities without signing in at <a href="https://xcel360.com" style="color:#005fc9;text-decoration:none;">xcel360.com</a></p>
+    <p style="font-size:14px;color:#6b7280;line-height:1.7;text-align:center;">Already curious? Browse opportunities without signing in at <a href="https://thexcel360.com" style="color:#005fc9;text-decoration:none;">thexcel360.com</a></p>
     <p style="font-size:16px;line-height:1.7;margin-top:32px;">Looking forward to seeing you on the platform,<br/><strong>The Xcel360 Team</strong></p>
   </div>
   <div style="background:#f9fafb;padding:24px 32px;text-align:center;border-top:1px solid #e5e7eb;">

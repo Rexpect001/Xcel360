@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 }
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 const orgJsonLd = {
   '@context': 'https://schema.org',

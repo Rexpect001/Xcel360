@@ -1,6 +1,6 @@
 import { sendMail } from '@/lib/mailer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 // Escape HTML then linkify URLs and preserve line breaks for plain-text blocks.
 function renderMeetingDetails(raw: string): string {

@@ -53,7 +53,7 @@ export async function clearPasswordResetToken(userId: string): Promise<void> {
 // ─── Email senders ───────────────────────────────────────────────────────────
 
 export async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
   await sendMail({
@@ -126,7 +126,7 @@ export async function verifyEmailToken(userId: string, token: string): Promise<b
 }
 
 export async function sendVerificationEmail(email: string, name: string, token: string): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
   const verificationUrl = `${appUrl}/verify-email?token=${token}`
 
   await sendMail({

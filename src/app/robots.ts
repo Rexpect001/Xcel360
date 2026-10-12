@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://xcel360.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 // Named explicitly (on top of the wildcard rule below) so there is no
 // ambiguity about AI crawlers being welcome - they power citations in

@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 
-const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@xcel360.com>'
+const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <noreply@thexcel360.com>'
 
 function getClient(): Resend {
   const key = process.env.RESEND_API_KEY

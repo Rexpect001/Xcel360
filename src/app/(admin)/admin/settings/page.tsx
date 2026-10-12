@@ -450,12 +450,12 @@ export default function SiteSettingsPage() {
                 Disable this when the event registration closes.
               </p>
               <a
-                href="https://edifier.xcel360.com"
+                href="https://edifier.thexcel360.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1.5"
               >
-                <ExternalLink size={11} /> https://edifier.xcel360.com
+                <ExternalLink size={11} /> https://edifier.thexcel360.com
               </a>
             </div>
           </div>
