@@ -302,6 +302,8 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 </section>
               )}
 
+              <GoogleAd placement="detail-inline" />
+
               <section className="paper-card p-6 sm:p-8">
                 <h2 className="font-display text-2xl text-ink-900 mb-4 flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-emerald-600" /> Who can apply

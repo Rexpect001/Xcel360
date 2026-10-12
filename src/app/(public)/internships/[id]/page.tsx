@@ -11,6 +11,7 @@ import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -110,6 +111,8 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
               <p className="text-gray-600 text-sm leading-relaxed">{job.eligibility}</p>
             </section>
 
+            <GoogleAd placement="detail-inline" />
+
             {job.skills.length > 0 && (
               <section className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -152,6 +155,7 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
             </div>
 
             <GuestPrompt kind="internship" />
+            <GoogleAd placement="detail-sidebar" shape="rectangle" />
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     'How Xcel360 collects, uses, stores, and protects your personal data - and the rights you have over it.',
 }
 
-const LAST_UPDATED = 'January 2025'
+const LAST_UPDATED = 'October 2026'
 
 const sections = [
   {
@@ -67,7 +67,13 @@ const sections = [
           </li>
           <li>
             <strong>Cookies:</strong> strictly necessary session cookies used to keep you signed
-            in. We do not use third-party advertising trackers.
+            in, plus advertising cookies and similar technologies set by Google AdSense and its
+            partners (see <a href="#cookies-advertising" className="text-brand-700 underline">section 6</a>).
+          </li>
+          <li>
+            <strong>Device and ad data:</strong> when ads are shown, Google may collect your IP
+            address, browser and device type, approximate location, the pages you visit on our site,
+            and how you interact with ads.
           </li>
         </ul>
       </>
@@ -93,6 +99,11 @@ const sections = [
         <li>To respond to your enquiries and provide support.</li>
         <li>To keep the platform secure, prevent fraud, and enforce our terms of service.</li>
         <li>To analyse aggregate, de-identified usage trends so we can improve the platform.</li>
+        <li>
+          <strong>Advertising:</strong> to display ads through Google AdSense, which helps keep
+          Xcel360 free for students. We never share your profile, saved opportunities, or
+          application data with advertisers.
+        </li>
       </ul>
     ),
   },
@@ -108,8 +119,9 @@ const sections = [
             signed up for.
           </li>
           <li>
-            <strong>Consent:</strong> optional marketing emails and non-essential communications,
-            which you can withdraw at any time.
+            <strong>Consent:</strong> optional marketing emails, non-essential communications, and
+            - for visitors in the EEA, UK, and Switzerland - advertising cookies and personalised
+            ads. You can withdraw consent at any time.
           </li>
           <li>
             <strong>Legitimate interests:</strong> platform security, fraud prevention, and
@@ -143,6 +155,12 @@ const sections = [
             certificate we issued is genuine.
           </li>
           <li>
+            <strong>Advertising partners:</strong> Google and its certified ad partners receive
+            the device and cookie data described in section 2.2 when they serve ads on our pages.
+            See <a href="#cookies-advertising" className="text-brand-700 underline">section 6</a>{' '}
+            for details and how to opt out.
+          </li>
+          <li>
             <strong>Legal authorities</strong> where required by law, court order, or to protect
             the rights and safety of our users.
           </li>
@@ -151,8 +169,102 @@ const sections = [
     ),
   },
   {
+    id: 'cookies-advertising',
+    title: '6. Cookies & Advertising',
+    body: (
+      <>
+        <p>
+          Cookies are small text files stored on your device. We use as few as possible, and we
+          rely on advertising to keep Xcel360 free.
+        </p>
+
+        <h4 className="font-semibold text-gray-900 mt-4 mb-2">6.1 Types of cookies we use</h4>
+        <ul className="list-disc pl-5 space-y-1.5">
+          <li>
+            <strong>Strictly necessary:</strong> session and security cookies that keep you signed
+            in and protect forms from abuse. The site cannot work without them, so they do not
+            require consent.
+          </li>
+          <li>
+            <strong>Advertising:</strong> cookies and similar identifiers set by Google and its
+            partners to show ads, limit how often you see the same ad, measure ad performance, and
+            detect ad fraud.
+          </li>
+        </ul>
+
+        <h4 className="font-semibold text-gray-900 mt-4 mb-2">6.2 Google AdSense</h4>
+        <ul className="list-disc pl-5 space-y-1.5">
+          <li>
+            Third-party vendors, including Google, use cookies to serve ads based on your prior
+            visits to this website or other websites.
+          </li>
+          <li>
+            Google&apos;s use of advertising cookies enables it and its partners to serve ads to you
+            based on your visits to Xcel360 and/or other sites on the Internet.
+          </li>
+          <li>
+            Other certified ad vendors and networks may also serve ads on our site. You can see
+            the list of Google&apos;s ad technology providers in the{' '}
+            <a href="https://support.google.com/admanager/answer/9012903" target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">
+              Google ad tech providers list
+            </a>
+            .
+          </li>
+          <li>
+            Data collected by Google is processed under{' '}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">
+              Google&apos;s Privacy Policy
+            </a>{' '}
+            and may be transferred to and processed in the United States and other countries.
+            Learn more at{' '}
+            <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">
+              How Google uses information from sites that use its services
+            </a>
+            .
+          </li>
+        </ul>
+
+        <h4 className="font-semibold text-gray-900 mt-4 mb-2">6.3 Your consent and choices</h4>
+        <ul className="list-disc pl-5 space-y-1.5">
+          <li>
+            <strong>EEA, UK, and Switzerland:</strong> we ask for your consent through a
+            Google-certified consent message before advertising cookies are used. If you decline,
+            you may still see non-personalised ads, which use only limited data such as your
+            approximate location and the page you are viewing.
+          </li>
+          <li>
+            <strong>Personalised ads:</strong> you can turn off personalised advertising at any
+            time in{' '}
+            <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">
+              Google Ads Settings
+            </a>
+            , or opt out of third-party vendors&apos; use of cookies at{' '}
+            <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">
+              aboutads.info
+            </a>{' '}
+            and (in Europe){' '}
+            <a href="https://www.youronlinechoices.eu" target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">
+              youronlinechoices.eu
+            </a>
+            .
+          </li>
+          <li>
+            <strong>Browser controls:</strong> you can block or delete cookies in your browser
+            settings. Blocking strictly necessary cookies will stop you signing in.
+          </li>
+          <li>
+            <strong>US state privacy laws:</strong> we do not sell personal data for money. Where
+            ad cookies count as &quot;sharing&quot; for targeted advertising under laws such as the
+            CCPA/CPRA, you can opt out using the Google Ads Settings link above or a browser signal
+            such as Global Privacy Control.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
     id: 'retention-security',
-    title: '6. Data Retention & Security',
+    title: '7. Data Retention & Security',
     body: (
       <>
         <p>
@@ -171,7 +283,7 @@ const sections = [
   },
   {
     id: 'your-rights',
-    title: '7. Your Rights',
+    title: '8. Your Rights',
     body: (
       <>
         <p>You have the right to:</p>
@@ -192,6 +304,10 @@ const sections = [
             retention requirements.
           </li>
           <li>
+            <strong>Opt out of personalised ads</strong> at any time - see{' '}
+            <a href="#cookies-advertising" className="text-brand-700 underline">section 6.3</a>.
+          </li>
+          <li>
             <strong>Object to or restrict</strong> certain processing, and to lodge a complaint
             with your local data-protection authority.
           </li>
@@ -208,18 +324,19 @@ const sections = [
   },
   {
     id: 'children',
-    title: '8. Children’s Privacy',
+    title: '9. Children’s Privacy',
     body: (
       <p>
         Our services are intended for users aged 16 and above. We do not knowingly collect personal
         data from children under 16. If you believe a child has provided us with personal data,
-        contact us and we will delete it promptly.
+        contact us and we will delete it promptly. Our ads are not directed at children, and we do
+        not knowingly allow personalised advertising to be shown to users under 16.
       </p>
     ),
   },
   {
     id: 'changes',
-    title: '9. Changes to This Policy',
+    title: '10. Changes to This Policy',
     body: (
       <p>
         We may update this Privacy Policy from time to time. When we make material changes, we will
@@ -231,7 +348,7 @@ const sections = [
   },
   {
     id: 'contact',
-    title: '10. Contact Us',
+    title: '11. Contact Us',
     body: (
       <p>
         Questions, concerns, or requests about your privacy? Reach our team at{' '}

@@ -1,16 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
+import { ADSENSE_CLIENT } from '@/lib/ads'
 
 // Brand type: Plus Jakarta Sans for headings, Inter for body/UI - both chosen
 // for readability at small sizes on a high-traffic information site.
 const sans = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
 const display = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-display', weight: ['500', '600', '700', '800'] })
-
-const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT
-const ADSENSE_ACCOUNT = ADSENSE_CLIENT || 'ca-pub-7270136170155691'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -90,19 +87,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <head>
         <meta name="theme-color" content="#2266b1" />
-        <meta name="google-adsense-account" content={ADSENSE_ACCOUNT} />
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
       </head>
       <body className="font-sans">
         {children}
-        {ADSENSE_CLIENT && (
-          <Script
-            id="adsense"
-            async
-            strategy="afterInteractive"
-            crossOrigin="anonymous"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-          />
-        )}
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </body>
     </html>

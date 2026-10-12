@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import prisma from '@/lib/prisma'
 import JobsClient from '@/components/jobs/JobsClient'
-import AdSlot from '@/components/ads/AdSlot'
+import GoogleAd from '@/components/ads/GoogleAd'
 import PageHero from '@/components/layout/PageHero'
 import { opportunityListSelect } from '@/types/opportunity-list'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
@@ -55,7 +55,7 @@ export default async function InternshipsPage() {
         <JobsClient initialJobs={internships} mode="internships" />
       </Suspense>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <AdSlot placement="internships-bottom" compact />
+        <GoogleAd placement="listing-top" shape="leaderboard" />
       </div>
     </div>
   )
