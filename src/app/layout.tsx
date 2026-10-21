@@ -88,6 +88,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="theme-color" content="#2266b1" />
         <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+        {/* Sabilytics web analytics */}
+        <script
+          async
+          src="https://www.sabilytics.com/script.js"
+          data-site="io40e6jzo2c5"
+          data-domain="thexcel360.com"
+        />
       </head>
       <body className="font-sans">
         {children}

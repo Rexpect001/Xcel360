@@ -70,12 +70,12 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // Google AdSense needs its loader plus the ad-serving/quality domains
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://www.googletagservices.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://www.googletagservices.com https://www.sabilytics.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Posters/covers live on Vercel Blob; ads and YouTube thumbnails are served over https
               "img-src 'self' blob: data: https:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://*.tile.openstreetmap.org https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google",
+              "connect-src 'self' https://*.tile.openstreetmap.org https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://www.sabilytics.com https://sabilytics.com",
               "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://*.doubleclick.net https://*.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
               "frame-ancestors 'none'",
               "base-uri 'self'",
