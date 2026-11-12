@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export const revalidate = 300
+// This endpoint reads runtime database settings. Building the container must
+// not require production database credentials or bake those settings in.
+export const dynamic = 'force-dynamic'
 
 // Safe, public site settings - consumed by the announcement bar and footer.
 // NEVER return admin-only or sensitive keys here.
