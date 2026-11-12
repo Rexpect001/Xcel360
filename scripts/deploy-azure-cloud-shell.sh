@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-RESOURCE_GROUP="xcel360-prod"
-ENVIRONMENT="xcel360-env"
-APP_NAME="xcel360"
-LOCATION="francecentral"
-CONTAINER_NAME="xcel360-public"
-IMAGE="ghcr.io/rexpect001/xcel360:sha-45b6a043ce6c53a456d6ad4f147150838d8be116"
+RESOURCE_GROUP="${AZURE_RESOURCE_GROUP:-xcel360-prod}"
+ENVIRONMENT="${AZURE_CONTAINERAPP_ENVIRONMENT:-xcel360-env}"
+APP_NAME="${AZURE_CONTAINERAPP_NAME:-xcel360}"
+LOCATION="${AZURE_LOCATION:-francecentral}"
+CONTAINER_NAME="${AZURE_STORAGE_CONTAINER:-xcel360-public}"
+IMAGE="${AZURE_CONTAINER_IMAGE:-ghcr.io/rexpect001/xcel360:sha-45b6a043ce6c53a456d6ad4f147150838d8be116}"
 ENV_FILE="${1:-.env.local}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -193,21 +193,36 @@ if az containerapp show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" --
     --transport auto \
     --output none
 else
-  az containerapp create \
-    --name "$APP_NAME" \
-    --resource-group "$RESOURCE_GROUP" \
-    --environment "$ENVIRONMENT" \
-    --image "$IMAGE" \
-    --ingress external \
-    --target-port 3000 \
-    --transport auto \
-    --cpu 0.5 \
-    --memory 1Gi \
-    --min-replicas 0 \
-    --max-replicas 2 \
-    --secrets "${secrets[@]}" \
-    --env-vars "${env_vars[@]}" \
+  create_args=(
+    --name "$APP_NAME"
+    --resource-group "$RESOURCE_GROUP"
+    --environment "$ENVIRONMENT"
+    --image "$IMAGE"
+    --ingress external
+    --target-port 3000
+    --transport auto
+    --cpu 0.5
+    --memory 1Gi
+    --min-replicas 0
+    --max-replicas 2
+    --secrets "${secrets[@]}"
+    --env-vars "${env_vars[@]}"
     --output none
+  )
+
+  ENVIRONMENT_MODE="$(
+    az containerapp env show \
+      --name "$ENVIRONMENT" \
+      --resource-group "$RESOURCE_GROUP" \
+      --query properties.environmentMode \
+      --output tsv
+  )"
+
+  if [[ "$ENVIRONMENT_MODE" == "WorkloadProfiles" ]]; then
+    create_args+=(--workload-profile-name Consumption)
+  fi
+
+  az containerapp create "${create_args[@]}"
 fi
 
 FQDN="$(
