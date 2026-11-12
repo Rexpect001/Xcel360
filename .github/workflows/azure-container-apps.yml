@@ -1,20 +1,28 @@
-name: Build Xcel360 container
+name: Build and deploy Xcel360
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
+concurrency:
+  group: xcel360-production
+  cancel-in-progress: false
 
 env:
   IMAGE_NAME: ghcr.io/rexpect001/xcel360
+  AZURE_RESOURCE_GROUP: xcel360-prod
+  AZURE_CONTAINER_APP: xcel360-web
+  PRODUCTION_URL: https://thexcel360.com
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.release-image.outputs.image }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -49,3 +57,124 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Record immutable release image
+        id: release-image
+        shell: bash
+        run: echo "image=${IMAGE_NAME}:sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+  deploy-production:
+    if: ${{ vars.AZURE_DEPLOY_ENABLED == 'true' }}
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: https://thexcel360.com
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install the Container Apps CLI extension
+        shell: bash
+        run: az extension add --name containerapp --upgrade --allow-preview true
+
+      - name: Capture the current production image
+        id: previous
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          previous_image="$(
+            az containerapp show \
+              --name "$AZURE_CONTAINER_APP" \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --query 'properties.template.containers[0].image' \
+              --output tsv
+          )"
+          echo "image=$previous_image" >> "$GITHUB_OUTPUT"
+          echo "Current image: $previous_image"
+
+      - name: Deploy the immutable image
+        id: deploy
+        shell: bash
+        env:
+          RELEASE_IMAGE: ${{ needs.build-and-push.outputs.image }}
+        run: |
+          set -Eeuo pipefail
+          echo "Deploying $RELEASE_IMAGE"
+          az containerapp update \
+            --name "$AZURE_CONTAINER_APP" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --image "$RELEASE_IMAGE" \
+            --output none
+
+      - name: Smoke test the new revision
+        id: smoke-test
+        shell: bash
+        env:
+          RELEASE_IMAGE: ${{ needs.build-and-push.outputs.image }}
+        run: |
+          set -Eeuo pipefail
+          fqdn="$(
+            az containerapp show \
+              --name "$AZURE_CONTAINER_APP" \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --query 'properties.configuration.ingress.fqdn' \
+              --output tsv
+          )"
+          health_url="https://${fqdn}/api/auth/providers"
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error --location \
+              --max-time 20 \
+              --output /dev/null \
+              "$health_url"; then
+              echo "Smoke test passed: $health_url"
+              {
+                echo "### Production deployment succeeded"
+                echo ""
+                echo "- Image: \`$RELEASE_IMAGE\`"
+                echo "- Site: $PRODUCTION_URL"
+                echo "- Health check: \`$health_url\`"
+              } >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+
+            echo "Health check attempt $attempt/30 failed; retrying in 10 seconds..."
+            sleep 10
+          done
+
+          echo "Smoke test failed after 30 attempts: $health_url" >&2
+          exit 1
+
+      - name: Roll back after a failed deployment
+        if: ${{ failure() && steps.previous.outputs.image != '' }}
+        shell: bash
+        env:
+          PREVIOUS_IMAGE: ${{ steps.previous.outputs.image }}
+          RELEASE_IMAGE: ${{ needs.build-and-push.outputs.image }}
+        run: |
+          set -Eeuo pipefail
+          if [[ "$PREVIOUS_IMAGE" == "$RELEASE_IMAGE" ]]; then
+            echo "The previous and release images are identical; no rollback is needed."
+            exit 0
+          fi
+
+          echo "Rolling back to $PREVIOUS_IMAGE"
+          az containerapp update \
+            --name "$AZURE_CONTAINER_APP" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --image "$PREVIOUS_IMAGE" \
+            --output none
+
+      - name: Sign out of Azure
+        if: ${{ always() }}
+        shell: bash
+        run: az logout
