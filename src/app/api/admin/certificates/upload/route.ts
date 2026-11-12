@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
+import { putBlob } from '@/lib/blob-storage'
 import { requireAdmin } from '@/lib/auth'
 
 const MAX_SIZE = 8 * 1024 * 1024 // 8 MB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg']
 
-// Upload a certificate asset (background / logo / signature) to Vercel Blob.
+// Upload a certificate asset (background / logo / signature) to Azure Blob Storage.
 // Form fields: file, kind ("background" | "logo" | "signature")
 export async function POST(req: NextRequest) {
   try {
@@ -24,16 +24,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Only PNG or JPG images are allowed.' }, { status: 400 })
     }
 
-    const token = process.env.BLOB_READ_WRITE_TOKEN
-    if (!token) {
-      return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not configured.' }, { status: 500 })
-    }
-
     const safeKind = ['background', 'logo', 'signature'].includes(kind) ? kind : 'asset'
-    const blob = await put(`certificates/templates/${safeKind}-${Date.now()}-${file.name}`, file, {
-      access: 'public',
+    const blob = await putBlob(`certificates/templates/${safeKind}-${Date.now()}-${file.name}`, file, {
       contentType: file.type,
-      token,
     })
 
     return NextResponse.json({ url: blob.url })

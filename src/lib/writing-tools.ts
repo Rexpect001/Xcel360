@@ -156,3 +156,39 @@ export const STARTUP_TOOL_ORDER = ['startup-idea', 'startup-interviews', 'startu
 export function isToolId(v: unknown): v is ToolId {
   return typeof v === 'string' && Object.prototype.hasOwnProperty.call(WRITING_TOOLS, v)
 }
+
+/** The bits of an opportunity listing the forms need. */
+export interface OpportunitySummary {
+  id: string
+  title: string
+  org: string
+  category: string
+  eligibility: string
+  skills: string[]
+}
+
+/** Which tools can be tailored to a listing, by category. */
+export function toolsForOpportunity(category: string): ToolId[] {
+  return category === 'SCHOLARSHIP' ? ['cv', 'sop', 'cover-letter'] : ['cv', 'cover-letter']
+}
+
+/**
+ * Field values to fill from a listing. These fill only the "what are you applying for"
+ * fields; facts about the applicant always come from the applicant.
+ */
+export function opportunityPrefill(toolId: ToolId, opp: OpportunitySummary): Record<string, string> {
+  const criteria = opp.eligibility.replace(/\s+\n/g, '\n').trim()
+  switch (toolId) {
+    case 'cv':
+      return { target: `${opp.title} (${opp.org})`.slice(0, 240), criteria: criteria.slice(0, 1800) }
+    case 'sop':
+      return { scholarship: `${opp.title} (${opp.org})`.slice(0, 200) }
+    case 'cover-letter':
+      return {
+        role: `${opp.title}, ${opp.org}`.slice(0, 200),
+        requirements: [criteria, opp.skills.length ? `Skills: ${opp.skills.join(', ')}` : ''].filter(Boolean).join('\n\n').slice(0, 3000),
+      }
+    default:
+      return {}
+  }
+}

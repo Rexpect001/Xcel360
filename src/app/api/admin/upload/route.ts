@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
-import { put } from '@vercel/blob'
+import { putBlob } from '@/lib/blob-storage'
 
 const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -19,6 +19,6 @@ export async function POST(req: NextRequest) {
   const ext = EXT_MAP[file.type] ?? 'jpg'
   const filename = `opportunities/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
-  const blob = await put(filename, file, { access: 'public', contentType: file.type })
+  const blob = await putBlob(filename, file, { contentType: file.type })
   return NextResponse.json({ url: blob.url })
 }

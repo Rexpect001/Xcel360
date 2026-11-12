@@ -1,11 +1,17 @@
 import Link from 'next/link'
 import { ArrowUpRight, Lightbulb, MessageCircleQuestion, CalendarRange } from 'lucide-react'
 import DashHeader from '@/components/dashboard/DashHeader'
+import CreditsNotice from '@/components/dashboard/CreditsNotice'
+import { getAuth } from '@/lib/auth'
+import { pageCredits } from '@/lib/credits-page'
 import { STARTUP_TOOL_ORDER, WRITING_TOOLS } from '@/lib/writing-tools'
 
 const ICONS = { 'startup-idea': Lightbulb, 'startup-interviews': MessageCircleQuestion, 'startup-roadmap': CalendarRange } as const
 
-export default function LaunchpadPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function LaunchpadPage() {
+  const credits = await pageCredits(await getAuth())
   return (
     <div>
       <DashHeader
@@ -13,6 +19,7 @@ export default function LaunchpadPage() {
         title="Xcel360 Launchpad"
         subtitle="Work through an idea, talk to potential customers, and make a practical first-month plan. Each step uses your own details and shows what still needs testing."
       />
+      <CreditsNotice credits={credits} />
       <div className="grid sm:grid-cols-3 gap-4">
         {STARTUP_TOOL_ORDER.map((id, index) => {
           const tool = WRITING_TOOLS[id]

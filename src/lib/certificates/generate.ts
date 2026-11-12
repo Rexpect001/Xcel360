@@ -1,4 +1,4 @@
-import { put } from '@vercel/blob'
+import { putBlob } from '@/lib/blob-storage'
 import prisma from '@/lib/prisma'
 import { nextCertificateId } from './id'
 import { generateCertificatePdf, CertificateTemplateData } from './pdf'
@@ -97,15 +97,11 @@ export async function issueCertificate(opts: {
       template,
     )
 
-    // Upload PDF to Vercel Blob (public, unguessable URL)
-    const token = process.env.BLOB_READ_WRITE_TOKEN
-    if (!token) return { ok: false, error: 'BLOB_READ_WRITE_TOKEN is not configured' }
-    // addRandomSuffix makes the blob URL unguessable so certificate PDFs
+    // Upload PDF to Azure Blob Storage. addRandomSuffix makes the URL
+    // unguessable so certificate PDFs
     // can't be enumerated by incrementing the certificate ID.
-    const blob = await put(`certificates/${certificateId}.pdf`, Buffer.from(pdfBytes), {
-      access: 'public',
+    const blob = await putBlob(`certificates/${certificateId}.pdf`, Buffer.from(pdfBytes), {
       contentType: 'application/pdf',
-      token,
       addRandomSuffix: true,
     })
 

@@ -1,10 +1,12 @@
 export const revalidate = 3600
 export async function generateStaticParams() { return [] }
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { Calendar, Clock, User, Video, MapPin, ArrowLeft, Users, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import RegisterForm from './RegisterForm'
+import GoogleAd from '@/components/ads/GoogleAd'
 import CountdownTimer from '@/components/events/CountdownTimer'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
@@ -24,13 +26,13 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       title: event.title, description, url: `${BASE}/events/${event.id}`, type: 'article',
       // Use the stored static cover if one exists; skip the auto-generated OG
       // renderer otherwise rather than hitting it on every social unfurl.
-      ...(imageUrl ? { images: [{ url: imageUrl, width: 1200, height: 630, alt: event.title }] } : {}),
+      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: event.title }] : [DEFAULT_OG_IMAGE],
     },
     twitter: {
-      card: imageUrl ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: event.title,
       description,
-      ...(imageUrl ? { images: [imageUrl] } : {}),
+      images: [imageUrl ?? DEFAULT_OG_IMAGE.url],
     },
   }
 }
@@ -61,7 +63,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
   const eventDate = new Date(event.date)
   // Format in West Africa Time so the date/time match the audience's locale
-  // regardless of the server timezone (UTC on Vercel).
+  // regardless of the hosting platform's server timezone.
   const dateStr = eventDate.toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Lagos',
   })
@@ -179,6 +181,8 @@ export default async function EventDetailPage({ params }: { params: { id: string
               <p className="text-gray-600 leading-relaxed whitespace-pre-line">{event.description}</p>
             </div>
           )}
+
+          <GoogleAd placement="detail-inline" />
 
           {/* Registration */}
           {isPast ? (

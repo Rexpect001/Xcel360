@@ -7,7 +7,7 @@ const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <onboarding@resend.dev>'
 
 /**
  * Daily cron  -  continues any campaigns that still have unsent recipients.
- * Called by Vercel Cron at 7am UTC. Protected by CRON_SECRET.
+ * Called by an external scheduler. Protected by CRON_SECRET.
  */
 export async function GET(req: Request) {
   const authHeader = req.headers.get('Authorization')

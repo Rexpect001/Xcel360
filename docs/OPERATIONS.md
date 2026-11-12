@@ -12,8 +12,8 @@
 1. Run `npm run build` before deploying.
 2. Check `/`, `/api/settings/public`, and a public detail page. An anonymous request to `/api/og` should return 403.
 3. Run `npm run db:check` from a trusted environment with production credentials. It reports counts and lock health, not connection secrets.
-4. Compare Vercel Usage > Functions > Active CPU and the highest-CPU routes over the next 24–48 hours. The previous screenshot showed 5 h 5 m used against a 4 h Hobby allowance. This release removes likely hot paths, but a lower CPU trend must be confirmed in Vercel usage data.
-5. If CPU remains high, inspect function-level usage and traffic. Review image rendering, cron jobs, and automated traffic before changing hosting providers.
+4. Review Azure Container Apps metrics and Azure Logic Apps run history over the next 24–48 hours. Confirm both scheduled workflows succeed and inspect any backend errors.
+5. If compute usage is high, inspect image rendering, cron jobs, and automated traffic before changing plans.
 
 ## Database safety
 
@@ -24,7 +24,7 @@
 
 ## Next architecture decisions
 
-- Keep Vercel for cached pages and lightweight user APIs while measuring the post-release CPU trend. Move image creation, discovery, bulk email, and import jobs to a queue/worker only if they remain material in function-level usage.
+- Keep cached pages and lightweight user APIs in Azure Container Apps. Move image creation, discovery, bulk email, and import jobs to a queue/worker only if they become material in backend metrics.
 - Decide on a backup retention target and restore-time objective before adding more user data. Establish versioned Prisma migrations and a staging database before changing tables.
 - Launchpad currently provides idea validation, interview questions, and a 30-day plan. Saving startup projects, collaboration, and paid usage tiers need separate product and data-model decisions; they are not implied by renaming the old Pro section.
 

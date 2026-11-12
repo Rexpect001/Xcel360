@@ -11,3 +11,11 @@ export const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-
 
 export const ADS_ENABLED =
   process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_ADS_DISABLED !== 'true'
+
+/**
+ * In-article ad breaks: one after the 3rd paragraph, a second after the 10th
+ * on long articles. Short pieces get none so ads never outweigh the content.
+ */
+export function isArticleAdBreak(index: number, total: number) {
+  return (index === 2 && total > 4) || (index === 9 && total > 13)
+}

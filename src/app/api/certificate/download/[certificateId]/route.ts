@@ -6,7 +6,7 @@ import prisma from '@/lib/prisma'
 const db = prisma as any
 
 /**
- * Stream a certificate PDF through the app so the underlying Vercel Blob
+ * Stream a certificate PDF through the app so the underlying blob-storage
  * storage URL is never exposed to the client. Only ISSUED certificates are
  * served; revoked/missing ones 404.
  */

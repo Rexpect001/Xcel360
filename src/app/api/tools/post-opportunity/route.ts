@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
 
     if (!imageUrl) {
       // Generate the branded card image and store it as a permanent static PNG in
-      // Vercel Blob so card loads are served from CDN with zero compute.
+      // Azure Blob Storage so card loads do not consume application compute.
       const staticUrl = await generateAndStoreOpImage(opportunity.id, typeParam, APP_URL)
       if (staticUrl) {
         await db.opportunity.update({ where: { id: opportunity.id }, data: { imageUrl: staticUrl } })

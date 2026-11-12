@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
+import { putBlob } from '@/lib/blob-storage'
 import { requireAdmin } from '@/lib/auth'
 
 const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
@@ -28,15 +28,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const token = process.env.BLOB_READ_WRITE_TOKEN
-    if (!token) {
-      return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not configured.' }, { status: 500 })
-    }
-
-    const blob = await put(`events/${Date.now()}-${file.name}`, file, {
-      access: 'public',
+    const blob = await putBlob(`events/${Date.now()}-${file.name}`, file, {
       contentType: file.type,
-      token,
     })
 
     return NextResponse.json({ url: blob.url })

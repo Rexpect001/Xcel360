@@ -1,14 +1,14 @@
 /**
  * Generate certificates for ALL registrations of the Leveraging AI event.
  * Skips registrations that already have a certificate (resumable). Does NOT
- * email - emailing is handled separately. Writes PDFs to Vercel Blob and
+ * email - emailing is handled separately. Writes PDFs to Azure Blob Storage and
  * Certificate records to the DB.
  *   npx tsx scripts/gen-certs.mts            # dry run (counts only)
  *   npx tsx scripts/gen-certs.mts --yes      # generate
  */
 import { readFileSync } from 'node:fs'
 import { PrismaClient } from '@prisma/client'
-import { put } from '@vercel/blob'
+import { putBlob } from './azure-blob.mjs'
 
 function loadEnv(file: string) {
   try {
@@ -67,9 +67,6 @@ async function main() {
   console.log(`Template signature: ${template.signatureName ?? '(none)'} | sig image: ${template.signatureUrl ? 'yes' : 'no'}`)
 
   if (!confirmed) { console.log('\nDry run - pass --yes to generate.'); return }
-  const token = process.env.BLOB_READ_WRITE_TOKEN
-  if (!token) throw new Error('BLOB_READ_WRITE_TOKEN not set')
-
   let made = 0, failed = 0
   for (const reg of todo) {
     try {
@@ -87,8 +84,8 @@ async function main() {
         },
         template,
       )
-      const blob = await put(`certificates/${certificateId}.pdf`, Buffer.from(pdfBytes), {
-        access: 'public', contentType: 'application/pdf', token, addRandomSuffix: true,
+      const blob = await putBlob(`certificates/${certificateId}.pdf`, Buffer.from(pdfBytes), {
+        contentType: 'application/pdf', addRandomSuffix: true,
       })
       if (ex) {
         await db.certificate.update({

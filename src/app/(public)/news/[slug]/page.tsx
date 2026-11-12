@@ -1,11 +1,15 @@
 export const revalidate = 900
 export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { formatDate } from '@/lib/utils'
 import { ArrowLeft, Calendar, User } from 'lucide-react'
+import GoogleAd from '@/components/ads/GoogleAd'
+import { isArticleAdBreak } from '@/lib/ads'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = prisma as any
@@ -25,7 +29,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title: post.title,
       description: post.excerpt ?? undefined,
       url: `/news/${post.slug}`,
-      images: post.coverImage ? [post.coverImage] : undefined,
+      images: post.coverImage ? [post.coverImage] : [DEFAULT_OG_IMAGE],
       type: 'article',
     },
   }
@@ -86,9 +90,10 @@ export default async function NewsArticlePage({ params }: { params: { slug: stri
             )}
             <div className="space-y-5">
               {paragraphs.map((p: string, i: number) => (
-                <p key={i} className="text-gray-700 leading-[1.8] whitespace-pre-wrap">
-                  {p}
-                </p>
+                <Fragment key={i}>
+                  <p className="text-gray-700 leading-[1.8] whitespace-pre-wrap">{p}</p>
+                  {isArticleAdBreak(i, paragraphs.length) && <GoogleAd placement="detail-inline" />}
+                </Fragment>
               ))}
             </div>
           </div>

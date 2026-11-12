@@ -68,6 +68,9 @@ model User {
   notifications Notification[]
   accounts      Account[]
   sessions      Session[]
+  writingDrafts WritingDraft[]
+  creditEntries CreditEntry[]
+  payments      Payment[]
 }
 
 model Profile {
@@ -358,11 +361,11 @@ model Resource {
   title       String
   description String?  @db.Text
   category    String   // "CV Template", "SOP Template", "Guide", etc.
-  fileUrl     String   // Vercel Blob URL or external link
+  fileUrl     String   // Azure Blob URL or external link
   filename    String?  // Suggested filename when downloaded
   fileSize    Int?     // File size in bytes
   fileType    String?  // MIME type: application/pdf, application/vnd.openxmlformats...
-  isUploaded  Boolean  @default(false) // true = stored in Vercel Blob, false = external link
+  isUploaded  Boolean  @default(false) // true = managed blob storage, false = external link
   downloads   Int      @default(0)
   published   Boolean  @default(true)
   sortOrder   Int      @default(0)
@@ -485,7 +488,7 @@ model Certificate {
 
   certificateType String            @default("Certificate of Participation")
   status          CertificateStatus @default(ISSUED)
-  pdfUrl          String?           // Vercel Blob URL of the generated PDF
+  pdfUrl          String?           // Azure Blob URL of the generated PDF
   emailSentAt     DateTime?
   issuedAt        DateTime          @default(now())
   revokedAt       DateTime?
@@ -529,4 +532,61 @@ model CertificateOtp {
 model CertificateSequence {
   year String @id // "2026"
   seq  Int    @default(0)
+}
+
+// Saved outputs from the AI writing tools (CV, SOP, cover letter, cold email, startup).
+model WritingDraft {
+  id             String   @id @default(cuid())
+  userId         String
+  tool           String
+  title          String
+  inputs         Json
+  output         String   @db.Text
+  previousOutput String?  @db.Text
+  opportunityId  String?
+  promptVersion  String
+  checks         Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
+}
+
+// Credits for the AI tools. Append-only: balance = sum of delta. `reference` makes
+// each grant, purchase, charge and refund happen at most once.
+model CreditEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  delta     Int
+  reason    String   // FREE_GRANT, PURCHASE, DRAFT, REFUND, ADMIN
+  reference String   @unique
+  note      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// Paystack checkouts. Credits are added only after Paystack confirms the payment.
+model Payment {
+  id         String    @id @default(cuid())
+  userId     String
+  provider   String    @default("paystack")
+  reference  String    @unique
+  packId     String
+  credits    Int
+  amount     Int       // smallest unit (kobo)
+  currency   String    @default("NGN")
+  status     String    @default("PENDING") // PENDING, SUCCESS, FAILED
+  channel    String?
+  paidAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

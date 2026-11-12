@@ -1,4 +1,5 @@
 export const revalidate = 86400
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import { Quote } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
@@ -12,6 +13,7 @@ export const metadata = {
     title: 'Success Stories  -  Xcel360',
     description: 'Real students, real scholarships. See how Xcel360 members won fully funded opportunities abroad.',
     url: '/success-stories',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

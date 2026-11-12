@@ -1,0 +1,16 @@
+.git
+.github
+.next
+.tmp
+.vercel
+node_modules
+
+.env
+.env.*
+!.env.example
+
+*.log
+*.pem
+*.pptx
+Other Resources
+video

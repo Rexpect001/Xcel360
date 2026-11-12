@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowRight, Lightbulb } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
 import SearchDemo from '@/components/landing/SearchDemo'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 export const metadata: Metadata = {
   title: 'How to Search for Scholarships',
@@ -31,6 +32,10 @@ export default function HowToSearchPage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <SearchDemo />
       </section>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+        <GoogleAd placement="home-feed" shape="leaderboard" />
+      </div>
 
       <section className="bg-white border-y border-surface-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">

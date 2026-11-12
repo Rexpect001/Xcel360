@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { sendDeadlineReminders } from '@/lib/notifications'
 
-// Called daily by a cron job (e.g., Vercel Cron, external scheduler)
+// Called daily by the Azure Logic Apps scheduler.
 // Protect with a secret header in production
 export async function GET(req: Request) {
   const authHeader = req.headers.get('Authorization')

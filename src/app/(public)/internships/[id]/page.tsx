@@ -1,6 +1,7 @@
 export const revalidate = 3600
 export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { formatDate, daysUntilDeadline } from '@/lib/utils'
@@ -9,6 +10,7 @@ import ShareButtons from '@/components/ui/ShareButtons'
 import { Calendar, MapPin, BookOpen, FileText, CheckCircle, Briefcase, DollarSign, Wifi, Star } from 'lucide-react'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
+import TailorApplication from '@/components/opportunities/TailorApplication'
 import SaveButton from '@/components/ui/SaveButton'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
 import GoogleAd from '@/components/ads/GoogleAd'
@@ -29,13 +31,13 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       title: job.title, description, url: `${BASE}/internships/${job.id}`, type: 'article',
       // Use the stored static card if one exists; skip the auto-generated OG
       // renderer otherwise rather than hitting it on every social unfurl.
-      ...(imageUrl ? { images: [{ url: imageUrl, width: 1200, height: 630, alt: job.title }] } : {}),
+      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630, alt: job.title }] : [DEFAULT_OG_IMAGE],
     },
     twitter: {
-      card: imageUrl ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: job.title,
       description,
-      ...(imageUrl ? { images: [imageUrl] } : {}),
+      images: [imageUrl ?? DEFAULT_OG_IMAGE.url],
     },
   }
 }
@@ -87,6 +89,8 @@ export default async function InternshipDetailPage({ params }: { params: { id: s
             <ApplyButton href={job.applicationLink} title={job.title} />
             <SaveButton opportunityId={job.id} />
           </div>
+
+          {days > 0 && <TailorApplication opportunityId={job.id} category={job.category} className="mt-5" />}
 
           <div className="mt-5 pt-5 border-t border-gray-100">
             <ShareButtons title={job.title} url={pageUrl} />

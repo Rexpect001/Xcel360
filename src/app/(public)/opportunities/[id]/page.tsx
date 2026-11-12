@@ -1,6 +1,7 @@
 export const revalidate = 3600
 export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 
@@ -35,13 +36,13 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       url: `${BASE}/opportunities/${opp.id}`,
       type: 'article',
       // Use uploaded image if available; skip auto-generated OG otherwise
-      ...(imageUrl ? { images: [{ url: imageUrl, alt: opp.title }] } : {}),
+      images: imageUrl ? [{ url: imageUrl, alt: opp.title }] : [DEFAULT_OG_IMAGE],
     },
     twitter: {
-      card: imageUrl ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: opp.title,
       description,
-      ...(imageUrl ? { images: [imageUrl] } : {}),
+      images: [imageUrl ?? DEFAULT_OG_IMAGE.url],
     },
   }
 }
@@ -61,6 +62,7 @@ import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
 import OpportunityMatch from '@/components/opportunities/OpportunityMatch'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
+import TailorApplication from '@/components/opportunities/TailorApplication'
 import type { ReactNode } from 'react'
 
 // Renders inline **bold** markers safely
@@ -325,8 +327,8 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                     ))}
                   </ul>
                   <p className="mt-4 text-xs text-ink-500">
-                    Need a CV, SOP or cover letter? Xcel360 writing tools draft them for you.{' '}
-                    <Link href="/dashboard/tools" className="font-semibold text-brand-700 hover:underline">Open writing tools</Link>
+                    Need a CV, SOP or cover letter? Xcel360 writing tools can draft them for this listing.{' '}
+                    <Link href={`/dashboard/tools/cv?opportunity=${opp.id}`} className="font-semibold text-brand-700 hover:underline">Start with your CV</Link>
                   </p>
                 </section>
               )}
@@ -362,6 +364,8 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 </p>
                 <GuestPrompt />
               </div>
+
+              {!isClosed && <TailorApplication opportunityId={opp.id} category={opp.category} />}
 
               <div className="rounded-2xl bg-brand-600 text-white p-5">
                 <h3 className="font-bold text-white mb-3">Quick summary</h3>

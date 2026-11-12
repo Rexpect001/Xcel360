@@ -1,6 +1,7 @@
 export const revalidate = 3600
 
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import OpportunitiesPage from '../opportunities/page'
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
     title: 'Scholarships for African Students - Xcel360',
     description: 'Search scholarships, grants, fellowships, and funding opportunities by country, field, level, and deadline.',
     url: '/scholarships',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

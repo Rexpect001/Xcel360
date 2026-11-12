@@ -246,7 +246,7 @@ export default function AdminResourcesPage() {
 
       <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-blue-700 mb-6 flex items-start gap-2">
         <CloudUpload className="h-4 w-4 flex-shrink-0 mt-0.5" />
-        <span>Upload PDF, Word, Excel, or PowerPoint files directly (max 10 MB)  -  or paste an external link. Files are served from Vercel Blob CDN.</span>
+        <span>Upload PDF, Word, Excel, or PowerPoint files directly (max 10 MB) - or paste an external link. Files are served from Azure Blob Storage.</span>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -497,7 +497,7 @@ export default function AdminResourcesPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800 truncate">{uploadedFile?.name}</p>
-                    <p className="text-xs text-gray-500">{formatFileSize(uploadedFile?.size)} · Uploaded to Vercel Blob</p>
+                    <p className="text-xs text-gray-500">{formatFileSize(uploadedFile?.size)} · Uploaded to Azure Blob Storage</p>
                   </div>
                   {!editRes && (
                     <button type="button" onClick={resetUpload} className="p-1.5 rounded-lg text-gray-400 hover:bg-green-100 hover:text-gray-600 transition-colors flex-shrink-0">

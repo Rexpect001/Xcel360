@@ -22,6 +22,7 @@ export const MATERIALS_NAV: NavItem[] = [
       { href: '/dashboard/tools/sop',          label: 'SOP Generator' },
       { href: '/dashboard/tools/cover-letter', label: 'Cover Letter Builder' },
       { href: '/dashboard/tools/cold-email',   label: 'Cold Email Generator' },
+      { href: '/dashboard/tools/drafts',       label: 'My Drafts' },
     ],
   },
   {
@@ -42,6 +43,7 @@ export const SERVICES_NAV: NavItem[] = [
       { href: '/dashboard/services/advisor', label: 'Speak With an Advisor' },
     ],
   },
+  { href: '/dashboard/billing', label: 'Credits', icon: 'coins' },
   { href: '/dashboard/profile', label: 'My Profile', icon: 'user' },
 ]
 

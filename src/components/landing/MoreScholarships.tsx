@@ -1,6 +1,8 @@
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import OpportunityCard, { type CardOpportunity } from '@/components/opportunities/OpportunityCard'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 /**
  * "More to explore" - nine scholarships in the shared snapshot format
@@ -25,8 +27,13 @@ export default function MoreScholarships({ scholarships }: { scholarships: CardO
           </Link>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {scholarships.map((s) => (
-            <OpportunityCard key={s.id} opp={s} />
+          {scholarships.map((s, i) => (
+            <Fragment key={s.id}>
+              <OpportunityCard opp={s} />
+              {i === 5 && scholarships.length > 6 && (
+                <GoogleAd placement="listing-infeed" className="sm:col-span-2 lg:col-span-3" />
+              )}
+            </Fragment>
           ))}
         </div>
         <div className="mt-10 text-center">

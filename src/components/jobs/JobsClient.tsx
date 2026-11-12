@@ -1,10 +1,11 @@
 'use client'
-import { useState, useMemo, useEffect, lazy, Suspense } from 'react'
+import { Fragment, useState, useMemo, useEffect, lazy, Suspense } from 'react'
 import { Search, SlidersHorizontal, X, Bookmark, ExternalLink, LayoutGrid, Map, Briefcase, DollarSign, Wifi } from 'lucide-react'
 import { Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
 import Pagination from '@/components/ui/Pagination'
+import GoogleAd from '@/components/ads/GoogleAd'
 import { formatDate, daysUntilDeadline, cn } from '@/lib/utils'
 import { tokenizeQuery, searchScore } from '@/lib/opportunitySearch'
 import { FIELDS, COUNTRIES } from '@/types'
@@ -257,12 +258,12 @@ export default function JobsClient({ initialJobs, mode }: Props) {
       ) : viewMode === 'list' ? (
         <>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {paginated.map((job) => {
+          {paginated.map((job, i) => {
             const days = daysUntilDeadline(job.deadline)
             const detailPath = job.category === 'INTERNSHIP' ? `/internships/${job.id}` : `/jobs/${job.id}`
             return (
+              <Fragment key={job.id}>
               <div
-                key={job.id}
                 className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
               >
                 <div className={`h-1.5 ${job.category === 'INTERNSHIP' ? 'bg-gradient-to-r from-purple-500 to-pink-400' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}`} />
@@ -341,6 +342,10 @@ export default function JobsClient({ initialJobs, mode }: Props) {
                   </div>
                 </div>
               </div>
+              {(i + 1) % 6 === 0 && i < paginated.length - 1 && (
+                <GoogleAd placement="listing-infeed" className="sm:col-span-2 lg:col-span-3" />
+              )}
+              </Fragment>
             )
           })}
         </div>

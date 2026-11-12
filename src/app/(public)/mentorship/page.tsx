@@ -1,5 +1,6 @@
 export const revalidate = 3600
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
 // @ts-ignore  -  lucide ships Linkedin icon
 import { Linkedin } from 'lucide-react'
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
     title: 'Find a Mentor  -  Xcel360',
     description: 'Connect with mentors who have won scholarships and studied abroad. Get guidance on your journey.',
     url: '/mentorship',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

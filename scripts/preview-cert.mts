@@ -17,7 +17,7 @@ const bytes = await generateCertificatePdf(
     verifyUrl: 'https://thexcel360.com/verify/XCL360-2026-000123',
   },
   {
-    signatureUrl: 'https://xroogngayha6w4h2.public.blob.vercel-storage.com/johnson-alabi-signature-y6M5lJ0Rb081GMInlgGM2SwYsyMn3p.png',
+    signatureUrl: process.env.CERTIFICATE_SIGNATURE_URL ?? null,
     signatureName: 'Johnson Alabi',
     signatureTitle: 'Coordinator, Xcel360',
   },

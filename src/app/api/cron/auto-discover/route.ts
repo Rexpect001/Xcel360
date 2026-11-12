@@ -4,7 +4,7 @@ import { runDiscovery } from '@/lib/agent/discover'
 import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 /**
- * Auto-Discovery Cron  -  runs every 8 hours via Vercel Cron
+ * Auto-Discovery Cron - invoked on a schedule by Azure Logic Apps.
  * Searches the web for new scholarships/internships, validates them,
  * and saves them directly to the DB.
  *

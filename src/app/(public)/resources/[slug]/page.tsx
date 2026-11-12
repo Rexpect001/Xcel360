@@ -1,11 +1,15 @@
 export const revalidate = 3600
 export async function generateStaticParams() { return [] }
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
+import { Fragment } from 'react'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import { ArrowLeft, BookOpen, Calendar, Tag, Clock } from 'lucide-react'
+import GoogleAd from '@/components/ads/GoogleAd'
+import { isArticleAdBreak } from '@/lib/ads'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -24,9 +28,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description,
       url: `${BASE}/resources/${post.slug}`,
       type: 'article',
-      ...(post.coverImage && { images: [{ url: post.coverImage }] }),
+      images: post.coverImage ? [{ url: post.coverImage }] : [DEFAULT_OG_IMAGE],
     },
-    twitter: { card: 'summary', title: post.title, description },
+    twitter: { card: 'summary_large_image', title: post.title, description, images: [post.coverImage ?? DEFAULT_OG_IMAGE.url] },
   }
 }
 
@@ -42,6 +46,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   if (!post || !post.published) notFound()
 
   const readTime = estimateReadTime(post.content)
+  const paragraphs = post.content.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -121,8 +126,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {/* Article body */}
         <div className="max-w-3xl mx-auto px-4 py-10">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-            <div className="prose prose-brand max-w-none text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
-              {post.content}
+            <div className="prose prose-brand max-w-none text-gray-700 text-base leading-relaxed space-y-5">
+              {paragraphs.map((p, i) => (
+                <Fragment key={i}>
+                  <p className="whitespace-pre-wrap">{p}</p>
+                  {isArticleAdBreak(i, paragraphs.length) && <GoogleAd placement="detail-inline" className="not-prose" />}
+                </Fragment>
+              ))}
             </div>
           </div>
 

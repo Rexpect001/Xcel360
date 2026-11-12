@@ -9,10 +9,9 @@ import prisma from '@/lib/prisma'
 import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
 /**
- * Consolidated daily cron - Vercel's free Hobby tier allows at most 2 cron
- * jobs, so the fast jobs (deadline reminders, campaign batches, closing
+ * Consolidated daily cron. The fast jobs (deadline reminders, campaign batches, closing
  * expired opportunities, weekly digest) run together here. The long-running auto-discovery job stays on its
- * own route (/api/cron/auto-discover).
+ * own route (/api/cron/auto-discover). Azure Logic Apps invokes both routes.
  *
  * Each job is isolated: a failure in one never blocks the others, and every
  * job is resumable, so a partial run simply continues tomorrow.

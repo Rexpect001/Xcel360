@@ -1,5 +1,6 @@
 export const revalidate = 900
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight, MapPin } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
@@ -7,6 +8,7 @@ import Link from 'next/link'
 import ScrollingBeneficiaries from '@/components/programs/ScrollingBeneficiaries'
 import { CountdownBadge } from '@/components/events/CountdownTimer'
 import PageHero from '@/components/layout/PageHero'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 export const metadata: Metadata = {
   title: 'Events & Webinars',
@@ -17,6 +19,7 @@ export const metadata: Metadata = {
     title: 'Events & Webinars  -  Xcel360',
     description: 'Join free webinars, workshops, and Q&A sessions on scholarships and study abroad.',
     url: '/events',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 
@@ -166,6 +169,8 @@ export default async function EventsPage() {
             </div>
           </div>
         )}
+
+        {events.length > 0 && <GoogleAd placement="listing-top" shape="leaderboard" />}
 
         {/* Past events */}
         {past.length > 0 && (

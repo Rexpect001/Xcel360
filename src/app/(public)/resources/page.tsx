@@ -1,11 +1,13 @@
 export const revalidate = 3600
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import { BookOpen, Calendar, Tag, Download, FileText, ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import ResourceDownloadButton from '@/components/resources/ResourceDownloadButton'
 import PageHero from '@/components/layout/PageHero'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 export const metadata: Metadata = {
   title: 'Free Resources  -  Templates, Guides & SOP Samples',
@@ -24,6 +26,7 @@ export const metadata: Metadata = {
     title: 'Free Resources  -  Xcel360',
     description: 'Download free templates, SOP samples, and guides to strengthen your scholarship applications.',
     url: '/resources',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 
@@ -146,7 +149,7 @@ export default async function ResourcesPage() {
                                     <Download className="h-3 w-3" /> {resource.downloads.toLocaleString()} downloads
                                   </p>
                                 )}
-                                <ResourceDownloadButton resource={resource} />
+                                <ResourceDownloadButton resource={{ id: resource.id, title: resource.title, fileUrl: '' }} viaAdPage />
                               </div>
                             </div>
                           )
@@ -173,7 +176,7 @@ export default async function ResourcesPage() {
                         </div>
                         <h3 className="font-bold text-gray-900 mb-2 text-sm leading-snug">{resource.title}</h3>
                         {resource.description && <p className="text-xs text-gray-500 flex-1 mb-4 line-clamp-3">{resource.description}</p>}
-                        <ResourceDownloadButton resource={resource} />
+                        <ResourceDownloadButton resource={{ id: resource.id, title: resource.title, fileUrl: '' }} viaAdPage />
                       </div>
                     </div>
                   )
@@ -188,6 +191,8 @@ export default async function ResourcesPage() {
             <p className="text-sm text-gray-400 mt-1">Check back soon  -  templates and guides are coming.</p>
           </div>
         )}
+
+        <GoogleAd placement="listing-top" shape="leaderboard" className="mb-14" />
 
         {/* Blog / Guides */}
         <div>

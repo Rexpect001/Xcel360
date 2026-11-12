@@ -39,8 +39,7 @@ const data = {
   excerpt:
     "A recap of the 27 June 2026 session on using artificial intelligence for scholarships, research and career growth - plus how to claim your Certificate of Participation.",
   content,
-  coverImage:
-    'https://xroogngayha6w4h2.public.blob.vercel-storage.com/fifa-worldcup-2026-6YkyYDMfhIoNTy3aPVJHD1BHBNa1wP.png',
+  coverImage: process.env.NEWS_RECAP_IMAGE_URL || null,
   author: 'Xcel360',
   tags: ['Event Recap', 'Artificial Intelligence', 'Webinar'],
   published: true,

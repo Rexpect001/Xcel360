@@ -1,4 +1,5 @@
 export const revalidate = 60
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { GraduationCap, Target, Heart, Globe, Quote } from 'lucide-react'
 import Link from 'next/link'
 import PageHero from '@/components/layout/PageHero'
@@ -13,6 +14,7 @@ export const metadata = {
     title: 'About Xcel360',
     description: 'Our mission: no African student should miss a scholarship opportunity because of lack of information.',
     url: '/about',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 
@@ -32,7 +34,7 @@ export default function AboutPage() {
           <Quote className="h-8 w-8 text-brand-300 mb-4" />
           <p className="text-lg md:text-xl text-gray-800 leading-relaxed font-medium">
             Xcel360 was founded by Alabi Johnson Sunday. The idea came from a simple, personal
-            experience: during university in Kenya, exposure to scholarships and global
+            experience: during university in Ekiti State, Nigeria, exposure to scholarships and global
             opportunities came far later than it should have - not because the opportunities
             weren&apos;t there, but because the information never reached the people who needed
             it most.

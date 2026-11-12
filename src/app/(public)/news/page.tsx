@@ -1,10 +1,12 @@
 export const revalidate = 900
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import { formatDate } from '@/lib/utils'
 import { ArrowRight, Calendar } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 export const metadata: Metadata = {
   title: 'News & Media',
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
     title: 'News & Media  -  Xcel360',
     description: 'Event recaps, announcements and highlights from Xcel360.',
     url: '/news',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 
@@ -76,6 +79,8 @@ export default async function NewsPage() {
                 </span>
               </div>
             </Link>
+
+            <GoogleAd placement="listing-top" shape="leaderboard" className="mt-6" />
 
             {/* Rest */}
             {rest.length > 0 && (

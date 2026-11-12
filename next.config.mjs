@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Bundle the certificate fonts into the serverless function on Vercel so
+  // Azure Container Apps runs the minimal standalone Next.js server image.
+  output: 'standalone',
+  // Bundle the certificate fonts into the server function so
   // fs.readFileSync can load them at runtime.
   experimental: {
     outputFileTracingIncludes: {
@@ -50,7 +52,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Temporary compatibility while existing database objects are copied to Azure.
       { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+      { protocol: 'https', hostname: '*.blob.core.windows.net' },
       { protocol: 'https', hostname: 'thexcel360.com' },
       { protocol: 'https', hostname: 'i.ytimg.com' },
     ],
@@ -72,7 +76,7 @@ const nextConfig = {
               // Google AdSense needs its loader plus the ad-serving/quality domains
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://www.googletagservices.com https://www.sabilytics.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              // Posters/covers live on Vercel Blob; ads and YouTube thumbnails are served over https
+              // Posters/covers live in Azure Blob Storage; ads and YouTube thumbnails use HTTPS
               "img-src 'self' blob: data: https:",
               "font-src 'self' https://fonts.gstatic.com",
               "connect-src 'self' https://*.tile.openstreetmap.org https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://www.sabilytics.com https://sabilytics.com",

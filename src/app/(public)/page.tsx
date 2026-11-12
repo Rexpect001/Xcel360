@@ -24,7 +24,7 @@ const orgJsonLd = {
   '@type': 'Organization',
   name: 'Xcel360',
   url: BASE,
-  logo: `${BASE}/logo.svg`,
+  logo: `${BASE}/brand/xcel-blue.png`,
   sameAs: [
     'https://www.youtube.com/@Xcel_360',
     'https://whatsapp.com/channel/0029Vb6QBzT2v1IyBT8SYn30',

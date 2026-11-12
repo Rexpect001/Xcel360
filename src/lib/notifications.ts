@@ -47,7 +47,7 @@ export async function scheduleDeadlineReminders(userId: string, opportunityId: s
 }
 
 export async function sendDeadlineReminders() {
-  // Called by a cron job (daily at 8am via vercel.json)
+  // Called by the consolidated daily cron route.
   const now = new Date()
   const notificationDays = [30, 14, 7, 2]
 

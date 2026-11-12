@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireRole } from '@/lib/auth'
-import { put } from '@vercel/blob'
+import { putBlob } from '@/lib/blob-storage'
 
 const MAX_SIZE = 10 * 1024 * 1024 // 10 MB  -  Resend attachment limit
 
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     if (file.size > MAX_SIZE) return NextResponse.json({ error: 'File too large (max 10 MB)' }, { status: 400 })
 
-    const blob = await put(`email-attachments/${Date.now()}-${file.name}`, file, {
-      access: 'public',
+    const blob = await putBlob(`email-attachments/${Date.now()}-${file.name}`, file, {
+      contentType: file.type,
     })
 
     return NextResponse.json({

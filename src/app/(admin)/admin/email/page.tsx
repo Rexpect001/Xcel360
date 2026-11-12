@@ -1023,8 +1023,8 @@ export default function AdminEmailPage() {
             <p className="font-semibold text-red-700">{provider === 'resend' ? 'Resend' : 'SendChamp'} is not configured</p>
             <p className="text-red-600 mt-0.5">
               {provider === 'resend'
-                ? <><code className="bg-red-100 px-1 rounded">RESEND_API_KEY</code> is missing. Get a free key at <strong>resend.com</strong> and add it to your Vercel environment variables.</>
-                : <><code className="bg-red-100 px-1 rounded">SENDCHAMP_API_KEY</code> is missing. Get your key from <strong>sendchamp.com</strong> and add it to your Vercel environment variables.</>
+                ? <><code className="bg-red-100 px-1 rounded">RESEND_API_KEY</code> is missing. Get a free key at <strong>resend.com</strong> and add it to your Azure app settings.</>
+                : <><code className="bg-red-100 px-1 rounded">SENDCHAMP_API_KEY</code> is missing. Get your key from <strong>sendchamp.com</strong> and add it to your Azure app settings.</>
               }
             </p>
           </div>

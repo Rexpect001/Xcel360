@@ -16,7 +16,7 @@ import {
   GraduationCap, BookOpen, Users2, CalendarDays, BookMarked, Briefcase,
   Award, UserCheck, Users, BarChart3, Activity, FolderOpen, Settings,
   ContactRound, Mail, BadgeCheck, LogOut, Menu, X, ArrowLeft, ShieldCheck,
-  SquareKanban, PenLine, LibraryBig, Headset, Sparkles, ChevronDown, Search,
+  SquareKanban, PenLine, LibraryBig, Headset, Sparkles, ChevronDown, Search, Coins,
   type LucideIcon,
 } from 'lucide-react'
 import Logo from '@/components/brand/Logo'
@@ -52,6 +52,7 @@ const ICONS = {
   library: LibraryBig,
   headset: Headset,
   sparkles: Sparkles,
+  coins: Coins,
   search: Search,
 } as const
 

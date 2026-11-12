@@ -1,6 +1,7 @@
 export const revalidate = 3600
 
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { Suspense } from 'react'
 import prisma from '@/lib/prisma'
 import JobsClient from '@/components/jobs/JobsClient'
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
     title: 'Internships - Xcel360',
     description: 'Browse internship opportunities for African students and graduates.',
     url: '/internships',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

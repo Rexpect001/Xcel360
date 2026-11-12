@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
@@ -42,21 +43,14 @@ export const metadata: Metadata = {
     title: 'Xcel360  -  Scholarships, CV Tools & Deadline Tracking',
     description:
       'Discover fully funded scholarships, track deadlines, and prepare stronger applications in one place.',
-    images: [
-      {
-        url: '/logo.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Xcel360  -  Scholarships and Application Tools',
-      },
-    ],
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Xcel360  -  Scholarships, CV Tools & Deadline Tracking',
     description:
       'Discover fully funded scholarships, track deadlines, and prepare stronger applications.',
-    images: ['/logo.svg'],
+    images: [DEFAULT_OG_IMAGE.url],
     creator: '@Xcel_360',
   },
   robots: {

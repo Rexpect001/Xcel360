@@ -1,6 +1,7 @@
 export const revalidate = 3600
 
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import OpportunitiesClient from '@/components/opportunities/OpportunitiesClient'
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
     title: 'Scholarships & Funding Opportunities - Xcel360',
     description: 'Browse hundreds of fully funded scholarships, grants, and fellowships for African students.',
     url: '/opportunities',
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

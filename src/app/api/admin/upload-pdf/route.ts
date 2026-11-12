@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
-import { put } from '@vercel/blob'
+import { putBlob } from '@/lib/blob-storage'
 
 const MAX_SIZE = 20 * 1024 * 1024 // 20 MB
 
@@ -15,6 +15,6 @@ export async function POST(req: NextRequest) {
   if (file.size > MAX_SIZE) return NextResponse.json({ error: 'File exceeds 20 MB limit' }, { status: 400 })
 
   const filename = `opportunities/pdfs/${Date.now()}-${Math.random().toString(36).slice(2)}.pdf`
-  const blob = await put(filename, file, { access: 'public', contentType: 'application/pdf' })
+  const blob = await putBlob(filename, file, { contentType: 'application/pdf' })
   return NextResponse.json({ url: blob.url })
 }
