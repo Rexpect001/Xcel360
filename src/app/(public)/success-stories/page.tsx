@@ -1,4 +1,4 @@
-export const revalidate = 86400
+export const dynamic = 'force-dynamic'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import { Quote } from 'lucide-react'

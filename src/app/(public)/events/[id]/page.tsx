@@ -1,5 +1,4 @@
-export const revalidate = 3600
-export async function generateStaticParams() { return [] }
+export const dynamic = 'force-dynamic'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
