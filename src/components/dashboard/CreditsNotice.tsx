@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Coins, Infinity as InfinityIcon, Sparkles } from 'lucide-react'
-import { CREDITS_PER_USE, FREE_CREDITS, REFERRAL_CREDITS, usesFor } from '@/lib/billing'
+import { FREE_CREDITS, MIN_TOOL_CREDITS, REFERRAL_CREDITS, TOOL_CREDITS } from '@/lib/billing'
 import { cn } from '@/lib/utils'
 
 /**
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
  * Rendered by server pages and by WritingToolForm, which passes its live balance so
  * the strip updates as soon as a draft is generated.
  */
-export default function CreditsNotice({ credits }: { credits: number | null }) {
+export default function CreditsNotice({ credits, cost }: { credits: number | null; /** This tool's price; omit on hub pages. */ cost?: number }) {
   if (credits === null) {
     return (
       <div className="mb-6 flex items-center gap-3 rounded-2xl border border-surface-200 bg-white px-4 py-3 shadow-soft">
@@ -22,7 +22,8 @@ export default function CreditsNotice({ credits }: { credits: number | null }) {
     )
   }
 
-  const uses = usesFor(credits)
+  const price = cost ?? MIN_TOOL_CREDITS
+  const uses = Math.floor(credits / price)
   const state = uses === 0 ? 'empty' : uses <= 1 ? 'low' : 'ok'
   // Meter is measured against the welcome grant, or the balance if it is bigger
   const pct = Math.min(100, Math.round((credits / Math.max(FREE_CREDITS, credits)) * 100))
@@ -45,10 +46,10 @@ export default function CreditsNotice({ credits }: { credits: number | null }) {
             <span className="mx-1.5 text-ink-300" aria-hidden>·</span>
             {state === 'empty' ? (
               <span className="font-semibold text-red-700">Not enough for a new draft</span>
+            ) : cost ? (
+              <span className="font-medium text-ink-800">enough for {uses} draft{uses === 1 ? '' : 's'} here</span>
             ) : (
-              <span className="font-medium text-ink-800">
-                {uses} draft{uses === 1 ? '' : 's'} left
-              </span>
+              <span className="font-medium text-ink-800">drafts cost {MIN_TOOL_CREDITS} to {Math.max(...Object.values(TOOL_CREDITS))} credits</span>
             )}
           </p>
           <div
@@ -62,7 +63,7 @@ export default function CreditsNotice({ credits }: { credits: number | null }) {
             <div className={cn('h-full rounded-full transition-[width] duration-500', tone.bar)} style={{ width: `${pct}%` }} />
           </div>
           <p className="mt-1.5 text-xs text-ink-600">
-            Each new draft uses {CREDITS_PER_USE} credits. Editing, fixing issues and restoring versions are free.
+            {cost ? `This tool uses ${cost} credits per new draft.` : 'Each tool shows its cost.'} Editing, fixing issues and restoring versions are free.
             {state !== 'ok' && (
               <> <Link href="/dashboard/billing#invite" className="font-semibold text-emerald-800 underline underline-offset-2">Invite a friend</Link> and you both get {REFERRAL_CREDITS} free credits.</>
             )}

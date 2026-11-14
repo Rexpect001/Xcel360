@@ -3,7 +3,7 @@
  *   npx tsx scripts/test-billing.ts
  */
 import crypto from 'crypto'
-import { CREDIT_PACKS, CREDITS_PER_USE, FREE_CREDITS, findPack, formatNaira, pricePerUse, savingsPercent, usesFor, legacyConversionDelta, purchaseCredits } from '../src/lib/billing'
+import { CREDIT_PACKS, CREDITS_PER_USE, FREE_CREDITS, MIN_TOOL_CREDITS, TOOL_CREDITS, creditsFor, findPack, formatNaira, pricePerUse, savingsPercent, usesFor, legacyConversionDelta, purchaseCredits } from '../src/lib/billing'
 import { validSignature } from '../src/lib/paystack'
 
 let failed = 0
@@ -25,7 +25,10 @@ expect('finds packs by id only', findPack('starter')?.credits === 200 && findPac
 expect('pack ids are unique', new Set(CREDIT_PACKS.map((p) => p.id)).size === CREDIT_PACKS.length)
 expect('every pack has positive credits and price', CREDIT_PACKS.every((p) => p.credits > 0 && p.priceNaira >= 100 && Number.isInteger(p.priceNaira)))
 expect('bigger packs never cost more per credit', CREDIT_PACKS.every((p, i) => i === 0 || p.priceNaira / p.credits <= CREDIT_PACKS[i - 1].priceNaira / CREDIT_PACKS[i - 1].credits))
-expect('free credits cover exactly 5 drafts', usesFor(FREE_CREDITS) === 5 && FREE_CREDITS % CREDITS_PER_USE === 0)
+expect('free credits cover at least 5 of the priciest drafts', FREE_CREDITS >= 5 * Math.max(...Object.values(TOOL_CREDITS)))
+expect('every tool has a whole, positive price', Object.values(TOOL_CREDITS).every((n) => Number.isInteger(n) && n > 0))
+expect('long documents cost more than a cold email', creditsFor('cv') > creditsFor('cold-email') && creditsFor('sop') > creditsFor('cold-email'))
+expect('cheapest draft is the cold email', MIN_TOOL_CREDITS === creditsFor('cold-email'))
 expect('every pack buys whole drafts', CREDIT_PACKS.every((p) => p.credits % CREDITS_PER_USE === 0))
 expect('price per draft: 1000 / 800', CREDIT_PACKS.map(pricePerUse).join('/') === '1000/800')
 expect('savings shown against the starter pack', savingsPercent(CREDIT_PACKS[0]) === 0 && savingsPercent(CREDIT_PACKS[1]) === 20)

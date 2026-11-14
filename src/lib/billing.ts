@@ -5,10 +5,36 @@
  * One "use" = one new AI draft. Fixing issues on a draft and restoring versions are free.
  */
 
-/** Credits every account gets once, for free. 100 / 20 = 5 free uses. */
+import type { ToolId } from '@/lib/writing-tools'
+
+/** Credits every account gets once, for free. */
 export const FREE_CREDITS = 100
 
-/** Credits taken for each new draft. */
+/**
+ * Credits for one new draft, by tool. Priced by how much each tool writes:
+ * long documents cost more than a short email. Change the numbers here only.
+ */
+export const TOOL_CREDITS: Record<ToolId, number> = {
+  cv: 20,
+  sop: 20,
+  'cover-letter': 15,
+  'cold-email': 10,
+  'startup-idea': 15,
+  'startup-interviews': 15,
+  'startup-roadmap': 15,
+}
+
+export function creditsFor(toolId: ToolId): number {
+  return TOOL_CREDITS[toolId]
+}
+
+/** Cheapest draft, used to tell whether a balance can still buy anything. */
+export const MIN_TOOL_CREDITS = Math.min(...Object.values(TOOL_CREDITS))
+
+/**
+ * Standard draft cost used for the Nov 2026 unit conversion of old balances
+ * (1 old credit = 1 draft = 20 new credits). Not a price; see TOOL_CREDITS.
+ */
 export const CREDITS_PER_USE = 20
 
 export interface CreditPack {

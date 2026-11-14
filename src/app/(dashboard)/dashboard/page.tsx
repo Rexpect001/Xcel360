@@ -14,7 +14,7 @@ import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import DashboardWelcome from '@/components/dashboard/DashboardWelcome'
 import PipelineGuide from '@/components/dashboard/PipelineGuide'
 import { pageCredits } from '@/lib/credits-page'
-import { CREDITS_PER_USE, usesFor } from '@/lib/billing'
+import { MIN_TOOL_CREDITS } from '@/lib/billing'
 import { cn } from '@/lib/utils'
 
 async function getDashboardData(userId: string) {
@@ -201,10 +201,10 @@ export default async function DashboardPage() {
                 {credits === null ? (
                   <span className="font-semibold">Unlimited credits</span>
                 ) : (
-                  <><span className="font-semibold tabular-nums">{credits} credits</span><span className="text-ink-200"> · {usesFor(credits)} draft{usesFor(credits) === 1 ? '' : 's'} left</span></>
+                  <span className="font-semibold tabular-nums">{credits} credits</span>
                 )}
               </span>
-              <span className="text-xs font-semibold text-accent-200 shrink-0">{credits !== null && usesFor(credits) === 0 ? 'Buy credits' : `${CREDITS_PER_USE} per draft`}</span>
+              <span className="text-xs font-semibold text-accent-200 shrink-0">{credits !== null && credits < MIN_TOOL_CREDITS ? 'Top up' : 'Top up or invite'}</span>
             </Link>
             <ul className="mt-4 space-y-1">
               {TOOLS.map(({ href, label, icon: Icon, hint }) => (

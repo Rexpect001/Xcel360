@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { Coins, Loader2 } from 'lucide-react'
 import Modal from '@/components/ui/Modal'
-import { ADMIN_GRANT_MAX, CREDITS_PER_USE, usesFor } from '@/lib/billing'
+import { ADMIN_GRANT_MAX, TOOL_CREDITS } from '@/lib/billing'
 
 const PRESETS = [20, 50, 100, 200]
 
@@ -96,7 +96,7 @@ export default function GiftCreditsModal({ user, onClose }: { user: { id: string
             className="input-field"
           />
           <p className="mt-1 text-xs text-ink-600">
-            {valid ? `About ${usesFor(n)} draft${usesFor(n) === 1 ? '' : 's'} at ${CREDITS_PER_USE} credits each.` : `Whole number from 1 to ${ADMIN_GRANT_MAX}.`}
+            {valid ? `For reference: a CV costs ${TOOL_CREDITS.cv} credits, a cold email ${TOOL_CREDITS['cold-email']}.` : `Whole number from 1 to ${ADMIN_GRANT_MAX}.`}
           </p>
         </div>
         <div>

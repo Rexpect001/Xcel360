@@ -5,7 +5,7 @@ import SessionProvider from '@/components/providers/SessionProvider'
 import AppShell from '@/components/layout/AppShell'
 import { ROLE_ACCESS, ROLE_LABELS, type UserRole } from '@/lib/permissions'
 import { dashboardNavGroups } from '@/lib/nav'
-import { CREDITS_PER_USE, FREE_CREDITS } from '@/lib/billing'
+import { FREE_CREDITS, MIN_TOOL_CREDITS } from '@/lib/billing'
 
 function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -39,7 +39,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       }}
       promo={{
         title: 'AI credits',
-        text: `Every account gets ${FREE_CREDITS} free credits. Each new AI draft uses ${CREDITS_PER_USE}.`,
+        text: `Every account gets ${FREE_CREDITS} free credits. Drafts start from ${MIN_TOOL_CREDITS} credits.`,
         href: '/dashboard/billing',
         cta: 'See my credits',
       }}

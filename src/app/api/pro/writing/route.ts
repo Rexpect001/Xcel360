@@ -11,7 +11,7 @@ import { finishAiRun, reserveAiRun } from '@/lib/ai-usage'
 import { PROMPT_VERSION, WRITING_MODEL, draftTitle, runWritingTool } from '@/lib/writing-engine'
 import { getOpportunityContext, getOwnDraft, pruneDrafts } from '@/lib/writing-drafts'
 import { getBalance, hasUnlimitedCredits, refundCredit, spendCredit } from '@/lib/credits'
-import { CREDITS_PER_USE } from '@/lib/billing'
+import { creditsFor } from '@/lib/billing'
 
 interface Body {
   tool?: unknown
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'You have reached the AI usage limit. Please try again later.' }, { status: 429 })
   }
 
-  // CREDITS_PER_USE per new draft. Fixing issues on an existing draft is free.
+  // Each tool has its own price (TOOL_CREDITS). Fixing issues on an existing draft is free.
   const unlimited = hasUnlimitedCredits(session.user.role)
   const charged = !fixing && !unlimited
   if (fixing && !draft) {
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   }
   let paid = true
   try {
-    paid = !charged || (await spendCredit(userId, runId, WRITING_TOOLS[toolId].name))
+    paid = !charged || (await spendCredit(userId, runId, WRITING_TOOLS[toolId].name, creditsFor(toolId)))
   } catch (error) {
     console.error('[pro/writing] credit check failed', error)
     await finishAiRun(runId, { model: WRITING_MODEL, outcome: 'credit-error' }, false).catch(console.error)
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     await finishAiRun(runId, { model: WRITING_MODEL, outcome: 'no-credits' }, false).catch(console.error)
     const balance = await getBalance(userId).catch(() => 0)
     return NextResponse.json(
-      { error: `A new draft uses ${CREDITS_PER_USE} credits. Buy a credit pack to keep drafting.`, code: 'NO_CREDITS', credits: balance },
+      { error: `A new ${WRITING_TOOLS[toolId].name} draft uses ${creditsFor(toolId)} credits. Top up to keep drafting.`, code: 'NO_CREDITS', credits: balance },
       { status: 402 }
     )
   }

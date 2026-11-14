@@ -12,7 +12,7 @@ import { checkOutput, countWords, fixableIssues, type DraftCheck } from '@/lib/w
 import Modal from '@/components/ui/Modal'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
 import InviteCard from '@/components/dashboard/InviteCard'
-import { CREDITS_PER_USE, usesFor } from '@/lib/billing'
+import { creditsFor } from '@/lib/billing'
 import { cn } from '@/lib/utils'
 
 const FORM_KEY = (id: string) => `xcel360_tool_${id}`
@@ -40,6 +40,7 @@ export default function WritingToolForm({
   credits?: number | null
 }) {
   const tool = WRITING_TOOLS[toolId]
+  const cost = creditsFor(toolId)
   const startup = toolId.startsWith('startup-')
   const { data: session } = useSession()
 
@@ -205,7 +206,7 @@ export default function WritingToolForm({
 
   const onSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
-    if (credits !== null && credits < CREDITS_PER_USE) {
+    if (credits !== null && credits < cost) {
       setOutOfCredits(true)
       return
     }
@@ -274,7 +275,7 @@ export default function WritingToolForm({
 
   return (
     <div className="space-y-5">
-      <CreditsNotice credits={credits} />
+      <CreditsNotice credits={credits} cost={cost} />
       {opportunity && (
         <div className="rounded-xl border border-brand-100 bg-brand-50 p-4 flex items-start gap-3">
           <Target className="h-5 w-5 text-brand-700 flex-shrink-0 mt-0.5" />
@@ -369,7 +370,7 @@ export default function WritingToolForm({
           </button>
           {credits !== null && (
             <p className="-mt-2 text-center text-xs text-ink-500">
-              Uses {CREDITS_PER_USE} credits · <span className="font-semibold text-ink-700 tabular-nums">{credits}</span> left ({usesFor(credits)} draft{usesFor(credits) === 1 ? '' : 's'})
+              Uses {cost} credits · <span className="font-semibold text-ink-700 tabular-nums">{credits}</span> left
             </p>
           )}
           <p className="text-xs text-ink-400 leading-relaxed">
@@ -444,7 +445,7 @@ export default function WritingToolForm({
         open={outOfCredits}
         onClose={() => setOutOfCredits(false)}
         title="You need more credits"
-        description={`Each new draft uses ${CREDITS_PER_USE} credits and you have ${credits ?? 0}. Buy a pack to keep going. Your answers and saved drafts stay here, and editing, fixing issues and restoring versions stay free.`}
+        description={`A new ${tool.name} draft uses ${cost} credits and you have ${credits ?? 0}. Buy a pack to keep going. Your answers and saved drafts stay here, and editing, fixing issues and restoring versions stay free.`}
         size="sm"
         footer={
           <>
@@ -460,7 +461,7 @@ export default function WritingToolForm({
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         title="Replace your current draft?"
-        description={`A new version uses ${CREDITS_PER_USE} credits and replaces the text in the editor, including your edits. Your current text is kept as the previous version, and you can bring it back with the restore button.`}
+        description={`A new version uses ${cost} credits and replaces the text in the editor, including your edits. Your current text is kept as the previous version, and you can bring it back with the restore button.`}
         size="sm"
         footer={
           <>
