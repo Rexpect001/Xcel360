@@ -61,7 +61,7 @@ export default async function NewsArticlePage({ params }: { params: { slug: stri
             ))}
           </div>
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 mt-5 text-sm text-white/60">
+          <div className="flex flex-wrap items-center gap-4 mt-5 text-sm text-white/80">
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4" /> {formatDate(post.createdAt)}
             </span>

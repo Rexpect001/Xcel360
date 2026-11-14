@@ -381,7 +381,7 @@ export default function PrivacyPolicyPage() {
             Your trust matters to us. This policy explains - in plain language - what data Xcel360
             collects, why, and the control you have over it.
           </p>
-          <p className="text-sm text-brand-200 mt-4">Last updated: {LAST_UPDATED}</p>
+          <p className="text-sm text-brand-100 mt-4">Last updated: {LAST_UPDATED}</p>
         </div>
       </div>
 

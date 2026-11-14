@@ -1,5 +1,6 @@
 import React from 'react'
-import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig, Easing } from 'remotion'
+import { AbsoluteFill, Img, interpolate, spring, staticFile, useVideoConfig, Easing } from 'remotion'
+import { useCurrentFrame } from './time'
 import { c, display, sans } from './theme'
 
 /* ---------- motion helpers ---------- */

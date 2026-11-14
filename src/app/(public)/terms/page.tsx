@@ -176,7 +176,7 @@ export default function TermsPage() {
             The ground rules for using Xcel360 - what we provide, what we ask of you, and how we
             both stay protected.
           </p>
-          <p className="text-sm text-brand-200 mt-4">Last updated: {LAST_UPDATED}</p>
+          <p className="text-sm text-brand-100 mt-4">Last updated: {LAST_UPDATED}</p>
         </div>
       </div>
 

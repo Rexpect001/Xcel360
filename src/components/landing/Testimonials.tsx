@@ -47,7 +47,7 @@ const defaultStories = [
   },
 ]
 
-const avatarColors = ['from-pink-500 to-rose-600', 'from-violet-500 to-purple-600', 'from-amber-500 to-orange-600', 'from-emerald-500 to-teal-600', 'from-sky-500 to-blue-600']
+const avatarColors = ['from-pink-500 to-rose-600', 'from-violet-500 to-purple-600', 'from-amber-500 to-orange-600', 'from-emerald-500 to-teal-600', 'from-brand-500 to-brand-600']
 
 // Light watermark pattern for dark/blue background
 function LightWatermarkPattern() {
@@ -79,7 +79,7 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
     : defaultStories
 
   return (
-    <section className="relative py-24 overflow-hidden" style={{ background: 'linear-gradient(135deg, #004ca3 0%, #005fc9 40%, #006fec 75%, #4b95f5 100%)' }}>
+    <section className="relative py-24 overflow-hidden" style={{ background: 'linear-gradient(160deg, #163b67 0%, #1a4880 40%, #1d579a 75%, #2266b1 100%)' }}>
       {/* Light watermark pattern for blue background */}
       <LightWatermarkPattern />
       
@@ -101,14 +101,14 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm text-blue-200 mb-5 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm text-brand-100 mb-5 backdrop-blur-sm">
             <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
             Success Stories
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
             Students who made it
           </h2>
-          <p className="text-blue-200 mt-4 text-lg max-w-xl mx-auto">
+          <p className="text-brand-100 mt-4 text-lg max-w-xl mx-auto">
             Real stories from the Xcel360 community who secured their dream scholarships.
           </p>
         </motion.div>
@@ -138,7 +138,7 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
                 ))}
               </div>
 
-              <Quote className="h-8 w-8 text-blue-300/50 mb-4" />
+              <Quote className="h-8 w-8 text-brand-300/50 mb-4" />
               <p className="text-white/85 text-sm leading-relaxed mb-7 italic">
                 &ldquo;{story.quote}&rdquo;
               </p>
@@ -149,8 +149,8 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
                 </div>
                 <div className="min-w-0">
                   <div className="text-white font-semibold text-sm">{story.name}</div>
-                  <div className="text-blue-200 text-xs font-medium truncate">{story.scholarship}</div>
-                  <div className="text-blue-300 text-xs truncate">{story.university}</div>
+                  <div className="text-brand-100 text-xs font-medium truncate">{story.scholarship}</div>
+                  <div className="text-brand-100 text-xs truncate">{story.university}</div>
                 </div>
                 {story.flag && (
                   <div className="ml-auto text-xl flex-shrink-0 group-hover:scale-125 transition-transform">{story.flag}</div>
@@ -167,10 +167,10 @@ export default function Testimonials({ stories }: { stories: SerializedStory[] }
           viewport={{ once: true }}
           className="text-center mt-14"
         >
-          <p className="text-blue-200 mb-5">Ready to write your own success story?</p>
+          <p className="text-brand-100 mb-5">Ready to write your own success story?</p>
           <a
             href="/signup"
-            className="inline-flex items-center gap-2 bg-white text-brand-800 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-lg hover:scale-105 transform"
+            className="inline-flex items-center gap-2 bg-white text-brand-800 font-bold px-8 py-4 rounded-xl hover:bg-brand-50 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-lg hover:scale-105 transform"
           >
             Start for Free  -  It Takes 2 Minutes
           </a>

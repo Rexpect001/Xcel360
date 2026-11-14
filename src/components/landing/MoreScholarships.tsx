@@ -12,7 +12,7 @@ import GoogleAd from '@/components/ads/GoogleAd'
 export default function MoreScholarships({ scholarships }: { scholarships: CardOpportunity[] }) {
   if (scholarships.length === 0) return null
   return (
-    <section className="py-16 sm:py-20 bg-white">
+    <section className="py-10 sm:py-14 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4 mb-8">
           <div className="max-w-2xl">
@@ -36,7 +36,7 @@ export default function MoreScholarships({ scholarships }: { scholarships: CardO
             </Fragment>
           ))}
         </div>
-        <div className="mt-10 text-center">
+        <div className="mt-8 text-center">
           <Link href="/opportunities" className="btn-primary">
             Browse every scholarship <ArrowRight className="h-4 w-4" />
           </Link>

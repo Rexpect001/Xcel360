@@ -1,17 +1,38 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Gift } from 'lucide-react'
 import GoogleIcon from '@/components/ui/GoogleIcon'
 import { toast } from 'react-hot-toast'
+
+const REF_COOKIE = 'xcel_ref'
+const REF_PATTERN = /^[A-Z2-9]{6,12}$/
+
+/** Keep the invite code for 30 days so it also survives the Google sign-up round trip. */
+function rememberReferral(): string | null {
+  try {
+    const fromUrl = new URLSearchParams(window.location.search).get('ref')?.trim().toUpperCase()
+    if (fromUrl && REF_PATTERN.test(fromUrl)) {
+      document.cookie = `${REF_COOKIE}=${fromUrl}; path=/; max-age=${30 * 86400}; samesite=lax`
+      return fromUrl
+    }
+    const fromCookie = document.cookie.split('; ').find((c) => c.startsWith(`${REF_COOKIE}=`))?.split('=')[1]
+    return fromCookie && REF_PATTERN.test(fromCookie) ? fromCookie : null
+  } catch {
+    return null
+  }
+}
 
 export default function SignUpPage() {
   const router = useRouter()
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [referral, setReferral] = useState<string | null>(null)
+
+  useEffect(() => { setReferral(rememberReferral()) }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,7 +49,7 @@ export default function SignUpPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
+        body: JSON.stringify({ name: form.name, email: form.email, password: form.password, ref: referral ?? undefined }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -52,6 +73,13 @@ export default function SignUpPage() {
         <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
         <p className="text-gray-500 text-sm mt-1">Join thousands of students finding scholarships</p>
       </div>
+
+      {referral && (
+        <div className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+          <Gift className="h-5 w-5 shrink-0 text-emerald-700" />
+          <p><span className="font-semibold">You were invited.</span> Sign up and you and your friend each get 50 extra AI credits.</p>
+        </div>
+      )}
 
       <button
         onClick={() => signIn('google', { callbackUrl: '/dashboard' })}

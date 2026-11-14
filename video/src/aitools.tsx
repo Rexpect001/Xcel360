@@ -1,5 +1,6 @@
 import React from 'react'
-import { interpolate, useCurrentFrame, Easing } from 'remotion'
+import { interpolate, Easing } from 'remotion'
+import { useCurrentFrame } from './time'
 import { Sparkles, Check, Send, Mail, PenLine, ScrollText } from 'lucide-react'
 import { c, display, s, sans } from './theme'
 import { Cursor, Heading, Line, Logo, Panel, Pill, pop, rise, useCount, useIn, useProgress, useTyped } from './ui'

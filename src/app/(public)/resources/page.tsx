@@ -59,7 +59,7 @@ async function getResources() {
 function getFileIcon(fileType?: string) {
   if (!fileType) return { label: 'FILE', color: 'bg-gray-100 text-gray-600' }
   if (fileType.includes('pdf')) return { label: 'PDF', color: 'bg-red-100 text-red-700' }
-  if (fileType.includes('word') || fileType.includes('document')) return { label: 'DOC', color: 'bg-blue-100 text-blue-700' }
+  if (fileType.includes('word') || fileType.includes('document')) return { label: 'DOC', color: 'bg-brand-100 text-brand-700' }
   if (fileType.includes('sheet') || fileType.includes('excel')) return { label: 'XLS', color: 'bg-green-100 text-green-700' }
   if (fileType.includes('presentation') || fileType.includes('powerpoint')) return { label: 'PPT', color: 'bg-orange-100 text-orange-700' }
   return { label: 'FILE', color: 'bg-gray-100 text-gray-600' }

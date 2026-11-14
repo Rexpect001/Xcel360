@@ -33,9 +33,7 @@ export default function HowToSearchPage() {
         <SearchDemo />
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
-        <GoogleAd placement="home-feed" shape="leaderboard" />
-      </div>
+      <GoogleAd placement="home-feed" shape="leaderboard" className="max-w-6xl mx-auto px-4 sm:px-6 pb-12" />
 
       <section className="bg-white border-y border-surface-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">

@@ -25,14 +25,18 @@ for (const comp of comps) {
       const output = path.join(outDir, 'stills', `${comp.id}-${String(i + 1).padStart(2, '0')}-${scene.id}.png`)
       await renderStill({ composition: comp, serveUrl, output, frame, inputProps: comp.props })
       console.log('still', output)
-      start += scene.dur - 12
+      start += scene.dur - 9
     }
     continue
   }
-  const output = path.join(outDir, `${comp.id}.mp4`)
+  // --gif: half-size, 10 fps animated GIF (loops forever) in out/gif/
+  const gif = args.includes('--gif')
+  if (gif) fs.mkdirSync(path.join(outDir, 'gif'), { recursive: true })
+  const output = gif ? path.join(outDir, 'gif', `${comp.id}.gif`) : path.join(outDir, `${comp.id}.mp4`)
   let last = -1
   await renderMedia({
-    composition: comp, serveUrl, codec: 'h264', outputLocation: output, inputProps: comp.props, crf: 18,
+    composition: comp, serveUrl, outputLocation: output, inputProps: comp.props,
+    ...(gif ? { codec: 'gif', scale: 0.5, everyNthFrame: 3 } : { codec: 'h264', crf: 18 }),
     onProgress: ({ progress }) => {
       const pct = Math.floor(progress * 10) * 10
       if (pct !== last) { last = pct; console.log(`${comp.id} ${pct}%`) }

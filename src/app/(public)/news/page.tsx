@@ -40,10 +40,10 @@ export default async function NewsPage() {
         eyebrow="News & Media"
         title="Stories from the Xcel360 community"
         subtitle="Recaps, announcements and highlights from our events, webinars and programs."
-        className="pb-24"
+        className="pb-16"
       />
 
-      <div className="max-w-5xl mx-auto px-4 py-12 -mt-10">
+      <div className="max-w-5xl mx-auto px-4 pt-8 pb-10 -mt-10">
         {posts.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center text-gray-500">
             No stories published yet  -  check back soon.

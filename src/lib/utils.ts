@@ -61,7 +61,7 @@ export function slugify(str: string): string {
 export function getFundingBadgeColor(fundingType: string): string {
   switch (fundingType) {
     case 'Fully funded': return 'bg-green-100 text-green-700'
-    case 'Partial': return 'bg-blue-100 text-blue-700'
+    case 'Partial': return 'bg-brand-100 text-brand-700'
     case 'Stipend': return 'bg-purple-100 text-purple-700'
     case 'Tuition waiver': return 'bg-orange-100 text-orange-700'
     default: return 'bg-gray-100 text-gray-700'

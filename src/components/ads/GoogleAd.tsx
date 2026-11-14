@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import AdSlot from '@/components/ads/AdSlot'
 import { ADSENSE_CLIENT, ADS_ENABLED } from '@/lib/ads'
 import { cn } from '@/lib/utils'
 
@@ -12,7 +11,7 @@ import { cn } from '@/lib/utils'
  * Ads run in production builds (see lib/ads.ts). Each placement needs an ad
  * unit slot id, either its own or NEXT_PUBLIC_ADSENSE_SLOT_DEFAULT. Without
  * one - or when Google has no ad to fill the unit, or an ad blocker stops the
- * script - the Xcel360 house ad shows instead, so the space is never empty.
+ * script - nothing renders (the house banner was retired).
  *
  * NEXT_PUBLIC_* vars are inlined at build time, so each one must be referenced
  * literally - do not build these names dynamically.
@@ -61,12 +60,15 @@ export default function GoogleAd({ placement, shape = 'fluid', className }: Goog
   return <AdUnit key={pathname} placement={placement} slot={slot} shape={shape} className={className} />
 }
 
-function HouseAd({ placement, shape, className }: { placement: string; shape: keyof typeof SHAPES; className?: string }) {
-  return (
-    <div className={className}>
-      <AdSlot placement={placement} compact={shape !== 'rectangle'} />
-    </div>
-  )
+/**
+ * Fallback when no real ad can show. The old "Need a stronger scholarship
+ * application? View resources" house banner was retired (Nov 2026): those tools
+ * now live in the dashboard, so the space collapses instead. AdSlot is kept for
+ * a future sponsor; return it here to bring a house banner back.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function HouseAd(_props: { placement: string; shape: keyof typeof SHAPES; className?: string }) {
+  return null
 }
 
 function AdUnit({ placement, slot, shape, className }: { placement: AdPlacement; slot: string; shape: keyof typeof SHAPES; className?: string }) {

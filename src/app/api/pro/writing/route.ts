@@ -11,6 +11,7 @@ import { finishAiRun, reserveAiRun } from '@/lib/ai-usage'
 import { PROMPT_VERSION, WRITING_MODEL, draftTitle, runWritingTool } from '@/lib/writing-engine'
 import { getOpportunityContext, getOwnDraft, pruneDrafts } from '@/lib/writing-drafts'
 import { getBalance, hasUnlimitedCredits, refundCredit, spendCredit } from '@/lib/credits'
+import { CREDITS_PER_USE } from '@/lib/billing'
 
 interface Body {
   tool?: unknown
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'You have reached the AI usage limit. Please try again later.' }, { status: 429 })
   }
 
-  // One credit per new draft. Fixing issues on an existing draft is free.
+  // CREDITS_PER_USE per new draft. Fixing issues on an existing draft is free.
   const unlimited = hasUnlimitedCredits(session.user.role)
   const charged = !fixing && !unlimited
   if (fixing && !draft) {
@@ -77,8 +78,9 @@ export async function POST(req: NextRequest) {
   }
   if (!paid) {
     await finishAiRun(runId, { model: WRITING_MODEL, outcome: 'no-credits' }, false).catch(console.error)
+    const balance = await getBalance(userId).catch(() => 0)
     return NextResponse.json(
-      { error: 'You have used all your credits. Buy a credit pack to keep drafting.', code: 'NO_CREDITS', credits: 0 },
+      { error: `A new draft uses ${CREDITS_PER_USE} credits. Buy a credit pack to keep drafting.`, code: 'NO_CREDITS', credits: balance },
       { status: 402 }
     )
   }

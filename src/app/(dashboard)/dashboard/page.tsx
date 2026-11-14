@@ -12,6 +12,9 @@ import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import { deadlineInfo } from '@/lib/opportunity-display'
 import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import DashboardWelcome from '@/components/dashboard/DashboardWelcome'
+import PipelineGuide from '@/components/dashboard/PipelineGuide'
+import { pageCredits } from '@/lib/credits-page'
+import { CREDITS_PER_USE, usesFor } from '@/lib/billing'
 import { cn } from '@/lib/utils'
 
 async function getDashboardData(userId: string) {
@@ -37,8 +40,24 @@ async function getDashboardData(userId: string) {
   return { profile, savedCount, applicationCount, unreadNotifications, openOpportunities, upcoming }
 }
 
+const WELCOME_EVERY_DAYS = 30
+
+/** First dashboard visit, then once every 30 days. Never blocks the page if the lookup fails. */
+async function welcomeState(userId: string): Promise<{ show: boolean; returning: boolean }> {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { welcomeSeenAt: true } })
+    const seen = user?.welcomeSeenAt
+    if (!seen) return { show: true, returning: false }
+    return { show: Date.now() - seen.getTime() > WELCOME_EVERY_DAYS * 864e5, returning: true }
+  } catch {
+    return { show: false, returning: true }
+  }
+}
+
+const MATCHES_SHOWN = 12
+
 const TOOLS = [
-  { href: '/dashboard/tools/cv', label: 'CV Builder', icon: PenLine, hint: 'A scholarship-ready CV from your profile' },
+  { href: '/dashboard/tools/cv', label: 'CV Builder', icon: PenLine, hint: 'Academic or job CV, from your own evidence' },
   { href: '/dashboard/tools/sop', label: 'SOP Generator', icon: ScrollText, hint: 'Statement of purpose, drafted with you' },
   { href: '/dashboard/tools/cover-letter', label: 'Cover Letter', icon: Mail, hint: 'Tailored to each opportunity' },
   { href: '/dashboard/tools/cold-email', label: 'Cold Email', icon: Send, hint: 'Reach supervisors and professors' },
@@ -48,34 +67,34 @@ export default async function DashboardPage() {
   const session = await getAuth()
   if (!session) redirect('/signin')
 
-  const { profile, savedCount, applicationCount, unreadNotifications, openOpportunities, upcoming } =
-    await getDashboardData(session.user.id)
+  const [{ profile, savedCount, applicationCount, unreadNotifications, openOpportunities, upcoming }, credits, welcome] =
+    await Promise.all([getDashboardData(session.user.id), pageCredits(session), welcomeState(session.user.id)])
 
   const completion = profileCompleteness(profile)
   const ranked = rankOpportunities(openOpportunities, profile, 60)
   const matchedCount = ranked.filter((o) => o.score >= 50).length
-  const display = ranked.slice(0, 6)
+  const display = ranked.slice(0, MATCHES_SHOWN)
   const firstName = session.user.name?.split(' ')[0] ?? 'there'
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
   const nextDeadline = upcoming[0] ? deadlineInfo(upcoming[0].opportunity.deadline) : null
 
   const stats = [
-    { label: 'Saved', value: savedCount, href: '/dashboard/saved', Icon: Bookmark, chip: 'bg-brand-50 text-brand-600 ring-brand-100' },
-    { label: 'In your tracker', value: applicationCount, href: '/dashboard/applications', Icon: SquareKanban, chip: 'bg-violet-50 text-violet-600 ring-violet-100' },
-    { label: 'Closing in 30 days', value: upcoming.length, href: '/dashboard/deadlines', Icon: CalendarClock, chip: 'bg-amber-50 text-amber-600 ring-amber-100' },
-    { label: 'Unread alerts', value: unreadNotifications, href: '/dashboard/notifications', Icon: Bell, chip: 'bg-emerald-50 text-emerald-600 ring-emerald-100' },
+    { label: 'Saved', value: savedCount, href: '/dashboard/saved', Icon: Bookmark, chip: 'bg-brand-50 text-brand-700 ring-brand-100' },
+    { label: 'In tracker', value: applicationCount, href: '/dashboard/applications', Icon: SquareKanban, chip: 'bg-violet-50 text-violet-700 ring-violet-100' },
+    { label: 'Closing in 30 days', value: upcoming.length, href: '/dashboard/deadlines', Icon: CalendarClock, chip: 'bg-amber-50 text-amber-700 ring-amber-100' },
+    { label: 'Unread alerts', value: unreadNotifications, href: '/dashboard/notifications', Icon: Bell, chip: 'bg-emerald-50 text-emerald-700 ring-emerald-100' },
   ]
 
   return (
     <div>
-      <DashboardWelcome firstName={firstName} />
+      <DashboardWelcome firstName={firstName} show={welcome.show} returning={welcome.returning} />
 
       {/* Header */}
-      <header className="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+      <header className="mb-4 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
         <div>
-          <p className="eyebrow mb-2">{greeting}</p>
-          <h1 className="font-display text-3xl sm:text-4xl text-ink-900">Welcome back, {firstName}</h1>
+          <p className="eyebrow mb-1">{greeting}</p>
+          <h1 className="font-display text-2xl sm:text-3xl text-ink-900">Welcome back, {firstName}</h1>
         </div>
         <form action="/opportunities" className="flex items-center gap-2 w-full lg:w-[380px] bg-white ring-1 ring-surface-200 rounded-full pl-4 pr-1.5 py-1.5 shadow-soft">
           <Search className="h-4 w-4 text-ink-300 shrink-0" />
@@ -86,7 +105,7 @@ export default async function DashboardPage() {
       </header>
 
       {/* Hero banner - profile and match summary at a glance */}
-      <section className="relative overflow-hidden mb-6 rounded-3xl bg-gradient-to-br from-brand-600 via-brand-600 to-brand-800 text-white p-5 sm:p-7 shadow-accent">
+      <section className="relative overflow-hidden mb-3 rounded-3xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 text-white p-4 sm:p-5 shadow-accent">
         <div aria-hidden className="absolute -right-16 -top-24 h-72 w-72 rounded-full bg-accent-400/25 blur-3xl" />
         <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
           <div className="flex items-center gap-5 flex-1 min-w-0">
@@ -123,30 +142,32 @@ export default async function DashboardPage() {
       </section>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-10">
+      <nav aria-label="Your activity" className="dash-panel mb-6 grid grid-cols-2 lg:grid-cols-4 divide-surface-100 lg:divide-x [&>*:nth-child(-n+2)]:border-b [&>*:nth-child(-n+2)]:border-surface-100 lg:[&>*:nth-child(-n+2)]:border-b-0">
         {stats.map(({ label, value, href, Icon, chip }) => (
-          <Link key={label} href={href} className="group dash-panel p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-premium transition-all">
-            <div className="flex items-center justify-between">
-              <span className={cn('h-10 w-10 rounded-2xl ring-1 flex items-center justify-center', chip)}>
-                <Icon className="h-5 w-5" />
-              </span>
-              <span className="h-8 w-8 rounded-full bg-surface-50 flex items-center justify-center text-ink-300 group-hover:bg-brand-600 group-hover:text-white transition-colors">
-                <ArrowRight className="h-4 w-4" />
-              </span>
-            </div>
-            <div className="mt-4 font-display text-3xl font-semibold text-ink-900">{value}</div>
-            <div className="text-xs font-semibold text-ink-500 mt-1">{label}</div>
+          <Link key={label} href={href} className="group flex items-center gap-3 px-4 py-3 hover:bg-surface-50 transition-colors first:rounded-tl-3xl lg:first:rounded-l-3xl last:rounded-br-3xl lg:last:rounded-r-3xl">
+            <span className={cn('h-10 w-10 shrink-0 rounded-full ring-1 flex items-center justify-center', chip)}>
+              <Icon className="h-[18px] w-[18px]" />
+            </span>
+            <span className="min-w-0">
+              <span className="block font-display text-xl font-semibold leading-none text-ink-900 tabular-nums">{value}</span>
+              <span className="block text-xs font-semibold text-ink-600 mt-1 truncate">{label}</span>
+            </span>
+            <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-ink-300 group-hover:text-brand-700 transition-colors" />
           </Link>
         ))}
-      </div>
+      </nav>
+
+      {savedCount === 0 && applicationCount === 0 && <PipelineGuide compact className="mb-6" />}
 
       <div className="grid xl:grid-cols-[minmax(0,1fr)_340px] gap-8 items-start">
         {/* Matches */}
         <section>
-          <div className="flex items-end justify-between mb-4">
+          <div className="flex items-end justify-between mb-3">
             <div>
               <h2 className="font-display text-2xl text-ink-900">{matchedCount > 0 ? 'Matched for you' : 'Open scholarships'}</h2>
-              <p className="text-sm text-ink-500 mt-1">Ranked by your profile, then by deadline.</p>
+              <p className="text-sm text-ink-600 mt-1">
+                {display.length > 0 ? `Your top ${display.length}, ranked by your profile, then by deadline. Save one to add it to your pipeline.` : 'Ranked by your profile, then by deadline.'}
+              </p>
             </div>
             <Link href="/opportunities" className="rounded-full bg-white ring-1 ring-surface-200 px-4 py-2 text-sm font-semibold text-ink-700 hover:text-ink-900 hover:ring-ink-200 inline-flex items-center gap-1">
               View all <ArrowRight className="h-4 w-4" />
@@ -163,8 +184,8 @@ export default async function DashboardPage() {
           )}
         </section>
 
-        {/* Side column */}
-        <aside className="space-y-5">
+        {/* Side column - sticky on wide screens so the AI tools stay in reach while scrolling matches */}
+        <aside className="space-y-5 xl:sticky xl:top-6 xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto xl:pb-2 [scrollbar-width:thin]">
           <section className="dash-dark p-5">
             <div className="flex items-center gap-3">
               <span className="h-9 w-9 rounded-full bg-white/10 ring-1 ring-white/15 flex items-center justify-center">
@@ -172,9 +193,19 @@ export default async function DashboardPage() {
               </span>
               <div className="flex-1">
                 <h2 className="font-bold text-white text-base">AI writing tools</h2>
-                <p className="text-xs text-ink-300">Drafts in minutes, in your own words</p>
+                <p className="text-xs text-ink-200">Drafts in minutes, in your own words</p>
               </div>
             </div>
+            <Link href="/dashboard/billing" className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-white/[0.07] ring-1 ring-white/10 px-3 py-2.5 hover:bg-white/[0.12] transition-colors">
+              <span className="text-sm text-white">
+                {credits === null ? (
+                  <span className="font-semibold">Unlimited credits</span>
+                ) : (
+                  <><span className="font-semibold tabular-nums">{credits} credits</span><span className="text-ink-200"> · {usesFor(credits)} draft{usesFor(credits) === 1 ? '' : 's'} left</span></>
+                )}
+              </span>
+              <span className="text-xs font-semibold text-accent-200 shrink-0">{credits !== null && usesFor(credits) === 0 ? 'Buy credits' : `${CREDITS_PER_USE} per draft`}</span>
+            </Link>
             <ul className="mt-4 space-y-1">
               {TOOLS.map(({ href, label, icon: Icon, hint }) => (
                 <li key={href}>
@@ -182,7 +213,7 @@ export default async function DashboardPage() {
                     <Icon className="h-4 w-4 text-accent-200 shrink-0" />
                     <span className="flex-1 min-w-0">
                       <span className="block text-sm font-semibold text-white">{label}</span>
-                      <span className="block text-xs text-ink-300 truncate">{hint}</span>
+                      <span className="block text-xs text-ink-200 truncate">{hint}</span>
                     </span>
                     <ArrowRight className="h-4 w-4 text-ink-400 group-hover:text-white transition-colors" />
                   </Link>
@@ -194,7 +225,7 @@ export default async function DashboardPage() {
           <section className="dash-panel overflow-hidden">
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
               <h2 className="font-bold text-ink-900 text-lg">Coming up</h2>
-              <Link href="/dashboard/deadlines" className="rounded-full bg-surface-50 px-3 py-1 text-xs font-semibold text-ink-600 hover:text-ink-900">All deadlines</Link>
+              <Link href="/dashboard/deadlines" className="rounded-full bg-surface-50 px-3 py-1 text-xs font-semibold text-ink-700 hover:text-ink-900">All deadlines</Link>
             </div>
             {upcoming.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-ink-500">

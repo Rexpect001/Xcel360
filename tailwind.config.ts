@@ -37,16 +37,17 @@ const config: Config = {
           600: '#1f72b8',
           700: '#185a92',
         },
-        // Ink - neutral text greys with a hint of blue. 400+ passes AA on white.
+        // Ink - neutral text greys with a hint of blue. 400+ passes AA on white; 500+ is the
+        // default for body copy (darkened Nov 2026 so secondary text reads near-black).
         ink: {
           50:  '#f6f8fb',
           100: '#edf1f6',
           200: '#d8e0ea',
           300: '#a3b1c4',
-          400: '#5f6f86',
-          500: '#4d5d75',
-          600: '#3c4b62',
-          700: '#2d3a4f',
+          400: '#526279',
+          500: '#3f4d63',
+          600: '#313e53',
+          700: '#253144',
           800: '#1f2a3c',
           900: '#131c2b',
           950: '#0b111c',
@@ -113,13 +114,14 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient':   'linear-gradient(180deg, #2266b1 0%, #1f5fa6 100%)',
+        // Deep-to-logo blue: calmer than a flat logo-blue field, white text stays well above AA.
+        'hero-gradient':   'linear-gradient(160deg, #163b67 0%, #1a4880 40%, #1d579a 75%, #2266b1 100%)',
         'card-shine':      'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)',
       },
       boxShadow: {
-        'card-3d':  '0 20px 60px -10px rgba(0, 76, 163, 0.28)',
-        'glow':     '0 0 40px rgba(0, 111, 236, 0.22)',
-        'glow-sm':  '0 0 20px rgba(0, 111, 236, 0.15)',
+        'card-3d':  '0 20px 60px -10px rgba(22, 59, 103, 0.22)',
+        'glow':     '0 0 40px rgba(34, 102, 177, 0.18)',
+        'glow-sm':  '0 0 20px rgba(34, 102, 177, 0.12)',
         'premium':  '0 12px 32px -18px rgba(15, 23, 42, 0.26), 0 1px 4px rgba(15,23,42,0.06)',
         'accent':   '0 8px 24px -10px rgba(34, 102, 177, 0.45)',
         'soft':     '0 1px 2px rgba(19,28,43,0.04), 0 4px 16px -8px rgba(19,28,43,0.10)',

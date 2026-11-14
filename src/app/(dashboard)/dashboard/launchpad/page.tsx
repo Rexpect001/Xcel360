@@ -4,6 +4,7 @@ import DashHeader from '@/components/dashboard/DashHeader'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
 import { getAuth } from '@/lib/auth'
 import { pageCredits } from '@/lib/credits-page'
+import { CREDITS_PER_USE } from '@/lib/billing'
 import { STARTUP_TOOL_ORDER, WRITING_TOOLS } from '@/lib/writing-tools'
 
 const ICONS = { 'startup-idea': Lightbulb, 'startup-interviews': MessageCircleQuestion, 'startup-roadmap': CalendarRange } as const
@@ -28,16 +29,19 @@ export default async function LaunchpadPage() {
             <Link key={id} href={`/dashboard/tools/${id}`} className="group paper-card p-6 hover:border-ink-200 hover:shadow-premium transition-all">
               <div className="flex items-start justify-between">
                 <span className="w-11 h-11 rounded-xl bg-brand-600 text-accent-200 flex items-center justify-center"><Icon className="h-5 w-5" /></span>
-                <ArrowUpRight className="h-5 w-5 text-ink-200 group-hover:text-ink-700" />
+                <ArrowUpRight className="h-5 w-5 text-ink-300 group-hover:text-brand-700 transition-colors" />
               </div>
               <p className="mt-5 text-xs font-bold uppercase tracking-wide text-accent-700">Step {index + 1}</p>
               <h2 className="mt-1 font-bold text-lg text-ink-900">{tool.name}</h2>
-              <p className="text-sm text-ink-500 mt-1 leading-relaxed">{tool.tagline}</p>
+              <p className="text-sm text-ink-600 mt-1 leading-relaxed">{tool.tagline}</p>
+              <p className="mt-4 inline-flex items-center rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-ink-700">
+                {credits === null ? 'Unlimited' : `${CREDITS_PER_USE} credits per draft`}
+              </p>
             </Link>
           )
         })}
       </div>
-      <p className="mt-6 text-sm text-ink-500 max-w-2xl">Launchpad drafts are starting points. Check every assumption with real people before spending money or building a product.</p>
+      <p className="mt-6 text-sm text-ink-600 max-w-2xl">Launchpad drafts are starting points. Check every assumption with real people before spending money or building a product.</p>
     </div>
   )
 }

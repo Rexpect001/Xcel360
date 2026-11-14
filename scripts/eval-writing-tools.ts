@@ -86,6 +86,22 @@ expect('rejects an invalid select value', !!readFields(WRITING_TOOLS.sop, { prog
 const pre = opportunityPrefill('cover-letter', { id: 'x', title: 'Research Intern', org: 'WHO Africa', category: 'INTERNSHIP', eligibility: 'Final-year student', skills: ['R', 'Stata'] })
 expect('prefills a cover letter from a listing', pre.role === 'Research Intern, WHO Africa' && pre.requirements.includes('Stata'))
 
+// CV tracks: academic (default) vs job / industry
+const jobInputs = {
+  track: 'Job / Industry CV', name: 'Ada Example', target: 'Data Analyst, Flutterwave', education: 'BSc Statistics, UNILAG, 2023',
+  experience: 'Analyst intern, 2023-2024', thesis: 'Should be ignored on a job CV', summary: 'Two years in analytics', projects: 'Built a churn dashboard',
+}
+const jobFields = readFields(WRITING_TOOLS.cv, jobInputs)
+const jobReq = buildRequest({ tool: WRITING_TOOLS.cv, fields: jobFields.fields, inputs: jobInputs })
+const acadInputs = { track: 'Academic CV', name: 'Ada Example', target: 'MSc Public Health', education: 'BSc Microbiology', experience: 'Lab volunteer', thesis: 'Malaria resistance study' }
+const acadFields = readFields(WRITING_TOOLS.cv, acadInputs)
+const acadReq = buildRequest({ tool: WRITING_TOOLS.cv, fields: acadFields.fields, inputs: acadInputs })
+expect('job CV drops research-only answers', !jobFields.error && !jobFields.fields.some((f) => f.id === 'thesis') && jobFields.fields.some((f) => f.id === 'projects'))
+expect('job CV uses the job task and rules', jobReq.content.includes('professional summary') && jobReq.system.includes('Professional Summary, Experience') && !jobReq.system.includes('Research Experience, Publications'))
+expect('academic CV keeps research answers and rules', acadFields.fields.some((f) => f.id === 'thesis') && acadReq.system.includes('Research Experience, Publications') && !acadReq.content.includes('professional summary'))
+expect('both tracks keep the shared mentor rules', jobReq.system.includes('years only') && acadReq.system.includes('years only'))
+expect('drafts saved before tracks default to academic', readFields(WRITING_TOOLS.cv, { name: 'A', target: 'B', education: 'C', experience: 'D', thesis: 'E' }).fields.some((f) => f.id === 'thesis'))
+
 // ── Live: real model ───────────────────────────────────────────────────────
 interface LiveCase {
   name: string

@@ -156,6 +156,15 @@ export const authOptions: NextAuthOptions = {
       }).catch(() => {})
     },
     async createUser({ user }) {
+      // Referral reward for Google sign-ups: the code rides in a cookie set on /signup
+      try {
+        const { cookies } = await import('next/headers')
+        const { REFERRAL_COOKIE, applyReferral } = await import('@/lib/referrals')
+        const ref = cookies().get(REFERRAL_COOKIE)?.value
+        if (ref && user.id) await applyReferral(user.id, ref)
+      } catch (e) {
+        console.error('[createUser] referral failed', e)
+      }
       // Log new user registrations (OAuth-created accounts)
       prisma.activityLog.create({
         data: {

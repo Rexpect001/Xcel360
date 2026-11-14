@@ -11,9 +11,9 @@ const paths = [
 /** Entry points by study level - each routes into a pre-filtered listing. */
 export default function ChooseYourPath() {
   return (
-    <section className="py-16 sm:py-20 bg-surface-50">
+    <section className="py-10 sm:py-14 bg-surface-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="max-w-2xl mb-10">
+        <div className="max-w-2xl mb-8">
           <p className="eyebrow mb-2">Browse by level</p>
           <h2 className="font-display text-3xl sm:text-4xl text-ink-900">Funding for every stage</h2>
         </div>

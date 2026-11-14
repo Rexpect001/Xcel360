@@ -81,7 +81,7 @@ export type PaginatedResponse<T> = {
 export const APPLICATION_STATUSES: { value: ApplicationStatus; label: string; color: string }[] = [
   { value: 'INTERESTED', label: 'Interested', color: 'bg-gray-100 text-gray-700' },
   { value: 'PREPARING', label: 'Preparing', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'SUBMITTED', label: 'Submitted', color: 'bg-blue-100 text-blue-700' },
+  { value: 'SUBMITTED', label: 'Submitted', color: 'bg-brand-100 text-brand-700' },
   { value: 'INTERVIEW', label: 'Interview', color: 'bg-purple-100 text-purple-700' },
   { value: 'RESULT', label: 'Result', color: 'bg-green-100 text-green-700' },
 ]

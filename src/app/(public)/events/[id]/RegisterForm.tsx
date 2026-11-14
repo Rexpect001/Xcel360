@@ -183,7 +183,7 @@ export default function RegisterForm({ eventId, eventTitle, questions }: Props) 
         </div>
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-brand-600 to-sky-400 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-brand-600 to-brand-400 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

@@ -7,11 +7,21 @@ import type { NavGroup, NavItem } from '@/components/layout/AppShell'
  */
 
 export const OVERVIEW_NAV: NavItem[] = [
-  { href: '/dashboard',               label: 'Dashboard',     icon: 'dashboard', exact: true },
-  { href: '/dashboard/saved',         label: 'Pipeline',      icon: 'kanban' },
-  { href: '/dashboard/applications',  label: 'Tracker',       icon: 'kanban' },
-  { href: '/dashboard/deadlines',     label: 'Deadlines',     icon: 'calendar' },
-  { href: '/dashboard/notifications', label: 'Notifications', icon: 'bell' },
+  {
+    href: '/dashboard', label: 'Dashboard', icon: 'dashboard',
+    children: [
+      { href: '/dashboard',              label: 'Overview', exact: true },
+      { href: '/dashboard/saved',        label: 'Pipeline' },
+      { href: '/dashboard/applications', label: 'Tracker' },
+    ],
+  },
+  {
+    href: '/dashboard/notifications', label: 'Notifications', icon: 'bell',
+    children: [
+      { href: '/dashboard/notifications', label: 'All notifications' },
+      { href: '/dashboard/deadlines',     label: 'Deadlines' },
+    ],
+  },
 ]
 
 export const MATERIALS_NAV: NavItem[] = [
@@ -39,16 +49,19 @@ export const SERVICES_NAV: NavItem[] = [
   {
     href: '/dashboard/services', label: 'Services', icon: 'headset',
     children: [
-      { href: '/dashboard/services',         label: 'All Services' },
+      { href: '/dashboard/services',         label: 'All Services', exact: true },
       { href: '/dashboard/services/advisor', label: 'Speak With an Advisor' },
     ],
   },
+]
+
+export const ACCOUNT_NAV: NavItem[] = [
   { href: '/dashboard/billing', label: 'Credits', icon: 'coins' },
   { href: '/dashboard/profile', label: 'My Profile', icon: 'user' },
 ]
 
 // Kept for any page that still links the old personal list
-export const PERSONAL_NAV: NavItem[] = [...OVERVIEW_NAV, { href: '/dashboard/profile', label: 'My Profile', icon: 'user' }]
+export const PERSONAL_NAV: NavItem[] = [...OVERVIEW_NAV, ...ACCOUNT_NAV]
 
 // Admin sections - `section` matches ROLE_ACCESS entries in src/lib/permissions.ts
 export interface AdminNavItem extends NavItem {
@@ -91,8 +104,9 @@ export function adminNavGroups(allowedSections: string[]): NavGroup[] {
 export function dashboardNavGroups(allowedSections: string[]): NavGroup[] {
   const groups: NavGroup[] = [
     { title: 'Overview', items: OVERVIEW_NAV },
-    { title: 'Materials', items: MATERIALS_NAV },
+    { title: 'Writing materials', items: MATERIALS_NAV },
     { title: 'Services', items: SERVICES_NAV },
+    { title: 'Account', items: ACCOUNT_NAV },
   ]
   const adminItems = adminNavForRole(allowedSections)
   if (adminItems.length > 0) {

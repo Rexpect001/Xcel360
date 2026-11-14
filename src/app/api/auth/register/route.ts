@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import prisma from '@/lib/prisma'
+import { REFERRAL_COOKIE, applyReferral } from '@/lib/referrals'
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,6 +38,10 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, email: true, name: true },
     })
+
+    // Referral reward for both sides (never blocks sign-up)
+    const ref = typeof body.ref === 'string' ? body.ref.trim().toUpperCase() : req.cookies.get(REFERRAL_COOKIE)?.value
+    if (ref) await applyReferral(user.id, ref).catch((e) => console.error('[REGISTER] referral failed', e))
 
     // Log new registration to ActivityLog (non-blocking)
     prisma.activityLog.create({

@@ -4,13 +4,14 @@ import {
   Search, ChevronDown, User, Mail, Phone, BookOpen, MapPin,
   KeyRound, X, Loader2, Shield, CheckCircle2, Trash2,
   UserCheck, UserX, AlertTriangle, Clock, CheckSquare2, Pencil,
-  TrendingUp, Users, UserPlus, CalendarDays,
+  TrendingUp, Users, UserPlus, CalendarDays, Coins
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import { ROLE_LABELS, type UserRole } from '@/lib/permissions'
 import Modal from '@/components/ui/Modal'
+import GiftCreditsModal from '@/components/admin/GiftCreditsModal'
 
 // recharts is heavy - split into a separate chunk loaded on demand
 const GrowthChart = dynamic(() => import('./GrowthChart'), {
@@ -26,7 +27,7 @@ const ALL_ROLES: UserRole[] = ['USER', 'EDITOR', 'MODERATOR', 'MENTOR', 'MANAGER
 
 const ACTION_COLORS: Record<string, string> = {
   LOGIN: 'bg-green-100 text-green-700',
-  SIGNUP: 'bg-blue-100 text-blue-700',
+  SIGNUP: 'bg-brand-100 text-brand-700',
   CREATE: 'bg-brand-100 text-brand-700',
   UPDATE: 'bg-yellow-100 text-yellow-700',
   DELETE: 'bg-red-100 text-red-700',
@@ -89,6 +90,7 @@ export default function AdminUsersPage() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'profile' | 'activity'>('profile')
   const [pwModal, setPwModal] = useState<{ userId: string; userName: string } | null>(null)
+  const [giftUser, setGiftUser] = useState<{ id: string; label: string } | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [pwSaving, setPwSaving] = useState(false)
@@ -298,7 +300,7 @@ export default function AdminUsersPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <StatCard label="Total Users" value={stats.total} icon={Users} color="bg-brand-50 text-brand-700" />
           <StatCard label="Active Users" value={stats.active} sub={stats.suspended > 0 ? `${stats.suspended} suspended` : undefined} icon={UserCheck} color="bg-green-50 text-green-700" />
-          <StatCard label="New This Month" value={stats.newThisMonth} sub={`+${stats.newThisWeek} this week`} icon={UserPlus} color="bg-sky-50 text-sky-700" />
+          <StatCard label="New This Month" value={stats.newThisMonth} sub={`+${stats.newThisWeek} this week`} icon={UserPlus} color="bg-accent-50 text-brand-700" />
           <StatCard label="Joined Today" value={stats.newToday} icon={CalendarDays} color="bg-purple-50 text-purple-700" />
         </div>
       )}
@@ -450,6 +452,7 @@ export default function AdminUsersPage() {
                           {status !== 'ACTIVE' && <button onClick={() => changeStatus(user, 'ACTIVE')} disabled={isUpdating} title="Reactivate" className="p-1.5 rounded-lg text-gray-400 hover:bg-green-50 hover:text-green-600 transition-colors"><UserCheck className="h-4 w-4" /></button>}
                           {status !== 'SUSPENDED' && <button onClick={() => changeStatus(user, 'SUSPENDED')} disabled={isUpdating} title="Suspend" className="p-1.5 rounded-lg text-gray-400 hover:bg-yellow-50 hover:text-yellow-600 transition-colors"><AlertTriangle className="h-4 w-4" /></button>}
                           {status !== 'DISABLED' && <button onClick={() => changeStatus(user, 'DISABLED')} disabled={isUpdating} title="Disable" className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"><UserX className="h-4 w-4" /></button>}
+                          <button onClick={() => setGiftUser({ id: user.id, label: user.name || user.email })} title="Gift credits" className="p-1.5 rounded-lg text-gray-400 hover:bg-brand-50 hover:text-brand-700 transition-colors"><Coins className="h-4 w-4" /></button>
                           <button onClick={() => setPwModal({ userId: user.id, userName: user.name || user.email })} title="Reset password" className="p-1.5 rounded-lg text-gray-400 hover:bg-orange-50 hover:text-orange-600 transition-colors"><KeyRound className="h-4 w-4" /></button>
                           <button onClick={() => deleteUser(user)} title="Delete user" className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"><Trash2 className="h-4 w-4" /></button>
                           <div className="relative">
@@ -489,6 +492,7 @@ export default function AdminUsersPage() {
               </div>
               <div className="flex gap-2 flex-shrink-0 flex-wrap">
                 <button onClick={() => openEditUser(detailData?.user ?? detailUser)} className="flex items-center gap-1.5 px-3 py-2 bg-brand-50 text-brand-700 rounded-xl text-xs font-semibold hover:bg-brand-100 transition-colors"><Pencil className="h-3.5 w-3.5" /> Edit</button>
+                <button onClick={() => { setDetailUser(null); setGiftUser({ id: detailUser.id, label: detailUser.name || detailUser.email }) }} className="flex items-center gap-1.5 px-3 py-2 bg-brand-50 text-brand-700 rounded-xl text-xs font-semibold hover:bg-brand-100 transition-colors"><Coins className="h-3.5 w-3.5" /> Gift credits</button>
                 <button onClick={() => { setDetailUser(null); setPwModal({ userId: detailUser.id, userName: detailUser.name || detailUser.email }) }} className="flex items-center gap-1.5 px-3 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-semibold hover:bg-orange-100 transition-colors"><KeyRound className="h-3.5 w-3.5" /> Reset PW</button>
                 <button onClick={() => { setDetailUser(null); deleteUser(detailUser) }} className="flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-semibold hover:bg-red-100 transition-colors"><Trash2 className="h-3.5 w-3.5" /> Delete</button>
               </div>
@@ -575,6 +579,8 @@ export default function AdminUsersPage() {
           </div>
         </Modal>
       )}
+
+      <GiftCreditsModal user={giftUser} onClose={() => setGiftUser(null)} />
 
       {/* ── Password Reset Modal ── */}
       {pwModal && (

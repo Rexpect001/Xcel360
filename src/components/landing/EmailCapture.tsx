@@ -27,9 +27,9 @@ export default function EmailCapture() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-brand-600 text-white">
+    <section className="relative overflow-hidden bg-hero-gradient text-white">
       <BrandPattern opacity={0.12} />
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-center">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-14 grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-center">
         <div>
           <p className="eyebrow !text-accent-200 mb-3">The Friday digest</p>
           <h2 className="font-display text-3xl sm:text-4xl text-white">New scholarships in your inbox, once a week.</h2>

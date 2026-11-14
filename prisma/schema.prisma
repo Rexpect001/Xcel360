@@ -59,6 +59,12 @@ model User {
   status        UserStatus @default(ACTIVE)
   emailVerified DateTime?
   lastLoginAt   DateTime?
+  /// Last time the dashboard welcome/update pop-up was shown (first login, then every 30 days)
+  welcomeSeenAt DateTime?
+  /// Code used in this user's invite link (/signup?ref=CODE). Created on first use.
+  referralCode  String?    @unique
+  /// Who invited this user, if they signed up from a referral link
+  referredById  String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -548,10 +554,15 @@ model WritingDraft {
   checks         Json?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  /// Start of the 30-day active window (creation, or restore from Trash)
+  activeSince    DateTime @default(now())
+  /// Set when the draft moves to Trash (day 30, or deleted by the user). Purged 30 days later.
+  trashedAt      DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, updatedAt])
+  @@index([trashedAt])
 }
 
 // Credits for the AI tools. Append-only: balance = sum of delta. `reference` makes

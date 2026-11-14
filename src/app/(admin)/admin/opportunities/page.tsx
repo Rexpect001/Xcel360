@@ -726,7 +726,7 @@ export default function AdminOpportunitiesPage() {
           <button
             onClick={handleBackfill}
             disabled={backfillLoading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-sky-200 bg-white text-sky-700 hover:bg-sky-50 transition-colors disabled:opacity-60"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-accent-200 bg-white text-brand-700 hover:bg-accent-50 transition-colors disabled:opacity-60"
             title="Auto-generate OG images for any opportunities missing one"
           >
             {backfillLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
@@ -797,7 +797,7 @@ export default function AdminOpportunitiesPage() {
                       <span className="capitalize font-medium text-brand-700 shrink-0 w-20 truncate">{a.poster}</span>
                       <span className="text-gray-600 flex-1 line-clamp-1">{a.title}</span>
                       <span className={`text-xs px-1.5 py-0.5 rounded font-medium shrink-0 ${
-                        a.category === 'JOB' ? 'bg-blue-50 text-blue-600' :
+                        a.category === 'JOB' ? 'bg-brand-50 text-brand-600' :
                         a.category === 'INTERNSHIP' ? 'bg-purple-50 text-purple-600' :
                         'bg-green-50 text-green-600'
                       }`}>{a.category}</span>
@@ -936,7 +936,7 @@ export default function AdminOpportunitiesPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setDetailOpp(opp)}
-                          className="p-1.5 rounded-lg text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                          className="p-1.5 rounded-lg text-gray-400 hover:bg-brand-50 hover:text-brand-600 transition-colors"
                           title="View details"
                         >
                           <Eye className="h-4 w-4" />
@@ -1149,10 +1149,10 @@ export default function AdminOpportunitiesPage() {
 
             {/* Application method */}
             {detailOpp.applicationLink && (
-              <div className={`rounded-xl p-4 border ${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailOpp.applicationLink.trim()) ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-200'}`}>
+              <div className={`rounded-xl p-4 border ${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailOpp.applicationLink.trim()) ? 'bg-brand-50 border-brand-100' : 'bg-white border-gray-200'}`}>
                 <p className="text-xs font-semibold uppercase tracking-wide mb-1.5 text-gray-500">Application Method</p>
                 {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailOpp.applicationLink.trim()) ? (
-                  <a href={`mailto:${detailOpp.applicationLink.trim()}`} className="flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">
+                  <a href={`mailto:${detailOpp.applicationLink.trim()}`} className="flex items-center gap-2 text-sm font-semibold text-brand-700 hover:underline">
                     <Mail className="h-4 w-4 shrink-0" />{detailOpp.applicationLink.trim()}
                   </a>
                 ) : (

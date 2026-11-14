@@ -72,7 +72,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           <div className="max-w-3xl mx-auto">
             <Link
               href="/resources"
-              className="inline-flex items-center gap-1.5 text-brand-200 hover:text-white text-sm mb-6 transition-colors"
+              className="inline-flex items-center gap-1.5 text-brand-100 hover:text-white text-sm mb-6 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" /> Back to Resources
             </Link>
@@ -96,7 +96,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               <p className="text-brand-100 text-lg leading-relaxed mb-6">{post.excerpt}</p>
             )}
 
-            <div className="flex flex-wrap items-center gap-5 text-sm text-brand-200">
+            <div className="flex flex-wrap items-center gap-5 text-sm text-brand-100">
               <span className="flex items-center gap-1.5">
                 <BookOpen className="h-4 w-4" />{post.author}
               </span>

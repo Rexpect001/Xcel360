@@ -22,6 +22,6 @@ export const ROLE_LABELS: Record<UserRole, { label: string; color: string; descr
   EDITOR:    { label: 'Editor',    color: 'bg-yellow-100 text-yellow-700', description: 'Can manage scholarships, jobs, resources, blog posts, and events' },
   MODERATOR: { label: 'Moderator', color: 'bg-orange-100 text-orange-700', description: 'Can manage events' },
   MENTOR:    { label: 'Mentor',    color: 'bg-purple-100 text-purple-700', description: 'Can manage resources, blog, mentorship listings, and events' },
-  MANAGER:   { label: 'Manager',   color: 'bg-blue-100 text-blue-700',   description: 'Can manage scholarships, jobs, programs, resources, blog, and events' },
+  MANAGER:   { label: 'Manager',   color: 'bg-brand-100 text-brand-700',   description: 'Can manage scholarships, jobs, programs, resources, blog, and events' },
   ADMIN:     { label: 'Admin',     color: 'bg-red-100 text-red-700',     description: 'Super admin  -  full access including users, roles, and activity logs' },
 }

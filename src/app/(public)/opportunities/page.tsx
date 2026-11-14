@@ -88,15 +88,11 @@ export default async function OpportunitiesPage() {
           New here? Watch the 60-second search walkthrough →
         </Link>
       </PageHero>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <GoogleAd placement="listing-top" shape="leaderboard" />
-      </div>
+      <GoogleAd placement="listing-top" shape="leaderboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6" />
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <OpportunitiesClient initialOpportunities={opportunities} />
       </Suspense>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <GoogleAd placement="listing-top" shape="leaderboard" />
-      </div>
+      <GoogleAd placement="listing-top" shape="leaderboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10" />
       <CategoryBrowse />
       <section className="bg-white border-t border-surface-200 px-4 py-10">
         <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-3">

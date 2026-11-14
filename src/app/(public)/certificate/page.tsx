@@ -48,7 +48,7 @@ export default function CertificatePage() {
     d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ' - '
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-accent-50 to-white py-16 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

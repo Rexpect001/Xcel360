@@ -3,7 +3,7 @@
  *   npx tsx scripts/test-billing.ts
  */
 import crypto from 'crypto'
-import { CREDIT_PACKS, FREE_CREDITS, findPack, formatNaira } from '../src/lib/billing'
+import { CREDIT_PACKS, CREDITS_PER_USE, FREE_CREDITS, findPack, formatNaira, pricePerUse, savingsPercent, usesFor, legacyConversionDelta, purchaseCredits } from '../src/lib/billing'
 import { validSignature } from '../src/lib/paystack'
 
 let failed = 0
@@ -21,11 +21,24 @@ expect('rejects a tampered body', !validSignature(body.replace('abc', 'xyz'), si
 expect('rejects a wrong key', !validSignature(body, crypto.createHmac('sha512', 'other').update(body).digest('hex'), key))
 expect('rejects a missing signature', !validSignature(body, null, key))
 expect('rejects when no secret key is set', !validSignature(body, sig, null))
-expect('finds packs by id only', findPack('standard')?.credits === 30 && findPack('free') === null && findPack(undefined) === null)
+expect('finds packs by id only', findPack('starter')?.credits === 200 && findPack('season')?.priceNaira === 20000 && findPack('free') === null && findPack(undefined) === null)
 expect('pack ids are unique', new Set(CREDIT_PACKS.map((p) => p.id)).size === CREDIT_PACKS.length)
 expect('every pack has positive credits and price', CREDIT_PACKS.every((p) => p.credits > 0 && p.priceNaira >= 100 && Number.isInteger(p.priceNaira)))
 expect('bigger packs never cost more per credit', CREDIT_PACKS.every((p, i) => i === 0 || p.priceNaira / p.credits <= CREDIT_PACKS[i - 1].priceNaira / CREDIT_PACKS[i - 1].credits))
-expect('free credits are a small positive number', FREE_CREDITS > 0 && FREE_CREDITS <= 10)
+expect('free credits cover exactly 5 drafts', usesFor(FREE_CREDITS) === 5 && FREE_CREDITS % CREDITS_PER_USE === 0)
+expect('every pack buys whole drafts', CREDIT_PACKS.every((p) => p.credits % CREDITS_PER_USE === 0))
+expect('price per draft: 1000 / 800', CREDIT_PACKS.map(pricePerUse).join('/') === '1000/800')
+expect('savings shown against the starter pack', savingsPercent(CREDIT_PACKS[0]) === 0 && savingsPercent(CREDIT_PACKS[1]) === 20)
+expect('uses never negative and round down', usesFor(-5) === 0 && usesFor(19) === 0 && usesFor(39) === 1)
+// Old units: 1 credit = 1 draft, 3 free credits
+expect('untouched old account ends on exactly 100', 3 + legacyConversionDelta(3, 3) === 100)
+expect('old account that used its free drafts gets the 40 top-up', 0 + legacyConversionDelta(0, 3) === 40)
+expect('old paid balance keeps its value in drafts', usesFor(13 + legacyConversionDelta(13, 3)) === 13 + 2)
+expect('negative old balance is not amplified', legacyConversionDelta(-2, 3) === 40)
+expect('new checkouts credit what the pack says', purchaseCredits(10000 * 100, 200) === 200 && purchaseCredits(20000 * 100, 500) === 500)
+expect('old checkouts (N3,000 for 10) keep 10 drafts', usesFor(purchaseCredits(3000 * 100, 10)) === 10)
+expect('old 80-credit checkout is converted too', purchaseCredits(16000 * 100, 80) === 1600)
+expect('zero-credit payment adds nothing', purchaseCredits(100, 0) === 0)
 expect('formats Naira', formatNaira(7500) === '₦7,500')
 
 console.log(failed ? `\n${failed} failed\n` : '\nAll passed\n')

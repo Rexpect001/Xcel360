@@ -4,7 +4,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
-import { WRITING_TOOLS, type ToolDef, type ToolId } from '@/lib/writing-tools'
+import { WRITING_TOOLS, cvTrack, fieldVisible, taskFor, type ToolDef, type ToolId } from '@/lib/writing-tools'
 import {
   PROMPT_VERSION,
   checkOutput,
@@ -68,8 +68,11 @@ export function isStartup(toolId: ToolId) {
 export function readFields(tool: ToolDef, inputs: Record<string, unknown>): { fields: FieldLine[]; error?: string } {
   const fields: FieldLine[] = []
   for (const f of tool.fields) {
+    if (!fieldVisible(tool.id, f, inputs)) continue // e.g. research fields on a job CV
     const raw = inputs[f.id]
-    const value = typeof raw === 'string' ? cleanText(raw).slice(0, f.max ?? 2000) : ''
+    let value = typeof raw === 'string' ? cleanText(raw).slice(0, f.max ?? 2000) : ''
+    // Drafts saved before a select existed (e.g. CV track) use its first option
+    if (f.type === 'select' && !value && f.options?.length) value = f.options[0]
     if (f.type === 'select' && value && f.options && !f.options.includes(value)) {
       return { fields, error: `Please choose a valid option for "${f.label}".` }
     }
@@ -105,21 +108,25 @@ export function sourceText(fields: FieldLine[], opportunity?: OpportunityContext
 interface BuildArgs {
   tool: ToolDef
   fields: FieldLine[]
+  /** Raw inputs, used to pick the CV track. */
+  inputs?: Record<string, unknown>
   opportunity?: OpportunityContext | null
   /** For a fix pass: the current draft and the issues to fix. */
   fix?: { draft: string; issues: string[] }
 }
 
-export function buildRequest({ tool, fields, opportunity, fix }: BuildArgs) {
+export function buildRequest({ tool, fields, inputs = {}, opportunity, fix }: BuildArgs) {
   const startup = isStartup(tool.id)
   const tag = startup ? 'founder_details' : 'applicant_details'
-  const system = `${startup ? STARTUP_SYSTEM : WRITING_SYSTEM}\n\n${rulesBlock(tool.id)}`
+  const track = tool.id === 'cv' ? cvTrack(inputs) : undefined
+  const task = taskFor(tool, inputs)
+  const system = `${startup ? STARTUP_SYSTEM : WRITING_SYSTEM}\n\n${rulesBlock(tool.id, track)}`
   const details = `<${tag}>\n${fields.map((f) => `${f.label}:\n${f.value}`).join('\n\n')}\n</${tag}>`
   const opp = opportunity && !startup ? `<opportunity_details>\n${opportunityBlock(opportunity)}\n</opportunity_details>\n\n` : ''
 
   const content = fix
-    ? `Revise the current draft of this document. Fix only the issues listed below and keep everything else, including any wording the applicant edited by hand. Return the full revised document only.\n\nIssues to fix:\n${fix.issues.map((i) => `- ${i}`).join('\n')}\n\nOriginal task: ${tool.task}\n\n${opp}<current_draft>\n${cleanText(fix.draft).slice(0, 12000)}\n</current_draft>\n\n${details}`
-    : `${tool.task}${opp ? ' Tailor it to the opportunity described in <opportunity_details>.' : ''}\n\n${opp}${details}`
+    ? `Revise the current draft of this document. Fix only the issues listed below and keep everything else, including any wording the applicant edited by hand. Return the full revised document only.\n\nIssues to fix:\n${fix.issues.map((i) => `- ${i}`).join('\n')}\n\nOriginal task: ${task}\n\n${opp}<current_draft>\n${cleanText(fix.draft).slice(0, 12000)}\n</current_draft>\n\n${details}`
+    : `${task}${opp ? ' Tailor it to the opportunity described in <opportunity_details>.' : ''}\n\n${opp}${details}`
 
   return { system, content }
 }
@@ -166,7 +173,7 @@ export async function runWritingTool({ client, toolId, inputs, opportunity, fix 
     fixArg = { draft: fix.draft, issues }
   }
 
-  const { system, content } = buildRequest({ tool, fields, opportunity, fix: fixArg })
+  const { system, content } = buildRequest({ tool, fields, inputs, opportunity, fix: fixArg })
   const response = await client.messages.create({
     model: WRITING_MODEL,
     max_tokens: 4000,

@@ -15,13 +15,12 @@
 
 import type { ToolId } from '@/lib/writing-tools'
 
-export const PROMPT_VERSION = '2026-10-29.1'
+export const PROMPT_VERSION = '2026-11-14.1'
 
 // ── 1. House rules ──────────────────────────────────────────────────────────
 
+// Rules shared by both CV tracks
 const CV_RULES = [
-  'For scholarships and graduate school, order sections: Education, Research Experience, Publications and Presentations, Teaching Experience, Related Experience, Leadership, Awards, Conferences, Certifications, Skills, Referees. For a job, lead with experience instead.',
-  'Pull research out of work roles into its own Research Experience section. For academic applications call the remaining jobs "Related Experience", not "Work Experience".',
   'Every bullet shows what the applicant did, the skill or method used, and the result. Rewrite job duties as skills a graduate programme values (teaching, data analysis, programming, research methods). Replace vague lines like "trained students" with what was taught, if the applicant said so.',
   'Use years only for dates (2022, or 2021-2023), never months.',
   'Keep at most three awards, choosing academic ones. Drop titles that are social or political rather than academic.',
@@ -34,6 +33,22 @@ const CV_RULES = [
   'Never include date of birth, marital status, religion, state of origin or a photo line unless the target explicitly requires it.',
   'Write the CV as a CV: headings and bullets, no paragraph of self-praise, no "References available upon request".',
 ]
+
+const CV_ACADEMIC_RULES = [
+  'Order sections: Education, Research Experience, Publications and Presentations, Teaching Experience, Related Experience, Leadership, Awards, Conferences, Certifications, Skills, Referees.',
+  'Pull research out of work roles into its own Research Experience section, and call the remaining jobs "Related Experience", not "Work Experience".',
+  'Rewrite job duties as skills a graduate programme values (teaching, data analysis, programming, research methods).',
+]
+
+const CV_JOB_RULES = [
+  'Order sections: Professional Summary, Experience, Key Projects or Achievements, Education, Skills, Certifications. Leave out Referees unless the role asks for them.',
+  'Keep it to one or two pages. Cut coursework, school awards and conferences that do not help with this role.',
+  'Use the role\'s own keywords only where the applicant\'s evidence supports them. Never keyword-stuff.',
+  'The summary is 2-3 lines about the applicant and the role, not adjectives about their personality.',
+]
+
+/** Track-specific CV rules, placed before the shared CV rules. */
+export const CV_TRACK_RULES = { academic: CV_ACADEMIC_RULES, job: CV_JOB_RULES } as const
 
 const SOP_RULES = [
   'Open with a specific problem or moment the applicant described. Do not open with where they were born or raised, a quote, a dictionary definition, a broad global statistic, or "Since I was a child".',
@@ -77,8 +92,9 @@ export const TOOL_RULES: Record<ToolId, string[]> = {
   'startup-roadmap': STARTUP_RULES,
 }
 
-export function rulesBlock(toolId: ToolId): string {
-  return `Xcel360 house rules for this document (from our mentors' reviews):\n${TOOL_RULES[toolId].map((r) => `- ${r}`).join('\n')}`
+export function rulesBlock(toolId: ToolId, track?: keyof typeof CV_TRACK_RULES): string {
+  const rules = toolId === 'cv' && track ? [...CV_TRACK_RULES[track], ...TOOL_RULES.cv] : TOOL_RULES[toolId]
+  return `Xcel360 house rules for this document (from our mentors' reviews):\n${rules.map((r) => `- ${r}`).join('\n')}`
 }
 
 // ── 2. Input screening ──────────────────────────────────────────────────────

@@ -4,9 +4,7 @@ import Hero from '@/components/landing/Hero'
 import ChooseYourPath from '@/components/landing/ChooseYourPath'
 import TopScholarships from '@/components/landing/TopScholarships'
 import MoreScholarships from '@/components/landing/MoreScholarships'
-import HowToSearch from '@/components/landing/HowToSearch'
 import EmailCapture from '@/components/landing/EmailCapture'
-import GoogleAd from '@/components/ads/GoogleAd'
 import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
@@ -98,13 +96,7 @@ export default async function LandingPage() {
       <div className="overflow-x-hidden">
         <Hero liveCount={liveCount} />
         <TopScholarships scholarships={latest} />
-        <div className="bg-surface-50 pb-4">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <GoogleAd placement="home-feed" shape="leaderboard" />
-          </div>
-        </div>
         <MoreScholarships scholarships={more} />
-        <HowToSearch />
         <ChooseYourPath />
         <EmailCapture />
       </div>

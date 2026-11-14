@@ -23,7 +23,7 @@ export default function Hero({ liveCount }: { liveCount?: number }) {
     <section className="relative overflow-hidden bg-hero-gradient text-white">
       <BrandPattern opacity={0.1} />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-32 pb-20 sm:pt-40 sm:pb-24 text-center">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-28 pb-14 sm:pt-36 sm:pb-16 text-center">
         <p className="eyebrow !text-accent-200 mb-5">
           {liveCount ? `${liveCount.toLocaleString()} live opportunities, checked daily` : 'Scholarships, checked daily'}
         </p>

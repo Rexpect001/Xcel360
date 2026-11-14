@@ -1,5 +1,6 @@
 import React from 'react'
-import { interpolate, useCurrentFrame, Easing } from 'remotion'
+import { interpolate, Easing } from 'remotion'
+import { useCurrentFrame } from './time'
 import {
   Bookmark, CalendarClock, Bell, SquareKanban, Check, Mail, PenLine, ScrollText, Send, Sparkles, GraduationCap,
   MapPin, Wallet, ArrowRight, Share2, Link2,

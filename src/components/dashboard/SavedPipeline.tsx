@@ -6,6 +6,7 @@ import { ArrowRight, Bookmark, CalendarDays, ExternalLink, Loader2, Send, Trophy
 import { toast } from 'react-hot-toast'
 import { categoryMeta, deadlineInfo } from '@/lib/opportunity-display'
 import Modal, { ModalSummary } from '@/components/ui/Modal'
+import PipelineGuide from '@/components/dashboard/PipelineGuide'
 import { cn } from '@/lib/utils'
 
 type Stage = 'SAVED' | 'PREPARING' | 'SUBMITTED' | 'INTERVIEW' | 'RESULT'
@@ -194,11 +195,7 @@ export default function SavedPipeline() {
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-brand-600" /></div>
       ) : items.length === 0 ? (
-        <div className="dash-panel p-12 text-center">
-          <span className="mx-auto h-14 w-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center"><Bookmark className="h-7 w-7" /></span>
-          <h2 className="mt-4 text-lg font-semibold text-ink-900">Nothing in your pipeline yet</h2>
-          <p className="mt-1 text-sm text-ink-500">Save a scholarship, job, or internship to start your shortlist.</p>
-        </div>
+        <PipelineGuide />
       ) : (
         <div className="overflow-x-auto pb-4" aria-label="Opportunity pipeline">
           <div className="grid grid-cols-5 gap-4 min-w-[1080px]">

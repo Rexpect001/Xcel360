@@ -7,10 +7,12 @@ import Link from 'next/link'
 import {
   AlertTriangle, Check, Copy, Download, FileText, Info, Loader2, RefreshCw, RotateCcw, Sparkles, Target, Wand2, FilePlus2,
 } from 'lucide-react'
-import { WRITING_TOOLS, opportunityPrefill, type OpportunitySummary, type ToolId } from '@/lib/writing-tools'
+import { WRITING_TOOLS, fieldVisible, opportunityPrefill, type OpportunitySummary, type ToolId } from '@/lib/writing-tools'
 import { checkOutput, countWords, fixableIssues, type DraftCheck } from '@/lib/writing-guardrails'
 import Modal from '@/components/ui/Modal'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
+import InviteCard from '@/components/dashboard/InviteCard'
+import { CREDITS_PER_USE, usesFor } from '@/lib/billing'
 import { cn } from '@/lib/utils'
 
 const FORM_KEY = (id: string) => `xcel360_tool_${id}`
@@ -164,7 +166,7 @@ export default function WritingToolForm({
       })
       const data = await res.json().catch(() => ({}))
       if (res.status === 402 || data.code === 'NO_CREDITS') {
-        setCredits(0)
+        if (typeof data.credits === 'number') setCredits(data.credits)
         setOutOfCredits(true)
         return
       }
@@ -203,7 +205,7 @@ export default function WritingToolForm({
 
   const onSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
-    if (credits !== null && credits < 1) {
+    if (credits !== null && credits < CREDITS_PER_USE) {
       setOutOfCredits(true)
       return
     }
@@ -297,13 +299,35 @@ export default function WritingToolForm({
               Start with the programme or role you want. Your answers are sent to the AI service only when you generate a draft, and each draft is saved to <Link href="/dashboard/tools/drafts" className="font-semibold text-brand-700 underline">My drafts</Link>. <Link href="/resources" className="font-semibold text-brand-700 underline">See the public CV guides</Link>.
             </div>
           )}
-          {tool.fields.map((f) => (
+          {tool.fields.filter((f) => fieldVisible(toolId, f, values)).map((f, i) => (
             <div key={f.id}>
-              {f.section && <h2 className="pt-3 mb-3 border-t border-surface-200 font-bold text-ink-900">{f.section}</h2>}
+              {f.section && <h2 className={cn('mb-3 font-bold text-ink-900', i > 0 && 'pt-3 border-t border-surface-200')}>{f.section}</h2>}
               <label htmlFor={f.id} className="label">
                 {f.label} {f.required && <span className="text-red-500">*</span>}
               </label>
-              {f.type === 'textarea' ? (
+              {f.help && f.display === 'segmented' && <p className="-mt-1 mb-2 text-xs text-ink-600">{f.help}</p>}
+              {f.type === 'select' && f.display === 'segmented' ? (
+                <div id={f.id} role="radiogroup" aria-label={f.label} className="grid grid-cols-2 gap-1 rounded-xl bg-surface-100 p-1">
+                  {f.options?.map((o) => {
+                    const active = (values[f.id] ?? f.options?.[0]) === o
+                    return (
+                      <button
+                        key={o}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => update(f.id, o)}
+                        className={cn(
+                          'rounded-lg px-3 py-2.5 text-sm font-semibold transition-all',
+                          active ? 'bg-white text-brand-700 shadow-soft ring-1 ring-brand-200' : 'text-ink-700 hover:text-ink-900'
+                        )}
+                      >
+                        {o}
+                      </button>
+                    )
+                  })}
+                </div>
+              ) : f.type === 'textarea' ? (
                 <textarea
                   id={f.id}
                   rows={4}
@@ -330,7 +354,7 @@ export default function WritingToolForm({
                   className="input-field"
                 />
               )}
-              {f.help && <p className="mt-1.5 text-xs leading-relaxed text-ink-500">{f.help}</p>}
+              {f.help && f.display !== 'segmented' && <p className="mt-1.5 text-xs leading-relaxed text-ink-600">{f.help}</p>}
             </div>
           ))}
           {toolId === 'cv' && (
@@ -344,7 +368,9 @@ export default function WritingToolForm({
               : <><Sparkles className="h-4 w-4 text-accent-200" /> {output ? 'Generate a new version' : 'Generate draft'}</>}
           </button>
           {credits !== null && (
-            <p className="-mt-2 text-center text-xs text-ink-500">Uses 1 credit · {credits} left</p>
+            <p className="-mt-2 text-center text-xs text-ink-500">
+              Uses {CREDITS_PER_USE} credits · <span className="font-semibold text-ink-700 tabular-nums">{credits}</span> left ({usesFor(credits)} draft{usesFor(credits) === 1 ? '' : 's'})
+            </p>
           )}
           <p className="text-xs text-ink-400 leading-relaxed">
             {startup
@@ -417,8 +443,8 @@ export default function WritingToolForm({
       <Modal
         open={outOfCredits}
         onClose={() => setOutOfCredits(false)}
-        title="You're out of credits"
-        description="Each new draft uses 1 credit. Buy a pack to keep going. Your answers and saved drafts stay here, and editing, fixing issues and restoring versions stay free."
+        title="You need more credits"
+        description={`Each new draft uses ${CREDITS_PER_USE} credits and you have ${credits ?? 0}. Buy a pack to keep going. Your answers and saved drafts stay here, and editing, fixing issues and restoring versions stay free.`}
         size="sm"
         footer={
           <>
@@ -426,13 +452,15 @@ export default function WritingToolForm({
             <Link href="/dashboard/billing" className="btn-primary">See credit packs</Link>
           </>
         }
-      />
+      >
+        <InviteCard compact />
+      </Modal>
 
       <Modal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         title="Replace your current draft?"
-        description={`A new version uses 1 credit and replaces the text in the editor, including your edits. Your current text is kept as the previous version, and you can bring it back with the restore button.`}
+        description={`A new version uses ${CREDITS_PER_USE} credits and replaces the text in the editor, including your edits. Your current text is kept as the previous version, and you can bring it back with the restore button.`}
         size="sm"
         footer={
           <>

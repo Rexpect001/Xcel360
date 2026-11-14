@@ -21,7 +21,7 @@ function BeneficiaryCard({ b }: { b: Beneficiary }) {
   return (
     <div className="flex items-center gap-4 bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 w-full select-none">
       {/* Avatar circle with initials */}
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-brand-600 flex items-center justify-center flex-shrink-0">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0">
         <span className="text-white text-sm font-bold">{firstName(b.firstName)}</span>
       </div>
       <div className="min-w-0">

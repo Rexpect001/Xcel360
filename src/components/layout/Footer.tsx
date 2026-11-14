@@ -64,7 +64,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-white/15 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-brand-200">
+        <div className="border-t border-white/15 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-brand-100">
           <p>© {new Date().getFullYear()} Xcel360. All rights reserved.</p>
           <p>Always apply through the official provider&apos;s website. Xcel360 never charges application fees.</p>
         </div>

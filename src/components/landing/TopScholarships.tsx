@@ -14,7 +14,7 @@ export default function TopScholarships({ scholarships }: { scholarships: Schola
   if (scholarships.length === 0) return null
 
   return (
-    <section className="py-16 sm:py-20 bg-surface-50">
+    <section className="py-10 sm:py-14 bg-surface-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-end justify-between gap-4 mb-7">
           <div>

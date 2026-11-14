@@ -1,5 +1,7 @@
 import crypto from 'crypto'
 import prisma from '@/lib/prisma'
+import { ensureWallet } from '@/lib/credits'
+import { purchaseCredits } from '@/lib/billing'
 
 const API = 'https://api.paystack.co'
 
@@ -87,6 +89,9 @@ export async function fulfilPayment(reference: string): Promise<FulfilResult> {
     return 'failed'
   }
 
+  // Settle the welcome grant / unit conversion first so a new purchase is never converted
+  await ensureWallet(payment.userId)
+  const credits = purchaseCredits(payment.amount, payment.credits)
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: payment.id },
@@ -96,10 +101,10 @@ export async function fulfilPayment(reference: string): Promise<FulfilResult> {
       where: { reference: `pay:${reference}` },
       create: {
         userId: payment.userId,
-        delta: payment.credits,
+        delta: credits,
         reason: 'PURCHASE',
         reference: `pay:${reference}`,
-        note: `${payment.credits} credits (${payment.packId})`,
+        note: `${credits} credits (${payment.packId})`,
       },
       update: {},
     }),

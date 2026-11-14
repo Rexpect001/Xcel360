@@ -32,13 +32,13 @@ export default function ShareButtons({ title, url, applicationLink }: ShareButto
       name: 'Facebook',
       icon: Facebook,
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      hover: 'hover:bg-blue-600 hover:text-white hover:border-blue-600',
+      hover: 'hover:bg-brand-600 hover:text-white hover:border-brand-600',
     },
     {
       name: 'LinkedIn',
       icon: Linkedin,
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-      hover: 'hover:bg-blue-700 hover:text-white hover:border-blue-700',
+      hover: 'hover:bg-brand-700 hover:text-white hover:border-brand-700',
     },
     {
       name: 'WhatsApp',

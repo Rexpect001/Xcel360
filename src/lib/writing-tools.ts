@@ -6,10 +6,23 @@
 
 export type ToolId = 'cv' | 'sop' | 'cover-letter' | 'cold-email' | 'startup-idea' | 'startup-interviews' | 'startup-roadmap'
 
+export type CvTrack = 'academic' | 'job'
+
+/** CV Builder track options, as shown to the user (and stored in the draft inputs). */
+export const CV_TRACK_OPTIONS = ['Academic CV', 'Job / Industry CV'] as const
+
+export function cvTrack(inputs: Record<string, unknown>): CvTrack {
+  return inputs.track === CV_TRACK_OPTIONS[1] ? 'job' : 'academic'
+}
+
 export interface ToolField {
   id: string
   label: string
   type: 'text' | 'textarea' | 'select'
+  /** Render a select as side-by-side toggle buttons. */
+  display?: 'segmented'
+  /** CV only: show this field just for these tracks. */
+  tracks?: CvTrack[]
   section?: string
   help?: string
   placeholder?: string
@@ -28,30 +41,51 @@ export interface ToolDef {
   fields: ToolField[]
   /** Task description handed to the model, with the user's fields appended as data. */
   task: string
+  /** CV only: task per track (falls back to `task`). */
+  trackTasks?: Record<CvTrack, string>
+}
+
+/** Whether a field applies to the current answers (CV track filtering). */
+export function fieldVisible(toolId: ToolId, field: ToolField, inputs: Record<string, unknown>): boolean {
+  return !field.tracks || toolId !== 'cv' || field.tracks.includes(cvTrack(inputs))
+}
+
+/** The task text for this run. */
+export function taskFor(tool: ToolDef, inputs: Record<string, unknown>): string {
+  return (tool.id === 'cv' && tool.trackTasks?.[cvTrack(inputs)]) || tool.task
 }
 
 export const WRITING_TOOLS: Record<ToolId, ToolDef> = {
   cv: {
     id: 'cv',
-    name: 'Academic CV Builder',
-    tagline: 'Answer focused questions, then turn your own evidence into an academic CV.',
+    name: 'CV Builder',
+    tagline: 'Choose an academic or a job CV, answer focused questions, and turn your own evidence into a CV.',
     outputLabel: 'Your CV draft',
     task:
       'Write a tailored academic CV for the stated scholarship, graduate programme, or role. Prioritise the strongest relevant evidence rather than forcing a fixed length. Use reverse chronological order, clear headings, and concise bullets showing action, method or skill, and result where the applicant supplied them. Put research and thesis evidence early for research-focused applications; include teaching, leadership, awards, conferences, certifications, publications, and referees only when supported and relevant. Do not invent metrics, publications, credentials, duties, dates, or referee details. Omit empty sections. Do not include private details such as date of birth, marital status, or a photograph unless explicitly required by the target. Return only the CV in plain text, with headings and "- " bullets.',
+    trackTasks: {
+      academic:
+        'Write a tailored academic CV for the stated scholarship, graduate programme, fellowship, or research position. Prioritise the strongest relevant evidence rather than forcing a fixed length. Use reverse chronological order, clear headings, and concise bullets showing action, method or skill, and result where the applicant supplied them. Put Education first, then Research Experience; include publications, teaching, leadership, awards, conferences, certifications, and referees only when supported and relevant. Do not invent metrics, publications, credentials, duties, dates, or referee details. Omit empty sections. Do not include private details such as date of birth, marital status, or a photograph unless explicitly required by the target. Return only the CV in plain text, with headings and "- " bullets.',
+      job:
+        'Write a tailored one-to-two page job / industry CV (resume) for the stated role. Open with a 2-3 line professional summary aimed at the role, then Experience in reverse chronological order, then Key Projects or Achievements, Education, Skills, and Certifications. Every bullet starts with a strong verb and shows action, tool or skill, and result; use numbers only where the applicant gave them, otherwise write a placeholder like [add result]. Mirror the role\'s requirements with the applicant\'s real evidence, using the employer\'s keywords where they truthfully apply so applicant-tracking systems can read it. Keep research and teaching only if they matter for the role, as short bullets. Do not invent employers, metrics, credentials, or dates. Omit empty sections and personal details such as date of birth, marital status, religion, or a photograph. Return only the CV in plain text, with headings and "- " bullets.',
+    },
     fields: [
+      { id: 'track', section: 'CV type', label: 'Which CV do you need?', type: 'select', display: 'segmented', options: [...CV_TRACK_OPTIONS], required: true, help: 'Academic: scholarships, master\'s and PhD admissions, fellowships. Job / Industry: employers, internships and graduate schemes.' },
       { id: 'name', section: 'Goal and contact', label: 'Full name', type: 'text', required: true, prefill: 'name', max: 120 },
       { id: 'target', label: 'Which scholarship, programme, research field, or role is this CV for?', type: 'text', required: true, placeholder: 'MSc Public Health scholarship; focus on epidemiology', max: 240 },
       { id: 'criteria', label: 'What does the selection committee ask for?', type: 'textarea', help: 'Paste the relevant requirements or selection criteria, not the whole advert.', max: 1800 },
       { id: 'contact', label: 'Professional email, phone, city, and useful profile link', type: 'text', placeholder: 'ada@email.com; Lagos; linkedin.com/in/ada', max: 320 },
       { id: 'education', section: 'Academic foundation', label: 'For each degree: qualification, field, university, dates, grade, and honours', type: 'textarea', required: true, prefill: 'school', placeholder: 'BSc Microbiology, University of Ibadan, 2019-2023; Second Class Upper, 4.21/5.00', max: 2500 },
-      { id: 'researchInterests', label: 'Which specific research interests fit this application?', type: 'textarea', help: 'Name focused topics you can explain. Leave blank for a non-research role.', max: 900 },
-      { id: 'thesis', section: 'Research and projects', label: 'What was your thesis or strongest project?', type: 'textarea', help: 'Give its title, question, your contribution, methods/tools, and findings. Say what is still unknown.', max: 2200 },
-      { id: 'research', label: 'What other research have you done?', type: 'textarea', help: 'For each project: your role, dates, methods, skills used, and result. Leave blank if none.', max: 2500 },
-      { id: 'publications', label: 'Publications, presentations, or manuscripts', type: 'textarea', help: 'Only list real work. Give title, authors, venue, year, and status (published, accepted, under review).', max: 1600 },
-      { id: 'teaching', section: 'Experience and impact', label: 'Have you taught, tutored, or supervised others?', type: 'textarea', help: 'Who did you teach, what subject, what did you do, and what changed?', max: 1400 },
+      { id: 'researchInterests', tracks: ['academic'], label: 'Which specific research interests fit this application?', type: 'textarea', help: 'Name focused topics you can explain. Leave blank for a non-research role.', max: 900 },
+      { id: 'thesis', tracks: ['academic'], section: 'Research and projects', label: 'What was your thesis or strongest project?', type: 'textarea', help: 'Give its title, question, your contribution, methods/tools, and findings. Say what is still unknown.', max: 2200 },
+      { id: 'research', tracks: ['academic'], label: 'What other research have you done?', type: 'textarea', help: 'For each project: your role, dates, methods, skills used, and result. Leave blank if none.', max: 2500 },
+      { id: 'publications', tracks: ['academic'], label: 'Publications, presentations, or manuscripts', type: 'textarea', help: 'Only list real work. Give title, authors, venue, year, and status (published, accepted, under review).', max: 1600 },
+      { id: 'summary', tracks: ['job'], section: 'Role fit', label: 'In one or two lines, what do you bring to this kind of role?', type: 'textarea', help: 'Your years of experience, main strength, and the kind of role you want. The AI turns this into your professional summary.', max: 500 },
+      { id: 'projects', tracks: ['job'], label: 'Key projects or achievements', type: 'textarea', help: 'For each: what you built or delivered, the tools used, and the result. Real numbers only.', max: 2200 },
+      { id: 'teaching', tracks: ['academic'], section: 'Experience and impact', label: 'Have you taught, tutored, or supervised others?', type: 'textarea', help: 'Who did you teach, what subject, what did you do, and what changed?', max: 1400 },
       { id: 'experience', label: 'Relevant work, internships, and service', type: 'textarea', required: true, help: 'For each role: organisation, years, the problem, your action, tools or skills used, and an honest result. Coursework and class projects count if you have no formal job.', max: 4200 },
       { id: 'leadership', label: 'Leadership and volunteering with outcomes', type: 'textarea', help: 'Pick the strongest relevant examples; describe your contribution and result.', max: 1800 },
-      { id: 'awards', section: 'Supporting evidence', label: 'What are your most relevant academic awards or honours?', type: 'textarea', help: 'Prioritise up to three strong awards and give the year and basis for each.', max: 1100 },
+      { id: 'awards', section: 'Supporting evidence', label: 'What are your most relevant awards or honours?', type: 'textarea', help: 'Prioritise up to three strong awards and give the year and basis for each.', max: 1100 },
       { id: 'conferences', label: 'Relevant conferences, certifications, and memberships', type: 'textarea', help: 'State your role or what you learned; leave unrelated items out.', max: 1300 },
       { id: 'skills', label: 'Technical tools, methods, and languages you can actually use', type: 'textarea', help: 'Name your level or evidence of use where helpful.', max: 1300 },
       { id: 'referees', label: 'Referees, only if requested and they have agreed', type: 'textarea', help: 'Name, role, institution, professional email, and relationship. Otherwise leave blank.', max: 900 },

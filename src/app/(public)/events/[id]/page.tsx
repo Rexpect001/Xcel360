@@ -97,7 +97,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-2xl" />
 
           <div className="max-w-3xl mx-auto relative">
-            <Link href="/events" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white text-sm mb-6 transition-colors">
+            <Link href="/events" className="inline-flex items-center gap-1.5 text-white/80 hover:text-white text-sm mb-6 transition-colors">
               <ArrowLeft className="h-4 w-4" /> Back to Events
             </Link>
 
@@ -122,7 +122,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
             {/* Countdown */}
             {!isPast && (
               <div className="mb-8">
-                <p className="text-white/50 text-xs font-medium uppercase tracking-widest mb-3">Starts in</p>
+                <p className="text-white/80 text-xs font-medium uppercase tracking-widest mb-3">Starts in</p>
                 <CountdownTimer targetDate={event.date} />
               </div>
             )}

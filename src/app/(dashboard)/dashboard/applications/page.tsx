@@ -6,6 +6,7 @@ import { formatDate, daysUntilDeadline } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import PipelineGuide from '@/components/dashboard/PipelineGuide'
 
 const PILL: Record<string, string> = {
   INTERESTED: 'pill-slate', PREPARING: 'pill-amber', SUBMITTED: 'pill-blue', INTERVIEW: 'pill-violet', RESULT: 'pill-green',
@@ -76,13 +77,7 @@ export default function ApplicationsPage() {
       </div>
 
       {apps.length === 0 ? (
-        <div className="dash-panel p-16 text-center">
-          <span className="mx-auto mb-4 h-14 w-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center"><FileText className="h-7 w-7" /></span>
-          <p className="text-ink-500 mb-4">No applications tracked yet. Save an opportunity and start tracking.</p>
-          <Link href="/opportunities" className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-brand-700">
-            Browse Opportunities
-          </Link>
-        </div>
+        <PipelineGuide />
       ) : (
         <div className="grid lg:grid-cols-5 gap-5">
           {/* List */}

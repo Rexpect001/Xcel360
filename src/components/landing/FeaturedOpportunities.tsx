@@ -22,7 +22,7 @@ function OpportunityCard({ opp }: { opp: SerializedOpportunity }) {
       className="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden"
     >
       {/* Top accent with gradient */}
-      <div className="h-1.5 bg-gradient-to-r from-brand-600 via-brand-500 to-sky-400" />
+      <div className="h-1.5 bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400" />
       <div className="relative p-6">
         {/* Subtle watermark on card */}
         <svg className="absolute top-2 right-2 w-16 h-16 opacity-30" xmlns="http://www.w3.org/2000/svg">

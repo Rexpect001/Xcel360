@@ -114,7 +114,6 @@ export default async function JobDetailPage({ params }: { params: { id: string }
               <p className="text-gray-600 text-sm leading-relaxed">{job.eligibility}</p>
             </section>
 
-            <GoogleAd placement="detail-inline" />
 
             {job.skills.length > 0 && (
               <section className="bg-white rounded-2xl border border-gray-100 p-6">

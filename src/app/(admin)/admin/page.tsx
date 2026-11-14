@@ -21,7 +21,7 @@ const ACTION_BADGE: Record<string, string> = {
   PUBLISH: 'bg-success-100 text-success-700',
   UNPUBLISH: 'bg-warning-100 text-warning-700',
   ASSIGN_ROLE: 'bg-indigo-100 text-indigo-700',
-  APPLY: 'bg-sky-100 text-sky-700',
+  APPLY: 'bg-accent-100 text-brand-700',
   VIEW: 'bg-surface-100 text-surface-700',
   DOWNLOAD: 'bg-indigo-100 text-indigo-700',
 }
@@ -60,7 +60,7 @@ export default async function AdminPage() {
     { label: 'Total Users',   value: users,        icon: Users,     href: '/admin/users',         tone: 'bg-brand-50 text-brand-700 border-brand-100' },
     { label: 'Scholarships',  value: scholarships, icon: BookOpen,  href: '/admin/opportunities', tone: 'bg-indigo-50 text-indigo-700 border-indigo-100' },
     { label: 'Jobs',          value: jobs,         icon: Briefcase, href: '/admin/jobs',          tone: 'bg-success-50 text-success-700 border-success-100' },
-    { label: 'Internships',   value: internships,  icon: Briefcase, href: '/admin/jobs',          tone: 'bg-sky-50 text-sky-700 border-sky-100' },
+    { label: 'Internships',   value: internships,  icon: Briefcase, href: '/admin/jobs',          tone: 'bg-accent-50 text-brand-700 border-accent-100' },
     { label: 'Total Saves',   value: saved,        icon: Bookmark,  href: '/admin/analytics',     tone: 'bg-rose-50 text-rose-700 border-rose-100' },
     { label: 'Applications',  value: applications, icon: FileText,  href: '/admin/analytics',     tone: 'bg-warning-50 text-warning-700 border-warning-100' },
   ]
@@ -105,8 +105,8 @@ export default async function AdminPage() {
       href: '/admin/users',         icon: Users,     label: 'Users',
       desc: 'View registered users and manage admin permissions.',
       count: `${users} users`,
-      iconColor: 'text-blue-600', iconBg: 'bg-blue-50',
-      hoverBorder: 'hover:border-blue-200',
+      iconColor: 'text-brand-600', iconBg: 'bg-brand-50',
+      hoverBorder: 'hover:border-brand-200',
     },
     {
       href: '/admin/analytics',     icon: TrendingUp,label: 'Analytics',

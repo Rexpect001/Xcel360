@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { getOwnDraft } from '@/lib/writing-drafts'
+import { getOwnDraft, getOwnDraftAnyState, restoreDraft, trashDraft } from '@/lib/writing-drafts'
 
 const MAX_OUTPUT = 20000
 
@@ -47,9 +47,33 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json({ ok: true, updatedAt: updated.updatedAt })
 }
 
+/**
+ * Delete: an active draft moves to Trash (kept 30 days, restorable).
+ * A draft already in Trash is deleted for good.
+ */
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const { draft, error } = await load(params.id)
-  if (error) return error
-  await prisma.writingDraft.delete({ where: { id: draft.id } })
+  const session = await getAuth()
+  const userId = session?.user?.id
+  if (!userId) return NextResponse.json({ error: 'Please sign in.' }, { status: 401 })
+  const draft = await getOwnDraftAnyState(userId, params.id)
+  if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
+  if (draft.trashedAt) {
+    await prisma.writingDraft.delete({ where: { id: draft.id } })
+    return NextResponse.json({ ok: true, state: 'deleted' })
+  }
+  await trashDraft(draft.id)
+  return NextResponse.json({ ok: true, state: 'trashed' })
+}
+
+/** Restore a draft from Trash. It gets a fresh 30-day active window. */
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await getAuth()
+  const userId = session?.user?.id
+  if (!userId) return NextResponse.json({ error: 'Please sign in.' }, { status: 401 })
+  const body = await req.json().catch(() => ({}))
+  if (body.action !== 'restore') return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+  const draft = await getOwnDraftAnyState(userId, params.id)
+  if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
+  if (draft.trashedAt) await restoreDraft(draft.id)
   return NextResponse.json({ ok: true })
 }

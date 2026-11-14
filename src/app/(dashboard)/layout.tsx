@@ -5,6 +5,7 @@ import SessionProvider from '@/components/providers/SessionProvider'
 import AppShell from '@/components/layout/AppShell'
 import { ROLE_ACCESS, ROLE_LABELS, type UserRole } from '@/lib/permissions'
 import { dashboardNavGroups } from '@/lib/nav'
+import { CREDITS_PER_USE, FREE_CREDITS } from '@/lib/billing'
 
 function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -37,10 +38,10 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         admin: isPrivileged,
       }}
       promo={{
-        title: 'Xcel360 Launchpad',
-        text: 'Plan and test a startup idea with guided AI tools.',
-        href: '/dashboard/launchpad',
-        cta: 'Explore Launchpad',
+        title: 'AI credits',
+        text: `Every account gets ${FREE_CREDITS} free credits. Each new AI draft uses ${CREDITS_PER_USE}.`,
+        href: '/dashboard/billing',
+        cta: 'See my credits',
       }}
       showSignOut
     >

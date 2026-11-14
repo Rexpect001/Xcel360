@@ -171,7 +171,7 @@ export default function ScholarshipMap({ opportunities }: Props) {
 
         const popup = L.popup({ maxWidth: 280, maxHeight: 360 }).setContent(`
           <div style="font-family:system-ui,sans-serif;">
-            <div style="font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #dbeafe;">
+            <div style="font-size:13px;font-weight:700;color:#1d579a;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #dbeaf8;">
               ${country}  -  ${count} scholarship${count > 1 ? 's' : ''}
             </div>
             ${listItems}

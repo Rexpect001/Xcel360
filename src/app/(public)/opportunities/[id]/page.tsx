@@ -158,21 +158,33 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
   const pageUrl = `${appUrl}/opportunities/${opp.id}`
 
-  // Related opportunities - same field or destination, still open
-  const related = await prisma.opportunity.findMany({
+  // Related opportunities - same field or destination first, then topped up from the same category
+  const RELATED_COUNT = 6
+  const relatedSelect = {
+    id: true, title: true, hostOrg: true, country: true, category: true,
+    fundingType: true, deadline: true, field: true, programLevel: true,
+    eligibility: true, createdAt: true,
+  } as const
+  const relatedOrder = [{ featured: 'desc' as const }, { deadline: 'asc' as const }]
+  const close = await prisma.opportunity.findMany({
     where: liveOpportunityWhere({
       id: { not: opp.id },
       category: opp.category,
       OR: [{ field: opp.field }, { country: opp.country }],
     }),
-    orderBy: [{ featured: 'desc' }, { deadline: 'asc' }],
-    take: 3,
-    select: {
-      id: true, title: true, hostOrg: true, country: true, category: true,
-      fundingType: true, deadline: true, field: true, programLevel: true,
-      eligibility: true, createdAt: true,
-    },
+    orderBy: relatedOrder,
+    take: RELATED_COUNT,
+    select: relatedSelect,
   }).catch(() => [])
+  const filler = close.length < RELATED_COUNT
+    ? await prisma.opportunity.findMany({
+        where: liveOpportunityWhere({ id: { notIn: [opp.id, ...close.map((o) => o.id)] }, category: opp.category }),
+        orderBy: relatedOrder,
+        take: RELATED_COUNT - close.length,
+        select: relatedSelect,
+      }).catch(() => [])
+    : []
+  const related = [...close, ...filler]
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -303,7 +315,6 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 </section>
               )}
 
-              <GoogleAd placement="detail-inline" />
 
               <section className="paper-card p-6 sm:p-8">
                 <h2 className="font-display text-2xl text-ink-900 mb-4 flex items-center gap-2">

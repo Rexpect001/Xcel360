@@ -61,6 +61,8 @@ export type IconKey = keyof typeof ICONS
 export interface NavChild {
   href: string
   label: string
+  /** Match this path only, not its sub-pages (e.g. Overview at /dashboard). */
+  exact?: boolean
 }
 
 export interface NavItem {
@@ -111,7 +113,7 @@ function Badge({ kind }: { kind: 'PRO' | 'NEW' }) {
 function NavEntry({ item }: { item: NavItem }) {
   const pathname = usePathname()
   const Icon: LucideIcon = ICONS[item.icon]
-  const childActive = item.children?.some((c) => matches(pathname, c.href)) ?? false
+  const childActive = item.children?.some((c) => matches(pathname, c.href, c.exact)) ?? false
   const selfActive = matches(pathname, item.href, item.exact ?? !!item.children)
   const [open, setOpen] = useState(childActive || selfActive)
 
@@ -146,7 +148,7 @@ function NavEntry({ item }: { item: NavItem }) {
       {open && (
         <ul className="ml-[21px] mt-1 mb-1.5 border-l border-surface-300">
           {item.children.map((c) => {
-            const active = matches(pathname, c.href)
+            const active = matches(pathname, c.href, c.exact)
             return (
               <li key={c.href} className="relative">
                 <span aria-hidden className="absolute left-0 top-1/2 w-3 border-t border-surface-300" />
@@ -306,7 +308,7 @@ export default function AppShell({
           <Logo tag={brandTag} size="h-5" />
         </div>
 
-        <div className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1400px] w-full">{children}</div>
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full">{children}</div>
       </main>
     </div>
   )

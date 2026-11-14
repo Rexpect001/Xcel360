@@ -56,9 +56,7 @@ export default async function JobsPage() {
       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
         <JobsClient initialJobs={jobs} mode="jobs" />
       </Suspense>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <GoogleAd placement="listing-top" shape="leaderboard" />
-      </div>
+      <GoogleAd placement="listing-top" shape="leaderboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10" />
     </div>
   )
 }

@@ -94,8 +94,8 @@ export default function EdifierAdPopup({ enabled }: { enabled: boolean }) {
           <div className="bg-white px-6 py-5">
             <div className="space-y-3 mb-5">
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
-                  <ClipboardList size={14} className="text-blue-700" />
+                <div className="w-7 h-7 rounded-full bg-brand-50 flex items-center justify-center shrink-0 mt-0.5">
+                  <ClipboardList size={14} className="text-brand-700" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Submit Your Poster</p>

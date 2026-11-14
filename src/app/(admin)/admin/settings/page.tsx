@@ -20,6 +20,7 @@ export default function SiteSettingsPage() {
   const [announcementLink, setAnnouncementLink] = useState('')
   const [announcementLinkLabel, setAnnouncementLinkLabel] = useState('Learn more')
   const [savingAnnouncement, setSavingAnnouncement] = useState(false)
+  const [notifyEveryone, setNotifyEveryone] = useState(false)
 
   // Contact
   const [contactEmail, setContactEmail] = useState('')
@@ -99,6 +100,21 @@ export default function SiteSettingsPage() {
         saveSetting('announcement_link_label', announcementLinkLabel.trim() || 'Learn more'),
       ])
       if (results.some((ok) => !ok)) throw new Error()
+      if (notifyEveryone && announcementEnabled) {
+        const res = await fetch('/api/admin/broadcast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: announcementText.trim(), link: announcementLink.trim() }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          toast.error(data.error ?? 'Bar saved, but the notification could not be sent')
+          return
+        }
+        setNotifyEveryone(false) // never resend by accident on the next save
+        toast.success(`Announcement saved and sent to ${data.sent} user${data.sent === 1 ? '' : 's'}`)
+        return
+      }
       toast.success('Announcement bar saved')
     } catch {
       toast.error('Failed to save announcement')
@@ -169,8 +185,8 @@ export default function SiteSettingsPage() {
         <section className="bg-white rounded-2xl border border-slate-100 p-6">
           <div className="flex items-start justify-between gap-6 mb-4">
             <div className="flex items-start gap-4">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${announcementEnabled ? 'bg-blue-50' : 'bg-slate-100'}`}>
-                <Megaphone size={18} className={announcementEnabled ? 'text-blue-600' : 'text-slate-400'} />
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${announcementEnabled ? 'bg-brand-50' : 'bg-slate-100'}`}>
+                <Megaphone size={18} className={announcementEnabled ? 'text-brand-600' : 'text-slate-400'} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -196,7 +212,7 @@ export default function SiteSettingsPage() {
               aria-label={announcementEnabled ? 'Disable announcement' : 'Enable announcement'}
             >
               {announcementEnabled
-                ? <ToggleRight size={36} className="text-blue-600" />
+                ? <ToggleRight size={36} className="text-brand-600" />
                 : <ToggleLeft size={36} className="text-slate-300" />}
             </button>
           </div>
@@ -255,13 +271,29 @@ export default function SiteSettingsPage() {
               </div>
             )}
 
+            <label className="flex items-start gap-3 rounded-xl border border-slate-200 p-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={notifyEveryone}
+                disabled={!announcementEnabled}
+                onChange={(e) => setNotifyEveryone(e.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-brand-600"
+              />
+              <span>
+                <span className="block text-sm font-semibold text-slate-900">Also send to everyone&apos;s notifications</span>
+                <span className="block text-xs text-slate-600">
+                  Every active user gets this message under Notifications, with the same link. Sent once per save; users who turned off in-app alerts are skipped.
+                </span>
+              </span>
+            </label>
+
             <button
               onClick={saveAnnouncement}
               disabled={savingAnnouncement}
               className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 disabled:opacity-60 transition-colors"
             >
               {savingAnnouncement ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-              {savingAnnouncement ? 'Saving…' : 'Save Announcement'}
+              {savingAnnouncement ? 'Saving…' : notifyEveryone && announcementEnabled ? 'Save and notify everyone' : 'Save Announcement'}
             </button>
           </div>
         </section>
@@ -297,7 +329,7 @@ export default function SiteSettingsPage() {
               aria-label={adEnabled ? 'Disable advert' : 'Enable advert'}
             >
               {adEnabled
-                ? <ToggleRight size={36} className="text-blue-600" />
+                ? <ToggleRight size={36} className="text-brand-600" />
                 : <ToggleLeft size={36} className="text-slate-300" />}
             </button>
           </div>
@@ -399,8 +431,8 @@ export default function SiteSettingsPage() {
         {/* ── Contact email ── */}
         <section className="bg-white rounded-2xl border border-slate-100 p-6">
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-              <Mail size={18} className="text-blue-600" />
+            <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+              <Mail size={18} className="text-brand-600" />
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 mb-1">Public Contact Email</h3>
@@ -431,8 +463,8 @@ export default function SiteSettingsPage() {
         {/* ── EDIFIER popup toggle (existing) ── */}
         <section className="bg-white rounded-2xl border border-slate-100 p-6 flex items-start justify-between gap-6">
           <div className="flex items-start gap-4">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${edifierEnabled ? 'bg-blue-50' : 'bg-slate-100'}`}>
-              <Settings2 size={18} className={edifierEnabled ? 'text-blue-600' : 'text-slate-400'} />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${edifierEnabled ? 'bg-brand-50' : 'bg-slate-100'}`}>
+              <Settings2 size={18} className={edifierEnabled ? 'text-brand-600' : 'text-slate-400'} />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -453,7 +485,7 @@ export default function SiteSettingsPage() {
                 href="https://edifier.thexcel360.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1.5"
+                className="inline-flex items-center gap-1 text-xs text-brand-600 hover:underline mt-1.5"
               >
                 <ExternalLink size={11} /> https://edifier.thexcel360.com
               </a>
@@ -468,7 +500,7 @@ export default function SiteSettingsPage() {
             {toggling === 'edifier' ? (
               <Loader2 size={28} className="animate-spin text-slate-400" />
             ) : edifierEnabled ? (
-              <ToggleRight size={36} className="text-blue-600" />
+              <ToggleRight size={36} className="text-brand-600" />
             ) : (
               <ToggleLeft size={36} className="text-slate-300" />
             )}

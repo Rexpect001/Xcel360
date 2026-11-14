@@ -111,7 +111,7 @@ function ForgotPasswordContent() {
   if (step === 'sent') {
     return (
       <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
-        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
           <Mail className="h-8 w-8 text-brand-600" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your inbox</h1>

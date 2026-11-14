@@ -22,7 +22,7 @@ function formatFileSize(bytes?: number) {
 function getFileLabel(fileType?: string) {
   if (!fileType) return { label: 'FILE', color: 'bg-gray-100 text-gray-600' }
   if (fileType.includes('pdf')) return { label: 'PDF', color: 'bg-red-100 text-red-700' }
-  if (fileType.includes('word') || fileType.includes('document')) return { label: 'DOC', color: 'bg-blue-100 text-blue-700' }
+  if (fileType.includes('word') || fileType.includes('document')) return { label: 'DOC', color: 'bg-brand-100 text-brand-700' }
   if (fileType.includes('sheet') || fileType.includes('excel')) return { label: 'XLS', color: 'bg-green-100 text-green-700' }
   if (fileType.includes('presentation') || fileType.includes('powerpoint')) return { label: 'PPT', color: 'bg-orange-100 text-orange-700' }
   return { label: 'FILE', color: 'bg-gray-100 text-gray-600' }
@@ -244,7 +244,7 @@ export default function AdminResourcesPage() {
         </button>
       </div>
 
-      <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-blue-700 mb-6 flex items-start gap-2">
+      <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-3 text-sm text-brand-700 mb-6 flex items-start gap-2">
         <CloudUpload className="h-4 w-4 flex-shrink-0 mt-0.5" />
         <span>Upload PDF, Word, Excel, or PowerPoint files directly (max 10 MB) - or paste an external link. Files are served from Azure Blob Storage.</span>
       </div>
@@ -273,7 +273,7 @@ export default function AdminResourcesPage() {
               const { label, color } = getFileLabel(r.fileType)
               const size = formatFileSize(r.fileSize)
               return (
-                <tr key={r.id} className={`hover:bg-gray-50 ${selected.has(r.id) ? 'bg-blue-50/60' : ''}`}>
+                <tr key={r.id} className={`hover:bg-gray-50 ${selected.has(r.id) ? 'bg-brand-50/60' : ''}`}>
                   <td className="px-4 py-3">
                     <button onClick={() => toggleSelectOne(r.id)} className="text-gray-400 hover:text-brand-700 transition-colors">
                       {selected.has(r.id) ? <CheckSquare className="h-4 w-4 text-brand-700" /> : <Square className="h-4 w-4" />}
@@ -286,7 +286,7 @@ export default function AdminResourcesPage() {
                     </button>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">
-                    <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{r.category}</span>
+                    <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">{r.category}</span>
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell">
                     <div className="flex items-center gap-2">
@@ -351,12 +351,12 @@ export default function AdminResourcesPage() {
         {detailRes && (
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-5 w-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <FileText className="h-5 w-5 text-brand-600" />
               </div>
               <div className="min-w-0">
                 <h3 className="font-semibold text-gray-900 text-base leading-snug">{detailRes.title}</h3>
-                <span className="inline-block mt-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{detailRes.category}</span>
+                <span className="inline-block mt-1 text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">{detailRes.category}</span>
               </div>
             </div>
 

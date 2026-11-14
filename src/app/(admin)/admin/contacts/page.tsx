@@ -18,7 +18,7 @@ const SOURCE_LABELS: Record<string, string> = {
   manual:     'Manual',
 }
 const SOURCE_COLORS: Record<string, string> = {
-  import:     'bg-blue-100 text-blue-700',
+  import:     'bg-brand-100 text-brand-700',
   event:      'bg-purple-100 text-purple-700',
   user:       'bg-green-100 text-green-700',
   subscriber: 'bg-orange-100 text-orange-700',

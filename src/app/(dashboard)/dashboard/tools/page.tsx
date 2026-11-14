@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns'
 import DashHeader from '@/components/dashboard/DashHeader'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
 import { pageCredits } from '@/lib/credits-page'
+import { CREDITS_PER_USE } from '@/lib/billing'
 import { WRITING_TOOLS, TOOL_ORDER, isToolId } from '@/lib/writing-tools'
 import { getAuth } from '@/lib/auth'
 import { listOwnDrafts } from '@/lib/writing-drafts'
@@ -33,10 +34,13 @@ export default async function ToolsIndexPage() {
             <Link key={id} href={`/dashboard/tools/${id}`} className="group paper-card p-6 hover:border-ink-200 hover:shadow-premium transition-all">
               <div className="flex items-start justify-between">
                 <span className="w-11 h-11 rounded-xl bg-brand-600 text-accent-200 flex items-center justify-center"><Icon className="h-5 w-5" /></span>
-                <ArrowUpRight className="h-5 w-5 text-ink-200 group-hover:text-ink-700 transition-colors" />
+                <ArrowUpRight className="h-5 w-5 text-ink-300 group-hover:text-brand-700 transition-colors" />
               </div>
               <h2 className="mt-5 font-bold text-lg text-ink-900">{t.name}</h2>
-              <p className="text-sm text-ink-500 mt-1 leading-relaxed">{t.tagline}</p>
+              <p className="text-sm text-ink-600 mt-1 leading-relaxed">{t.tagline}</p>
+              <p className="mt-4 inline-flex items-center rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-ink-700">
+                {credits === null ? 'Unlimited' : `${CREDITS_PER_USE} credits per draft`}
+              </p>
             </Link>
           )
         })}
@@ -56,7 +60,7 @@ export default async function ToolsIndexPage() {
                 <Link href={`/dashboard/tools/${d.tool}?draft=${d.id}`} className="block paper-card p-4 hover:border-ink-200 transition-colors">
                   <p className="text-xs font-semibold text-brand-700">{WRITING_TOOLS[d.tool].name}</p>
                   <p className="font-semibold text-ink-900 truncate">{d.title.replace(`${WRITING_TOOLS[d.tool].name}: `, '')}</p>
-                  <p className="text-xs text-ink-400 mt-0.5">Edited {formatDistanceToNow(d.updatedAt, { addSuffix: true })}</p>
+                  <p className="text-xs text-ink-500 mt-0.5">Edited {formatDistanceToNow(d.updatedAt, { addSuffix: true })}</p>
                 </Link>
               </li>
             ))}

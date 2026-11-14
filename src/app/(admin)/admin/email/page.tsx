@@ -36,7 +36,7 @@ function formatBytes(b: number) {
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
     DRAFT:      { label: 'Draft',      color: 'bg-gray-100 text-gray-600',    icon: <Clock className="h-3 w-3" /> },
-    SENDING:    { label: 'Sending…',   color: 'bg-blue-100 text-blue-700',    icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+    SENDING:    { label: 'Sending…',   color: 'bg-brand-100 text-brand-700',    icon: <Loader2 className="h-3 w-3 animate-spin" /> },
     COMPLETED:  { label: 'Completed',  color: 'bg-green-100 text-green-700',  icon: <CheckCircle className="h-3 w-3" /> },
     FAILED:     { label: 'Failed',     color: 'bg-red-100 text-red-700',      icon: <XCircle className="h-3 w-3" /> },
     CANCELLED:  { label: 'Cancelled',  color: 'bg-orange-100 text-orange-700',icon: <Ban className="h-3 w-3" /> },
@@ -152,7 +152,7 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
         {sourceMode && <span className="text-xs text-brand-600 font-medium ml-1">HTML source  -  click <Code className="inline h-3 w-3" /> to apply</span>}
       </div>
       <div ref={editorRef} contentEditable={!sourceMode} suppressContentEditableWarning onInput={handleInput}
-        className={`min-h-[280px] px-4 py-3 text-sm text-gray-800 outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_a]:text-blue-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 ${sourceMode ? 'hidden' : ''}`}
+        className={`min-h-[280px] px-4 py-3 text-sm text-gray-800 outline-none [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:text-gray-500 [&_a]:text-brand-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 ${sourceMode ? 'hidden' : ''}`}
         style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }} />
       {sourceMode && <textarea id="html-source-ta" defaultValue={value} className="w-full min-h-[280px] px-4 py-3 text-xs font-mono text-green-400 bg-gray-950 outline-none resize-y" spellCheck={false} />}
     </div>
@@ -530,32 +530,32 @@ function TemplateThumbnail({ type }: { type: string }) {
   const bar = 'rounded-sm bg-gray-200 h-2'
   return (
     <div className="w-full h-32 bg-white rounded-lg overflow-hidden border border-gray-100 flex flex-col gap-1.5 p-2 select-none pointer-events-none">
-      <div className="w-full h-8 rounded-md bg-gradient-to-r from-sky-900 to-sky-500 flex items-center justify-center shrink-0">
+      <div className="w-full h-8 rounded-md bg-gradient-to-r from-brand-900 to-brand-500 flex items-center justify-center shrink-0">
         <div className="w-20 h-2 bg-white/50 rounded-full" />
       </div>
       {type === 'opportunity' && <>
         <div className="flex gap-1">
-          {[0,1,2].map(i => <div key={i} className="flex-1 h-5 bg-sky-50 rounded" />)}
+          {[0,1,2].map(i => <div key={i} className="flex-1 h-5 bg-accent-50 rounded" />)}
         </div>
         <div className={`${bar} w-full`} />
         <div className={`${bar} w-4/5`} />
-        <div className="flex justify-center mt-0.5"><div className="w-14 h-3 bg-sky-500 rounded" /></div>
+        <div className="flex justify-center mt-0.5"><div className="w-14 h-3 bg-brand-500 rounded" /></div>
       </>}
       {type === 'programme' && <>
-        <div className="bg-sky-50 rounded p-1.5 space-y-1.5">
+        <div className="bg-accent-50 rounded p-1.5 space-y-1.5">
           {[0,1,2].map(i => (
             <div key={i} className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-sky-500 shrink-0" />
+              <div className="w-3 h-3 rounded-full bg-brand-500 shrink-0" />
               <div className={`${bar} flex-1`} />
             </div>
           ))}
         </div>
-        <div className="flex justify-center"><div className="w-14 h-3 bg-sky-500 rounded" /></div>
+        <div className="flex justify-center"><div className="w-14 h-3 bg-brand-500 rounded" /></div>
       </>}
       {type === 'appreciation' && <>
         <div className={`${bar} w-full`} />
         <div className={`${bar} w-4/5`} />
-        <div className="border-l-2 border-sky-400 pl-1.5 bg-sky-50 rounded-r py-1 space-y-1">
+        <div className="border-l-2 border-brand-400 pl-1.5 bg-accent-50 rounded-r py-1 space-y-1">
           <div className={`${bar} w-full`} />
           <div className={`${bar} w-3/5`} />
         </div>
@@ -565,19 +565,19 @@ function TemplateThumbnail({ type }: { type: string }) {
         <div className={`${bar} w-full`} />
         <div className={`${bar} w-4/5`} />
         <div className={`${bar} w-full`} />
-        <div className="flex justify-center mt-0.5"><div className="w-14 h-3 bg-sky-500 rounded" /></div>
+        <div className="flex justify-center mt-0.5"><div className="w-14 h-3 bg-brand-500 rounded" /></div>
       </>}
       {type === 'invitation' && <>
-        <div className="bg-sky-50 rounded p-1.5 space-y-1.5">
+        <div className="bg-accent-50 rounded p-1.5 space-y-1.5">
           {[0,1,2].map(i => (
             <div key={i} className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-sky-400 shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-brand-400 shrink-0" />
               <div className={`${bar} flex-1`} />
             </div>
           ))}
         </div>
         <div className={`${bar} w-full`} />
-        <div className="flex justify-center"><div className="w-20 h-3 bg-sky-500 rounded" /></div>
+        <div className="flex justify-center"><div className="w-20 h-3 bg-brand-500 rounded" /></div>
       </>}
       {type === 'reconnect' && <>
         <div className={`${bar} w-full`} />
@@ -587,7 +587,7 @@ function TemplateThumbnail({ type }: { type: string }) {
           <div className={`${bar} w-3/5`} />
         </div>
         <div className="flex justify-center gap-1.5 mt-0.5">
-          <div className="w-10 h-3 bg-sky-500 rounded" />
+          <div className="w-10 h-3 bg-brand-500 rounded" />
           <div className="w-10 h-3 bg-green-500 rounded" />
         </div>
       </>}
@@ -1007,7 +1007,7 @@ export default function AdminEmailPage() {
             <button key={t} onClick={() => { setTab(t); if (t === 'campaigns') loadCampaigns() }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 capitalize ${tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
               {t === 'campaigns' && activeCampaigns.length > 0 && (
-                <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">{activeCampaigns.length}</span>
+                <span className="w-5 h-5 rounded-full bg-brand-600 text-white text-xs flex items-center justify-center">{activeCampaigns.length}</span>
               )}
               {t}
             </button>

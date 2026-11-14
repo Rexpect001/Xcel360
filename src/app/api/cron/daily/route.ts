@@ -7,6 +7,7 @@ import { sendWeeklyDigestBatch } from '@/lib/weekly-digest'
 import { runCampaignSend } from '@/lib/email-utils'
 import prisma from '@/lib/prisma'
 import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
+import { runDraftLifecycle } from '@/lib/writing-drafts'
 
 /**
  * Consolidated daily cron. The fast jobs (deadline reminders, campaign batches, closing
@@ -31,6 +32,14 @@ export async function GET(req: Request) {
   } catch (err) {
     console.error('[cron/daily] deadline-reminders failed', err)
     results.deadlineReminders = { ok: false, error: err instanceof Error ? err.message : 'Unknown' }
+  }
+
+  // 1b. AI draft lifecycle: 30 days active -> Trash -> deleted 30 days later
+  try {
+    results.draftLifecycle = { ok: true, ...(await runDraftLifecycle()) }
+  } catch (err) {
+    console.error('[cron/daily] draft-lifecycle failed', err)
+    results.draftLifecycle = { ok: false, error: err instanceof Error ? err.message : 'Unknown' }
   }
 
   // 2. Advance any in-progress email campaigns (batched sends)

@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 const typeConfig: Record<NotificationType, { icon: React.ElementType; color: string }> = {
   DEADLINE_REMINDER: { icon: Calendar, color: 'bg-orange-100 text-orange-600' },
-  NEW_OPPORTUNITY: { icon: Sparkles, color: 'bg-blue-100 text-blue-600' },
+  NEW_OPPORTUNITY: { icon: Sparkles, color: 'bg-brand-100 text-brand-600' },
   APPLICATION_UPDATE: { icon: CheckCheck, color: 'bg-green-100 text-green-600' },
   GENERAL: { icon: Info, color: 'bg-surface-100 text-ink-600' },
 }
@@ -92,7 +92,7 @@ export default function NotificationsPage() {
                 className={`flex gap-4 p-4 rounded-2xl border transition-all cursor-pointer hover:shadow-sm ${
                   notif.read
                     ? 'bg-white border-surface-200 opacity-70'
-                    : 'bg-blue-50/50 border-brand-100 hover:bg-blue-50'
+                    : 'bg-brand-50/50 border-brand-100 hover:bg-brand-50'
                 }`}
               >
                 <div

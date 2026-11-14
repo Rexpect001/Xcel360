@@ -54,7 +54,7 @@ export default function AnnouncementBar({ announcement }: { announcement: Announ
         <button
           onClick={dismiss}
           aria-label="Dismiss announcement"
-          className="ml-1 p-1 rounded-md text-brand-200 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+          className="ml-1 p-1 rounded-md text-brand-100 hover:text-white hover:bg-white/10 transition-colors shrink-0"
         >
           <X className="h-3.5 w-3.5" />
         </button>

@@ -36,7 +36,7 @@ export function fundingTone(funding: string | null | undefined): string {
   const f = (funding ?? '').toLowerCase()
   if (f.includes('fully')) return 'bg-emerald-50 text-emerald-700'
   if (f.includes('partial')) return 'bg-amber-50 text-amber-800'
-  if (f.includes('tuition')) return 'bg-sky-50 text-sky-700'
+  if (f.includes('tuition')) return 'bg-accent-50 text-brand-700'
   if (f.includes('stipend')) return 'bg-violet-50 text-violet-700'
   return 'bg-surface-100 text-ink-600'
 }

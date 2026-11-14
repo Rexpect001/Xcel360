@@ -165,3 +165,48 @@ export async function sendNewOpportunityEmail({
 </body></html>`,
   })
 }
+
+function escapeHtml(s: string) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+/** Sent whenever credits land in a user's balance (admin gift, referral reward). */
+export async function sendCreditsReceivedEmail({
+  to,
+  name,
+  amount,
+  reason,
+  balance,
+}: {
+  to: string
+  name: string
+  amount: number
+  reason: string
+  balance: number
+}) {
+  await sendMail({
+    to,
+    subject: `You received ${amount} Xcel360 credits`,
+    html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f5f8fc;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+    <div style="background:linear-gradient(160deg,#163b67,#2266b1);padding:28px 40px;">
+      <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">Xcel360</h1>
+    </div>
+    <div style="padding:36px 40px;">
+      <h2 style="color:#131c2b;margin:0 0 12px 0;font-size:22px;font-weight:700;">Hi ${escapeHtml(name)}, ${amount} credits are yours</h2>
+      <p style="color:#2d3a4f;font-size:15px;line-height:1.6;margin:0 0 20px 0;">${escapeHtml(reason)}</p>
+      <div style="background:#eef5fc;border-left:4px solid #2266b1;border-radius:8px;padding:14px 20px;margin-bottom:24px;">
+        <p style="margin:0;font-size:15px;font-weight:600;color:#1d579a;">Your balance: ${balance} credits</p>
+        <p style="margin:4px 0 0 0;font-size:13px;color:#3c4b62;">Use them on the CV Builder, SOP Generator and Cover Letter Builder.</p>
+      </div>
+      <a href="${APP_URL}/dashboard/tools" style="display:inline-block;background:#2266b1;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">Open the writing tools</a>
+    </div>
+    <div style="background:#f5f8fc;padding:20px 40px;border-top:1px solid #ebf1f8;">
+      <p style="color:#4d5d75;font-size:12px;margin:0;">The Xcel360 Team · <a href="${APP_URL}/dashboard/notifications" style="color:#4d5d75;">Manage notifications</a></p>
+    </div>
+  </div>
+</body></html>`,
+  })
+}

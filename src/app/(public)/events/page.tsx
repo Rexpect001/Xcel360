@@ -42,19 +42,19 @@ async function getData() {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  Webinar: 'from-brand-600 to-sky-500',
+  Webinar: 'from-brand-600 to-brand-500',
   Workshop: 'from-violet-600 to-purple-500',
   'Q&A': 'from-emerald-600 to-teal-500',
   'Info Session': 'from-orange-500 to-amber-400',
-  Zoom: 'from-brand-600 to-sky-500',
+  Zoom: 'from-brand-600 to-brand-500',
 }
 
 const TYPE_BG: Record<string, string> = {
-  Webinar: 'bg-sky-50 text-sky-700',
+  Webinar: 'bg-accent-50 text-brand-700',
   Workshop: 'bg-violet-50 text-violet-700',
   'Q&A': 'bg-emerald-50 text-emerald-700',
   'Info Session': 'bg-orange-50 text-orange-700',
-  Zoom: 'bg-sky-50 text-sky-700',
+  Zoom: 'bg-accent-50 text-brand-700',
 }
 
 function typeGrad(type: string) {
@@ -88,14 +88,14 @@ export default async function EventsPage() {
               </div>
               <div>
                 <p className="text-white font-semibold text-sm">{upcoming.length} Upcoming Event{upcoming.length > 1 ? 's' : ''}</p>
-                <p className="text-brand-200 text-xs">Registration open</p>
+                <p className="text-brand-100 text-xs">Registration open</p>
               </div>
             </div>
           </div>
         )}
       </PageHero>
 
-      <div className="max-w-7xl mx-auto px-4 py-12 space-y-16">
+      <div className="max-w-7xl mx-auto px-4 py-10 space-y-10">
 
         {/* Upcoming events */}
         {upcoming.length > 0 && (
@@ -206,7 +206,7 @@ export default async function EventsPage() {
 
         {/* Mentorship Programs */}
         <div>
-          <div className="mb-10">
+          <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Mentorship Programs</h2>
             <p className="text-gray-500 mt-1">Cohort-based programs guiding students through the scholarship application journey.</p>
           </div>
@@ -216,14 +216,14 @@ export default async function EventsPage() {
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {programs.map((prog: any) => (
                 <div key={prog.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-2 bg-gradient-to-r from-brand-600 to-sky-400" />
+                  <div className="h-2 bg-gradient-to-r from-brand-600 to-brand-400" />
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <span className="text-xs font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full">
                         {prog.cohortNumber ? `Cohort ${prog.cohortNumber}` : 'Program'}
                       </span>
-                      <div className="w-9 h-9 bg-sky-50 rounded-xl flex items-center justify-center">
-                        <Users className="h-4 w-4 text-sky-600" />
+                      <div className="w-9 h-9 bg-accent-50 rounded-xl flex items-center justify-center">
+                        <Users className="h-4 w-4 text-brand-600" />
                       </div>
                     </div>
                     <h3 className="font-bold text-gray-900 text-lg mb-2">{prog.title}</h3>
@@ -239,7 +239,7 @@ export default async function EventsPage() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Users className="h-3.5 w-3.5 text-brand-500" />
-                        <span><strong className="text-gray-800">{prog._count.beneficiaries || prog.participants}</strong> participants</span>
+                        <span><strong className="text-gray-800">{prog.participants || prog._count.beneficiaries}</strong> participants</span>
                       </div>
                     </div>
                   </div>
@@ -257,7 +257,7 @@ export default async function EventsPage() {
         {/* Beneficiaries */}
         {beneficiaries.length > 0 && (
           <div>
-            <div className="mb-10">
+            <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Our Beneficiaries</h2>
               <p className="text-gray-500 mt-1">Students who have gone through our cohort mentorship programs.</p>
             </div>
@@ -266,10 +266,10 @@ export default async function EventsPage() {
         )}
 
         {/* CTA */}
-        <div className="rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #004ca3 0%, #006fec 100%)' }}>
+        <div className="rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(160deg, #163b67 0%, #1a4880 40%, #1d579a 75%, #2266b1 100%)' }}>
           <div className="px-8 py-12 text-center">
             <h2 className="text-2xl font-bold text-white mb-3">Ready for the next cohort?</h2>
-            <p className="text-sky-100 mb-8 max-w-lg mx-auto">
+            <p className="text-accent-100 mb-8 max-w-lg mx-auto">
               Join our WhatsApp channel to be the first to know when we open applications for the next mentorship cohort.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -283,7 +283,7 @@ export default async function EventsPage() {
               </a>
               <Link
                 href="/opportunities"
-                className="inline-flex items-center gap-2 bg-white text-brand-700 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors"
+                className="inline-flex items-center gap-2 bg-white text-brand-700 px-6 py-3 rounded-xl font-semibold hover:bg-brand-50 transition-colors"
               >
                 Browse Scholarships <ArrowRight className="h-4 w-4" />
               </Link>

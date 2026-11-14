@@ -22,7 +22,7 @@ export default async function VerifyCertificatePage({ params }: { params: { cert
   const valid = cert && cert.status === 'ISSUED'
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-accent-50 to-white py-16 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-6">
           <div className="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4">
