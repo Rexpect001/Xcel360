@@ -4,7 +4,6 @@ import DashHeader from '@/components/dashboard/DashHeader'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
 import { getAuth } from '@/lib/auth'
 import { pageCredits } from '@/lib/credits-page'
-import { creditsFor } from '@/lib/billing'
 import { STARTUP_TOOL_ORDER, WRITING_TOOLS } from '@/lib/writing-tools'
 
 const ICONS = { 'startup-idea': Lightbulb, 'startup-interviews': MessageCircleQuestion, 'startup-roadmap': CalendarRange } as const
@@ -34,9 +33,6 @@ export default async function LaunchpadPage() {
               <p className="mt-5 text-xs font-bold uppercase tracking-wide text-accent-700">Step {index + 1}</p>
               <h2 className="mt-1 font-bold text-lg text-ink-900">{tool.name}</h2>
               <p className="text-sm text-ink-600 mt-1 leading-relaxed">{tool.tagline}</p>
-              <p className="mt-4 inline-flex items-center rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-ink-700">
-                {credits === null ? 'Unlimited' : `${creditsFor(id)} credits per draft`}
-              </p>
             </Link>
           )
         })}

@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     await finishAiRun(runId, { model: WRITING_MODEL, outcome: 'no-credits' }, false).catch(console.error)
     const balance = await getBalance(userId).catch(() => 0)
     return NextResponse.json(
-      { error: `A new ${WRITING_TOOLS[toolId].name} draft uses ${creditsFor(toolId)} credits. Top up to keep drafting.`, code: 'NO_CREDITS', credits: balance },
+      { error: 'You do not have enough credits for a new draft. Top up or invite a friend to keep drafting.', code: 'NO_CREDITS', credits: balance },
       { status: 402 }
     )
   }

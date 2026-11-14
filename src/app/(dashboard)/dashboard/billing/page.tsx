@@ -5,7 +5,7 @@ import BuyCreditsButton from '@/components/dashboard/BuyCreditsButton'
 import InviteCard from '@/components/dashboard/InviteCard'
 import { getAuth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { CREDIT_PACKS, FREE_CREDITS, TOOL_CREDITS, formatNaira, purchaseCredits } from '@/lib/billing'
+import { CREDIT_PACKS, FREE_CREDITS, formatNaira, purchaseCredits } from '@/lib/billing'
 import { creditHistory, getBalance, hasUnlimitedCredits } from '@/lib/credits'
 import { fulfilPayment, paystackConfigured, type FulfilResult } from '@/lib/paystack'
 import { cn } from '@/lib/utils'
@@ -45,13 +45,6 @@ export default async function BillingPage({ searchParams }: { searchParams: { re
     }),
   ])
   const payable = paystackConfigured()
-  const costs = [
-    { label: 'CV Builder', credits: TOOL_CREDITS.cv },
-    { label: 'SOP Generator', credits: TOOL_CREDITS.sop },
-    { label: 'Cover letter', credits: TOOL_CREDITS['cover-letter'] },
-    { label: 'Cold email', credits: TOOL_CREDITS['cold-email'] },
-    { label: 'Launchpad tools', credits: TOOL_CREDITS['startup-idea'] },
-  ]
 
   return (
     <div>
@@ -63,36 +56,22 @@ export default async function BillingPage({ searchParams }: { searchParams: { re
 
       {result && <PaymentResult result={result} />}
 
-      <section className="mb-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <div className="flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 px-6 py-5 text-white shadow-soft">
-          <div>
-            <p className="text-sm font-medium text-brand-100">Your balance</p>
-            <p className="mt-1 font-display text-5xl leading-none tabular-nums">
-              {unlimited ? 'Unlimited' : balance.toLocaleString()}
-              {!unlimited && <span className="ml-2 text-lg font-sans font-medium text-brand-100">credits</span>}
-            </p>
-          </div>
-          {!unlimited && (
-            <a href="#buy" className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand-800 hover:bg-brand-50">
-              <Plus className="h-4 w-4" /> Top up
-            </a>
-          )}
-        </div>
-
-        <div className="paper-card px-5 py-4">
-          <p className="text-sm font-semibold text-ink-900">Credits per new draft</p>
-          <ul className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-sm">
-            {costs.map((t) => (
-              <li key={t.label} className="flex items-center justify-between gap-2 border-b border-surface-100 pb-1">
-                <span className="text-ink-700">{t.label}</span>
-                <span className="font-semibold tabular-nums text-ink-900">{t.credits}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-2.5 flex items-center gap-1.5 text-xs text-ink-600">
-            <Wand2 className="h-3.5 w-3.5 text-brand-700" /> Edits and fixes are free. Failed drafts are refunded. Credits never expire.
+      <section className="mb-5 flex flex-col gap-4 rounded-2xl bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 px-6 py-5 text-white shadow-soft sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-medium text-brand-100">Your balance</p>
+          <p className="mt-1 font-display text-5xl leading-none tabular-nums">
+            {unlimited ? 'Unlimited' : balance.toLocaleString()}
+            {!unlimited && <span className="ml-2 text-lg font-sans font-medium text-brand-100">credits</span>}
+          </p>
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-100">
+            <Wand2 className="h-3.5 w-3.5" /> Edits and fixes are free. Failed drafts are refunded. Credits never expire.
           </p>
         </div>
+        {!unlimited && (
+          <a href="#buy" className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-brand-800 hover:bg-brand-50">
+            <Plus className="h-4 w-4" /> Top up
+          </a>
+        )}
       </section>
 
       <InviteCard className="mb-6" />

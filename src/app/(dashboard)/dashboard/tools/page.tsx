@@ -4,7 +4,6 @@ import { formatDistanceToNow } from 'date-fns'
 import DashHeader from '@/components/dashboard/DashHeader'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
 import { pageCredits } from '@/lib/credits-page'
-import { creditsFor } from '@/lib/billing'
 import { WRITING_TOOLS, TOOL_ORDER, isToolId } from '@/lib/writing-tools'
 import { getAuth } from '@/lib/auth'
 import { listOwnDrafts } from '@/lib/writing-drafts'
@@ -38,9 +37,6 @@ export default async function ToolsIndexPage() {
               </div>
               <h2 className="mt-5 font-bold text-lg text-ink-900">{t.name}</h2>
               <p className="text-sm text-ink-600 mt-1 leading-relaxed">{t.tagline}</p>
-              <p className="mt-4 inline-flex items-center rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-ink-700">
-                {credits === null ? 'Unlimited' : `${creditsFor(id)} credits per draft`}
-              </p>
             </Link>
           )
         })}

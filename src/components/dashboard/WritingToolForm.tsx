@@ -175,7 +175,10 @@ export default function WritingToolForm({
         toast.error(data.error ?? 'Could not generate a draft')
         return
       }
-      if (typeof data.credits === 'number') setCredits(data.credits)
+      if (typeof data.credits === 'number') {
+        setCredits(data.credits)
+        window.dispatchEvent(new CustomEvent('xcel:credits', { detail: data.credits }))
+      }
       if (output.trim()) setLocalPrevious(output)
       generatedRef.current = data.text
       savedRef.current = data.text
@@ -370,7 +373,7 @@ export default function WritingToolForm({
           </button>
           {credits !== null && (
             <p className="-mt-2 text-center text-xs text-ink-500">
-              Uses {cost} credits · <span className="font-semibold text-ink-700 tabular-nums">{credits}</span> left
+              <span className="font-semibold text-ink-700 tabular-nums">{credits}</span> credits left
             </p>
           )}
           <p className="text-xs text-ink-400 leading-relaxed">
@@ -445,7 +448,7 @@ export default function WritingToolForm({
         open={outOfCredits}
         onClose={() => setOutOfCredits(false)}
         title="You need more credits"
-        description={`A new ${tool.name} draft uses ${cost} credits and you have ${credits ?? 0}. Buy a pack to keep going. Your answers and saved drafts stay here, and editing, fixing issues and restoring versions stay free.`}
+        description={`You have ${credits ?? 0} credits, which is not enough for a new ${tool.name} draft. Top up or invite a friend to keep going. Your answers and saved drafts stay here, and editing, fixing issues and restoring versions stay free.`}
         size="sm"
         footer={
           <>
@@ -461,7 +464,7 @@ export default function WritingToolForm({
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         title="Replace your current draft?"
-        description={`A new version uses ${cost} credits and replaces the text in the editor, including your edits. Your current text is kept as the previous version, and you can bring it back with the restore button.`}
+        description={`A new version uses credits and replaces the text in the editor, including your edits. Your current text is kept as the previous version, and you can bring it back with the restore button.`}
         size="sm"
         footer={
           <>

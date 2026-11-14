@@ -11,17 +11,17 @@ import type { ToolId } from '@/lib/writing-tools'
 export const FREE_CREDITS = 100
 
 /**
- * Credits for one new draft, by tool. Priced by how much each tool writes:
- * long documents cost more than a short email. Change the numbers here only.
+ * Credits for one new draft, by tool. Internal only: the app shows users their balance,
+ * never these prices. Change the numbers here only.
  */
 export const TOOL_CREDITS: Record<ToolId, number> = {
-  cv: 20,
-  sop: 20,
-  'cover-letter': 15,
-  'cold-email': 10,
-  'startup-idea': 15,
-  'startup-interviews': 15,
-  'startup-roadmap': 15,
+  cv: 5,
+  sop: 10,
+  'cover-letter': 7,
+  'cold-email': 5,
+  'startup-idea': 5, // idea validation
+  'startup-interviews': 10, // customer interview guide
+  'startup-roadmap': 12, // 30-day startup roadmap
 }
 
 export function creditsFor(toolId: ToolId): number {
