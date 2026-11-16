@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 import type { Metadata } from 'next'
 import Hero from '@/components/landing/Hero'
 import ChooseYourPath from '@/components/landing/ChooseYourPath'
@@ -7,6 +8,7 @@ import MoreScholarships from '@/components/landing/MoreScholarships'
 import EmailCapture from '@/components/landing/EmailCapture'
 import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 
 export const metadata: Metadata = {
   title: 'Xcel360  -  Find Scholarships and Build Stronger Applications',
@@ -75,7 +77,7 @@ async function getHomeData() {
     })
     return { latest, more, liveCount }
   } catch (error) {
-    console.error('[home] Failed to load landing data', error)
+    await shortenCacheAfterDbFailure('home', error)
     return { latest: [], more: [], liveCount: 0 }
   }
 }

@@ -1,7 +1,9 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { Calendar, Video, Users, BookOpen, MessageCircle, ArrowRight, MapPin } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
@@ -27,16 +29,16 @@ async function getData() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = prisma as any
   const [events, programs, beneficiaries] = await Promise.all([
-    db.event.findMany({ where: { published: true }, orderBy: { date: 'asc' } }).catch(() => []),
+    db.event.findMany({ where: { published: true }, orderBy: { date: 'asc' } }).catch((error: unknown) => shortenCacheAfterDbFailure('events', error).then(() => [])),
     db.program.findMany({
       where: { published: true },
       orderBy: { cohortNumber: 'asc' },
       include: { _count: { select: { beneficiaries: true } } },
-    }).catch(() => []),
+    }).catch((error: unknown) => shortenCacheAfterDbFailure('events', error).then(() => [])),
     db.beneficiary.findMany({
       select: { id: true, firstName: true, department: true, school: true },
       orderBy: { createdAt: 'desc' },
-    }).catch(() => []),
+    }).catch((error: unknown) => shortenCacheAfterDbFailure('events', error).then(() => [])),
   ])
   return { events, programs, beneficiaries }
 }

@@ -1,9 +1,19 @@
-export const dynamic = 'force-dynamic'
+// ISR: rendered on first visit, then served from cache for up to 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
+// Nothing is prerendered at build (no database there); each page is rendered
+// on its first visit and then cached like the listing pages.
+export function generateStaticParams() {
+  return []
+}
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
-import { Fragment } from 'react'
+import { Fragment, cache } from 'react'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
+
+// One query shared by generateMetadata and the page. A database error is thrown
+// (not turned into a 404) so the error page is never written to the ISR cache.
+const getPost = cache((slug: string) => prisma.blogPost.findUnique({ where: { slug } }))
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import { ArrowLeft, BookOpen, Calendar, Tag, Clock } from 'lucide-react'
@@ -13,7 +23,7 @@ import { isArticleAdBreak } from '@/lib/ads'
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } }).catch(() => null)
+  const post = await getPost(params.slug).catch(() => null)
   if (!post || !post.published) return { title: 'Article Not Found' }
 
   const description = post.excerpt ?? post.content.slice(0, 155).trim() + '…'
@@ -40,7 +50,7 @@ function estimateReadTime(content: string) {
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } }).catch(() => null)
+  const post = await getPost(params.slug)
 
   if (!post || !post.published) notFound()
 

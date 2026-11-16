@@ -1,9 +1,10 @@
 import { revalidatePath } from 'next/cache'
 
 /**
- * Public listing pages are ISR-cached (revalidate = 3600). Call this after any
+ * Public listing pages are ISR-cached (revalidate = 300). Call this after any
  * opportunity create/update/delete so new posts show up immediately instead of
- * waiting up to an hour for the cache to expire.
+ * waiting up to five minutes for the cache to expire. This clears the cache
+ * on the server that handled the write; other replicas catch up within 5 min.
  */
 export function revalidateOpportunityPages() {
   try {

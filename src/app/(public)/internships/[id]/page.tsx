@@ -1,8 +1,19 @@
-export const dynamic = 'force-dynamic'
+// ISR: rendered on first visit, then served from cache for up to 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
+// Nothing is prerendered at build (no database there); each page is rendered
+// on its first visit and then cached like the listing pages.
+export function generateStaticParams() {
+  return []
+}
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 import prisma from '@/lib/prisma'
+
+// One query shared by generateMetadata and the page. A database error is thrown
+// (not turned into a 404) so the error page is never written to the ISR cache.
+const getOpportunity = cache((id: string) => prisma.opportunity.findUnique({ where: { id } }))
 import { formatDate, daysUntilDeadline } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import ShareButtons from '@/components/ui/ShareButtons'
@@ -17,7 +28,7 @@ import GoogleAd from '@/components/ads/GoogleAd'
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const job = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
+  const job = await getOpportunity(params.id).catch(() => null)
   if (!job) return { title: 'Internship Not Found' }
   const imageUrl = job.imageUrl?.includes('/api/og') ? null : job.imageUrl
   const description = job.description?.slice(0, 155).trim() ?? `Internship at ${job.company ?? job.hostOrg} in ${job.country}.`
@@ -42,7 +53,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function InternshipDetailPage({ params }: { params: { id: string } }) {
-  const job = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
+  const job = await getOpportunity(params.id)
   if (!job || job.category !== 'INTERNSHIP') notFound()
 
   const days = daysUntilDeadline(job.deadline)

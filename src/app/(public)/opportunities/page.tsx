@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
@@ -9,6 +10,7 @@ import GoogleAd from '@/components/ads/GoogleAd'
 import PageHero from '@/components/layout/PageHero'
 import CategoryBrowse from '@/components/landing/CategoryBrowse'
 import prisma from '@/lib/prisma'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { opportunityListSelect } from '@/types/opportunity-list'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 
@@ -52,7 +54,7 @@ async function getOpportunities() {
       return true
     })
   } catch (error) {
-    console.error('[opportunities/page] Failed to load opportunities', error)
+    await shortenCacheAfterDbFailure('opportunities', error)
     return []
   }
 }

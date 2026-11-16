@@ -1,4 +1,10 @@
-export const dynamic = 'force-dynamic'
+// ISR: rendered on first visit, then served from cache for up to 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
+// Nothing is prerendered at build (no database there); each page is rendered
+// on its first visit and then cached like the listing pages.
+export function generateStaticParams() {
+  return []
+}
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'

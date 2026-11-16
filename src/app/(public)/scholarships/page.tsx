@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'

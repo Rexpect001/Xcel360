@@ -1,7 +1,13 @@
-export const dynamic = 'force-dynamic'
+// ISR: rendered on first visit, then served from cache for up to 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
+// Nothing is prerendered at build (no database there); each page is rendered
+// on its first visit and then cached like the listing pages.
+export function generateStaticParams() {
+  return []
+}
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
-import { Fragment } from 'react'
+import { Fragment, cache } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
@@ -13,9 +19,9 @@ import { isArticleAdBreak } from '@/lib/ads'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = prisma as any
 
-async function getPost(slug: string) {
-  return db.blogPost.findFirst({ where: { slug, published: true } }).catch(() => null)
-}
+// One query shared by generateMetadata and the page. A database error is thrown
+// (not turned into a 404) so the error page is never written to the ISR cache.
+const getPost = cache((slug: string) => db.blogPost.findFirst({ where: { slug, published: true } }))
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPost(params.slug)

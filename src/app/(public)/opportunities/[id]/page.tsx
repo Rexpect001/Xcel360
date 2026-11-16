@@ -1,13 +1,24 @@
-export const dynamic = 'force-dynamic'
+// ISR: rendered on first visit, then served from cache for up to 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
+// Nothing is prerendered at build (no database there); each page is rendered
+// on its first visit and then cached like the listing pages.
+export function generateStaticParams() {
+  return []
+}
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 import prisma from '@/lib/prisma'
+
+// One query shared by generateMetadata and the page. A database error is thrown
+// (not turned into a 404) so the error page is never written to the ISR cache.
+const getOpportunity = cache((id: string) => prisma.opportunity.findUnique({ where: { id } }))
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
+  const opp = await getOpportunity(params.id).catch(() => null)
   if (!opp) return { title: 'Scholarship Not Found' }
   const imageUrl = opp.imageUrl?.includes('/api/og') ? null : opp.imageUrl
 
@@ -56,6 +67,7 @@ import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import GoogleAd from '@/components/ads/GoogleAd'
 import BrandPattern from '@/components/brand/BrandPattern'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import Link from 'next/link'
 import ApplyButton from '@/components/ui/ApplyButton'
 import SaveButton from '@/components/ui/SaveButton'
@@ -149,7 +161,7 @@ function deadlineTone(days: number, closed: boolean) {
 }
 
 export default async function OpportunityDetailPage({ params }: { params: { id: string } }) {
-  const opp = await prisma.opportunity.findUnique({ where: { id: params.id } }).catch(() => null)
+  const opp = await getOpportunity(params.id)
   if (!opp) notFound()
 
   const isClosed = opp.status === 'CLOSED' || (opp.deadline !== null && opp.deadline.getTime() < Date.now())
@@ -175,14 +187,14 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
     orderBy: relatedOrder,
     take: RELATED_COUNT,
     select: relatedSelect,
-  }).catch(() => [])
+  }).catch((error: unknown) => shortenCacheAfterDbFailure('opportunity-detail', error).then(() => []))
   const filler = close.length < RELATED_COUNT
     ? await prisma.opportunity.findMany({
         where: liveOpportunityWhere({ id: { notIn: [opp.id, ...close.map((o) => o.id)] }, category: opp.category }),
         orderBy: relatedOrder,
         take: RELATED_COUNT - close.length,
         select: relatedSelect,
-      }).catch(() => [])
+      }).catch((error: unknown) => shortenCacheAfterDbFailure('opportunity-detail', error).then(() => []))
     : []
   const related = [...close, ...filler]
 

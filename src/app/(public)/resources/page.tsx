@@ -1,7 +1,9 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import Link from 'next/link'
 import { BookOpen, Calendar, Tag, Download, FileText, ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
@@ -38,7 +40,7 @@ async function getPosts() {
       take: 12,
     })
   } catch (error) {
-    console.error('[resources/page] Failed to load posts', error)
+    await shortenCacheAfterDbFailure('resources', error)
     return []
   }
 }
@@ -51,7 +53,7 @@ async function getResources() {
       take: 120,
     })
   } catch (error) {
-    console.error('[resources/page] Failed to load resources', error)
+    await shortenCacheAfterDbFailure('resources', error)
     return []
   }
 }

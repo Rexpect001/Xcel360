@@ -5,6 +5,9 @@ const nextConfig = {
   // Bundle the certificate fonts into the server function so
   // fs.readFileSync can load them at runtime.
   experimental: {
+    // ISR pages send `s-maxage=<revalidate>, stale-while-revalidate=60`, so a
+    // CDN keeps serving the old copy for up to a minute while Next refreshes it.
+    swrDelta: 60,
     outputFileTracingIncludes: {
       '/api/admin/certificates/**': ['./src/lib/certificates/fonts/**'],
     },
@@ -65,7 +68,17 @@ const nextConfig = {
   
   // Security headers for all routes
   async headers() {
+    // Files in /public have no content hash in their names, so they get a day
+    // of caching (plus a week of stale-while-revalidate) rather than "immutable".
+    // /_next/static assets are hashed and Next already marks them immutable.
+    const publicAssetCache = {
+      key: 'Cache-Control',
+      value: 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+    }
     return [
+      ...['/brand/:file*', '/downloads/:file*', '/:file(logo.*|logo-icon.jpg|logo-white.jpg|hero-image.png|og-image.jpg|llms.txt)'].map(
+        (source) => ({ source, headers: [publicAssetCache] })
+      ),
       {
         source: '/:path*',
         headers: [

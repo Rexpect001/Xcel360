@@ -1,8 +1,10 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { formatDate } from '@/lib/utils'
 import { ArrowRight, Calendar } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
@@ -26,7 +28,7 @@ async function getPosts() {
   const db = prisma as any
   return db.blogPost
     .findMany({ where: { published: true }, orderBy: { createdAt: 'desc' } })
-    .catch(() => [])
+    .catch((error: unknown) => shortenCacheAfterDbFailure('news', error).then(() => []))
 }
 
 export default async function NewsPage() {

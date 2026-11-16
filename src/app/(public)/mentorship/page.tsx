@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import { Users, ArrowRight, ExternalLink } from 'lucide-react'
@@ -6,6 +7,7 @@ import { Users, ArrowRight, ExternalLink } from 'lucide-react'
 import { Linkedin } from 'lucide-react'
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import PageHero from '@/components/layout/PageHero'
 
 export const metadata: Metadata = {
@@ -33,7 +35,8 @@ export const metadata: Metadata = {
 async function getMentors() {
   try {
     return await prisma.mentorshipOffering.findMany({ where: { available: true }, take: 6 })
-  } catch {
+  } catch (error) {
+    await shortenCacheAfterDbFailure('mentorship', error)
     return []
   }
 }

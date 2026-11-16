@@ -1,6 +1,8 @@
-export const dynamic = 'force-dynamic'
+// ISR: served from cache, refreshed at most every 5 minutes (see src/lib/isr.ts)
+export const revalidate = 300
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
 import prisma from '@/lib/prisma'
+import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { Quote } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
 
@@ -20,7 +22,8 @@ export const metadata = {
 async function getStories() {
   try {
     return await prisma.successStory.findMany({ where: { published: true } })
-  } catch {
+  } catch (error) {
+    await shortenCacheAfterDbFailure('success-stories', error)
     return []
   }
 }
