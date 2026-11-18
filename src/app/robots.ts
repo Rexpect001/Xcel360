@@ -19,12 +19,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/dashboard/', '/api/', '/auth/'],
+        disallow: ['/admin/', '/dashboard/', '/api/', '/auth/', '/post'],
       },
       ...AI_CRAWLERS.map((userAgent) => ({
         userAgent,
         allow: '/',
-        disallow: ['/admin/', '/dashboard/', '/api/', '/auth/'],
+        disallow: ['/admin/', '/dashboard/', '/api/', '/auth/', '/post'],
       })),
     ],
     sitemap: `${BASE}/sitemap.xml`,

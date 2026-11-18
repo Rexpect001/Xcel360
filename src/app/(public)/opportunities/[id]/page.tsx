@@ -74,83 +74,7 @@ import SaveButton from '@/components/ui/SaveButton'
 import OpportunityMatch from '@/components/opportunities/OpportunityMatch'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
 import TailorApplication from '@/components/opportunities/TailorApplication'
-import type { ReactNode } from 'react'
-
-// Renders inline **bold** markers safely
-function renderInline(text: string): ReactNode {
-  const parts = text.split(/\*\*(.+?)\*\*/)
-  if (parts.length === 1) return text
-  return parts.map((part, i) =>
-    i % 2 === 1
-      ? <strong key={i} className="font-semibold text-ink-900">{part}</strong>
-      : part
-  )
-}
-
-// Detects only explicit markdown section headers: ## or ###
-function isHeader(line: string): boolean {
-  return line.startsWith('### ') || line.startsWith('## ')
-}
-
-function headerText(line: string): string {
-  return line.replace(/^#{1,3}\s*/, '').replace(/:$/, '').trim()
-}
-
-// Renders description with bold headers, bullet lists, and inline **bold**
-function Description({ text }: { text: string }) {
-  const lines = text.split('\n')
-  const nodes: ReactNode[] = []
-  let bullets: string[] = []
-
-  const flushBullets = (key: string) => {
-    if (!bullets.length) return
-    nodes.push(
-      <ul key={key} className="space-y-1.5 my-2 pl-1">
-        {bullets.map((item, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-ink-700">
-            <span className="mt-2.5 h-1.5 w-1.5 rounded-full bg-accent-500 flex-shrink-0" />
-            <span>{renderInline(item)}</span>
-          </li>
-        ))}
-      </ul>
-    )
-    bullets = []
-  }
-
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim()
-    if (!trimmed) { flushBullets(`ul-${idx}`); return }
-
-    const bulletText = trimmed.startsWith('- ') || trimmed.startsWith('* ')
-      ? trimmed.slice(2).trim()
-      : trimmed.charCodeAt(0) === 8226
-        ? trimmed.slice(1).trim()
-        : null
-    if (bulletText) {
-      bullets.push(bulletText)
-      return
-    }
-
-    flushBullets(`ul-${idx}`)
-
-    if (isHeader(trimmed)) {
-      nodes.push(
-        <h3 key={`h-${idx}`} className="font-bold text-ink-900 text-base mt-5 mb-1.5">
-          {headerText(trimmed)}
-        </h3>
-      )
-    } else {
-      nodes.push(
-        <p key={`p-${idx}`} className="text-ink-700 text-[15px] leading-relaxed">
-          {renderInline(trimmed)}
-        </p>
-      )
-    }
-  })
-  flushBullets('ul-end')
-
-  return <div className="space-y-2 max-w-[68ch]">{nodes}</div>
-}
+import RichDescription from '@/components/opportunities/RichDescription'
 
 function deadlineTone(days: number, closed: boolean) {
   if (closed) return { chip: 'bg-red-50 text-red-700', label: 'Closed' }
@@ -323,7 +247,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                   <h2 className="font-display text-2xl text-ink-900 mb-4">
                     About this {opp.category === 'JOB' ? 'role' : opp.category === 'INTERNSHIP' ? 'internship' : 'scholarship'}
                   </h2>
-                  <Description text={opp.description} />
+                  <RichDescription text={opp.description} />
                 </section>
               )}
 
@@ -332,7 +256,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
                 <h2 className="font-display text-2xl text-ink-900 mb-4 flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-emerald-600" /> Who can apply
                 </h2>
-                <Description text={opp.eligibility ?? ''} />
+                <RichDescription text={opp.eligibility ?? ''} />
               </section>
 
               {opp.requiredDocs.length > 0 && (
