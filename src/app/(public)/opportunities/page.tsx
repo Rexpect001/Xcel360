@@ -14,6 +14,7 @@ import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { opportunityListSelect } from '@/types/opportunity-list'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import JsonLd from '@/components/seo/JsonLd'
+import PopularTopics from '@/components/opportunities/PopularTopics'
 
 export const metadata: Metadata = {
   title: 'Scholarships & Funding Opportunities',
@@ -97,6 +98,7 @@ export default async function OpportunitiesPage() {
       </Suspense>
       <GoogleAd placement="listing-top" shape="leaderboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10" />
       <CategoryBrowse />
+      <PopularTopics />
       <section className="bg-white border-t border-surface-200 px-4 py-10">
         <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-3">
           <div>

@@ -77,6 +77,7 @@ import TailorApplication from '@/components/opportunities/TailorApplication'
 import RichDescription from '@/components/opportunities/RichDescription'
 import JsonLd from '@/components/seo/JsonLd'
 import { breadcrumbLd, metaDescription } from '@/lib/seo/structured-data'
+import { topicsForListing } from '@/lib/scholarship-topics'
 
 function deadlineTone(days: number, closed: boolean) {
   if (closed) return { chip: 'bg-red-50 text-red-700', label: 'Closed' }
@@ -123,6 +124,8 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
       }).catch((error: unknown) => shortenCacheAfterDbFailure('opportunity-detail', error).then(() => []))
     : []
   const related = [...close, ...filler]
+  // Up to 4 topic pages this scholarship belongs to (most specific first), for browsing and internal links
+  const topics = opp.category === 'SCHOLARSHIP' ? topicsForListing(opp).slice(0, 4) : []
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -333,6 +336,20 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
               <GoogleAd placement="detail-sidebar" shape="rectangle" />
             </aside>
           </div>
+
+          {/* ── Topic pages this listing belongs to ── */}
+          {topics.length > 0 && (
+            <nav aria-label="Browse similar scholarships" className="mt-14">
+              <p className="eyebrow mb-3">Browse similar scholarships</p>
+              <div className="flex flex-wrap gap-2">
+                {topics.map((t) => (
+                  <Link key={t.slug} href={`/scholarships/${t.slug}`} className="px-3.5 py-2 rounded-full bg-white border border-surface-200 text-sm font-medium text-ink-700 hover:border-brand-300 hover:text-brand-700">
+                    {t.h1}
+                  </Link>
+                ))}
+              </div>
+            </nav>
+          )}
 
           {/* ── Related opportunities ── */}
           {related.length > 0 && (

@@ -41,6 +41,9 @@ export default function OpportunityCard({ opp, match, className }: Props) {
   const { data: session } = useSession()
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  // deadlineInfo works in UTC, so server and browser agree in every time zone.
+  // The elements showing it keep suppressHydrationWarning for the one case left:
+  // a cached page rendered just before UTC midnight and opened just after it.
   const dl = deadlineInfo(opp.deadline)
   const cat = categoryMeta(opp.category)
   const snippet = eligibilitySnippet(opp.eligibility)
@@ -126,7 +129,7 @@ export default function OpportunityCard({ opp, match, className }: Props) {
               <dt className="flex items-center gap-1 text-[10.5px] font-semibold uppercase tracking-wide text-ink-400">
                 <Icon className="h-3 w-3" /> {label}
               </dt>
-              <dd className={cn('mt-0.5 text-[13px] font-semibold text-ink-800 truncate', tone)}>{value}</dd>
+              <dd suppressHydrationWarning className={cn('mt-0.5 text-[13px] font-semibold text-ink-800 truncate', tone)}>{value}</dd>
             </div>
           ))}
         </dl>
@@ -140,7 +143,7 @@ export default function OpportunityCard({ opp, match, className }: Props) {
       </div>
 
       <div className="relative z-10 flex items-center gap-2 border-t border-surface-100 px-5 py-3">
-        <span className={cn('text-xs font-bold', dl.tone)}>{dl.label}</span>
+        <span suppressHydrationWarning className={cn('text-xs font-bold', dl.tone)}>{dl.label}</span>
         <div className="ml-auto flex items-center gap-1">
           <button
             type="button"

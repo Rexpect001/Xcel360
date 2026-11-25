@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
+import { SCHOLARSHIP_TOPICS } from '@/lib/scholarship-topics'
+import { isIndexable, topicCounts } from '@/lib/scholarship-topics-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -82,5 +84,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...staticPages, ...oppPages, ...eventPages, ...resourcePages]
+  // Topic landing pages: the hub, plus each topic with enough live listings
+  // (thinner topics are noindexed, so they are left out here too).
+  const counts = await topicCounts().catch(() => new Map<string, number>())
+  const topicPages: MetadataRoute.Sitemap = [
+    { url: `${BASE}/scholarships`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
+    ...SCHOLARSHIP_TOPICS.filter((t) => isIndexable(counts.get(t.slug) ?? 0)).map((t) => ({
+      url: `${BASE}/scholarships/${t.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    })),
+  ]
+
+  return [...staticPages, ...topicPages, ...oppPages, ...eventPages, ...resourcePages]
 }

@@ -5,6 +5,9 @@ import Logo from '@/components/brand/Logo'
 const footerLinks = {
   Opportunities: [
     { label: 'Scholarships', href: '/opportunities' },
+    { label: 'Scholarships by topic', href: '/scholarships' },
+    { label: "Fully funded master's", href: '/scholarships/fully-funded-masters-scholarships' },
+    { label: 'Fully funded PhD', href: '/scholarships/fully-funded-phd-scholarships' },
     { label: 'Internships', href: '/internships' },
     { label: 'Jobs', href: '/jobs' },
     { label: 'How to search', href: '/how-to-search' },

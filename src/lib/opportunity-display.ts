@@ -1,11 +1,21 @@
-import { differenceInCalendarDays, format } from 'date-fns'
+const DAY = 864e5
+const utcDay = (d: Date) => Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) / DAY)
+// Fixed names rather than Intl: Node and browsers disagree on some ("Sep" vs "Sept").
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const UTC_DATE = { format: (d: Date) => `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}` }
 
-/** Deadline presentation shared by every card and list row. */
+/**
+ * Deadline presentation shared by every card and list row.
+ * Days and the date are computed in UTC: deadlines are stored as calendar dates,
+ * and UTC makes the server-rendered HTML match the browser in every time zone
+ * (local time made "5 days left" vs "6 days left" hydration errors, and could
+ * show 14 Dec for a 15 Dec deadline west of UTC).
+ */
 export function deadlineInfo(deadline: Date | string | null | undefined) {
   if (!deadline) return { date: 'Rolling', label: 'Rolling deadline', tone: 'text-ink-500', days: null as number | null, closed: false }
   const d = new Date(deadline)
-  const days = differenceInCalendarDays(d, new Date())
-  const date = format(d, 'd MMM yyyy')
+  const days = utcDay(d) - utcDay(new Date())
+  const date = UTC_DATE.format(d)
   if (days < 0) return { date, label: 'Closed', tone: 'text-ink-400', days, closed: true }
   if (days === 0) return { date, label: 'Closes today', tone: 'text-red-600', days, closed: false }
   if (days <= 7) return { date, label: `${days} day${days === 1 ? '' : 's'} left`, tone: 'text-red-600', days, closed: false }
