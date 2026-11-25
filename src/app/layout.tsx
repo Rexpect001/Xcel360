@@ -72,7 +72,9 @@ export const metadata: Metadata = {
     apple: '/apple-icon.png',
   },
   verification: {
-    google: 'HqtM8s2pElCiihxma2gV07HWCRTF8hM4J6AZ9gPGaW0',
+    // One tag per Search Console owner account. Keep both: removing one
+    // unverifies that account.
+    google: ['HqtM8s2pElCiihxma2gV07HWCRTF8hM4J6AZ9gPGaW0', 'W-8fxs-kTqy52DL5RwgO6jM0bbHq7iMrT9PMR-zCoMg'],
   },
 }
 
