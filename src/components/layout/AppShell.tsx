@@ -71,6 +71,8 @@ export interface NavItem {
   icon: IconKey
   exact?: boolean
   badge?: 'PRO' | 'NEW'
+  /** Unread count shown as a pill (e.g. notifications). Hidden when 0. */
+  count?: number
   /** Sub-pages rendered as a collapsible tree under this item. */
   children?: NavChild[]
 }
@@ -97,6 +99,8 @@ interface AppShellProps {
   backLink?: { href: string; label: string }
   /** Optional promo card at the foot of the sidebar (e.g. Upgrade to Pro). */
   promo?: { title: string; text: string; href: string; cta: string }
+  /** Bell with unread count in the mobile top bar. */
+  bell?: { href: string; count?: number }
   showSignOut?: boolean
   children: React.ReactNode
 }
@@ -108,6 +112,15 @@ function matches(pathname: string, href: string, exact?: boolean) {
 
 function Badge({ kind }: { kind: 'PRO' | 'NEW' }) {
   return <span className={kind === 'PRO' ? 'pro-badge' : 'pro-badge !bg-accent-500'}>{kind}</span>
+}
+
+function CountPill({ count, label }: { count?: number; label: string }) {
+  if (!count) return null
+  return (
+    <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-5 text-center tabular-nums" aria-label={`${count} unread ${label.toLowerCase()}`}>
+      {count > 99 ? '99+' : count}
+    </span>
+  )
 }
 
 function NavEntry({ item }: { item: NavItem }) {
@@ -132,6 +145,7 @@ function NavEntry({ item }: { item: NavItem }) {
       <Link href={item.href} aria-current={selfActive ? 'page' : undefined} className={rowCls(selfActive)}>
         <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive ? 'text-accent-200' : 'text-ink-400')} />
         <span className="flex-1 truncate">{item.label}</span>
+        <CountPill count={item.count} label={item.label} />
         {item.badge && <Badge kind={item.badge} />}
       </Link>
     )
@@ -142,6 +156,7 @@ function NavEntry({ item }: { item: NavItem }) {
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={rowCls(selfActive || childActive)}>
         <Icon className={cn('h-[18px] w-[18px] shrink-0', selfActive || childActive ? 'text-accent-200' : 'text-ink-400')} />
         <span className="flex-1 truncate text-left">{item.label}</span>
+        <CountPill count={item.count} label={item.label} />
         {item.badge && <Badge kind={item.badge} />}
         <ChevronDown className={cn('h-4 w-4 transition-transform', selfActive || childActive ? 'text-brand-100' : 'text-ink-400', open && 'rotate-180')} />
       </button>
@@ -177,6 +192,7 @@ export default function AppShell({
   user,
   backLink,
   promo,
+  bell,
   showSignOut = true,
   children,
 }: AppShellProps) {
@@ -306,6 +322,20 @@ export default function AppShell({
             <Menu className="h-5 w-5" />
           </button>
           <Logo tag={brandTag} size="h-5" />
+          {bell && (
+            <Link
+              href={bell.href}
+              aria-label={bell.count ? `Notifications, ${bell.count} unread` : 'Notifications'}
+              className="ml-auto relative p-2 rounded-lg text-ink-600 hover:bg-surface-100 transition-colors"
+            >
+              <Bell className="h-5 w-5" />
+              {!!bell.count && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-[18px] text-center tabular-nums">
+                  {bell.count > 99 ? '99+' : bell.count}
+                </span>
+              )}
+            </Link>
+          )}
         </div>
 
         <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full">{children}</div>

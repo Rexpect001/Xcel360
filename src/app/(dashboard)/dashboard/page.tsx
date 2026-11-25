@@ -13,6 +13,7 @@ import { deadlineInfo } from '@/lib/opportunity-display'
 import OpportunityCard from '@/components/opportunities/OpportunityCard'
 import DashboardWelcome from '@/components/dashboard/DashboardWelcome'
 import PipelineGuide from '@/components/dashboard/PipelineGuide'
+import LatestNotice from '@/components/dashboard/LatestNotice'
 import { pageCredits } from '@/lib/credits-page'
 import { MIN_TOOL_CREDITS } from '@/lib/billing'
 import { cn } from '@/lib/utils'
@@ -20,11 +21,16 @@ import { cn } from '@/lib/utils'
 async function getDashboardData(userId: string) {
   const now = new Date()
   const in30 = new Date(now.getTime() + 30 * 864e5)
-  const [profile, savedCount, applicationCount, unreadNotifications, openOpportunities, upcoming] = await Promise.all([
+  const [profile, savedCount, applicationCount, unreadNotifications, latestNotice, openOpportunities, upcoming] = await Promise.all([
     prisma.profile.findUnique({ where: { userId } }),
     prisma.savedOpportunity.count({ where: { userId } }),
     prisma.application.count({ where: { userId } }),
     prisma.notification.count({ where: { userId, read: false } }),
+    prisma.notification.findFirst({
+      where: { userId, read: false },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, message: true, link: true },
+    }),
     prisma.opportunity.findMany({
       where: liveOpportunityWhere({ category: 'SCHOLARSHIP' }),
       orderBy: [{ featured: 'desc' }, { deadline: { sort: 'asc', nulls: 'last' } }],
@@ -37,7 +43,7 @@ async function getDashboardData(userId: string) {
       select: { opportunity: { select: { id: true, title: true, hostOrg: true, deadline: true, category: true } } },
     }),
   ])
-  return { profile, savedCount, applicationCount, unreadNotifications, openOpportunities, upcoming }
+  return { profile, savedCount, applicationCount, unreadNotifications, latestNotice, openOpportunities, upcoming }
 }
 
 const WELCOME_EVERY_DAYS = 30
@@ -67,7 +73,7 @@ export default async function DashboardPage() {
   const session = await getAuth()
   if (!session) redirect('/signin')
 
-  const [{ profile, savedCount, applicationCount, unreadNotifications, openOpportunities, upcoming }, credits, welcome] =
+  const [{ profile, savedCount, applicationCount, unreadNotifications, latestNotice, openOpportunities, upcoming }, credits, welcome] =
     await Promise.all([getDashboardData(session.user.id), pageCredits(session), welcomeState(session.user.id)])
 
   const completion = profileCompleteness(profile)
@@ -103,6 +109,8 @@ export default async function DashboardPage() {
           <button type="submit" className="rounded-full bg-brand-600 text-white text-xs font-semibold px-4 py-2 hover:bg-brand-700">Search</button>
         </form>
       </header>
+
+      {latestNotice && <LatestNotice notice={latestNotice} unread={unreadNotifications} />}
 
       {/* Hero banner - profile and match summary at a glance */}
       <section className="relative overflow-hidden mb-3 rounded-3xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 text-white p-4 sm:p-5 shadow-accent">

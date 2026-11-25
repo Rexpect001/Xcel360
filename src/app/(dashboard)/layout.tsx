@@ -8,6 +8,7 @@ import AppShell from '@/components/layout/AppShell'
 import { ROLE_ACCESS, ROLE_LABELS, type UserRole } from '@/lib/permissions'
 import { dashboardNavGroups } from '@/lib/nav'
 import { FREE_CREDITS } from '@/lib/billing'
+import { useUnreadNotifications } from '@/components/dashboard/useUnreadNotifications'
 
 /** Fired by the writing tools with the new balance right after a draft. */
 const CREDITS_EVENT = 'xcel:credits'
@@ -39,6 +40,7 @@ function useCreditBalance(enabled: boolean) {
 function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const credits = useCreditBalance(status === 'authenticated')
+  const unread = useUnreadNotifications(status === 'authenticated')
 
   if (status === 'loading') {
     return (
@@ -59,7 +61,8 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <AppShell
-      navGroups={withCreditLabel(dashboardNavGroups(allowedSections), credits)}
+      navGroups={withUnreadCount(withCreditLabel(dashboardNavGroups(allowedSections), credits), unread)}
+      bell={{ href: '/dashboard/notifications', count: unread }}
       user={{
         name: session.user?.name ?? 'User',
         email: session.user?.email ?? '',
@@ -84,6 +87,11 @@ function withCreditLabel(groups: ReturnType<typeof dashboardNavGroups>, credits:
   if (credits === undefined) return groups
   const label = credits === null ? 'Credits (unlimited)' : `Credits (${credits.toLocaleString()})`
   return groups.map((g) => ({ ...g, items: g.items.map((i) => (i.href === '/dashboard/billing' ? { ...i, label } : i)) }))
+}
+
+function withUnreadCount(groups: ReturnType<typeof dashboardNavGroups>, count: number | undefined) {
+  if (!count) return groups
+  return groups.map((g) => ({ ...g, items: g.items.map((i) => (i.href === '/dashboard/notifications' ? { ...i, count } : i)) }))
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

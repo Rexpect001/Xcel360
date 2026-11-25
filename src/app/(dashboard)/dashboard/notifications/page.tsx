@@ -5,6 +5,7 @@ import { Notification, NotificationType } from '@prisma/client'
 import { formatRelativeDate } from '@/lib/utils'
 import { toast } from 'react-hot-toast'
 import Link from 'next/link'
+import { NOTIFICATIONS_EVENT } from '@/components/dashboard/useUnreadNotifications'
 
 const typeConfig: Record<NotificationType, { icon: React.ElementType; color: string }> = {
   DEADLINE_REMINDER: { icon: Calendar, color: 'bg-orange-100 text-orange-600' },
@@ -33,6 +34,7 @@ export default function NotificationsPage() {
       body: JSON.stringify({ id }),
     })
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+    window.dispatchEvent(new Event(NOTIFICATIONS_EVENT))
   }
 
   const markAllRead = async () => {
@@ -42,6 +44,7 @@ export default function NotificationsPage() {
       body: JSON.stringify({ readAll: true }),
     })
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+    window.dispatchEvent(new Event(NOTIFICATIONS_EVENT))
     toast.success('All notifications marked as read')
   }
 

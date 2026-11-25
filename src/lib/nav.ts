@@ -83,6 +83,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin/analytics',     section: '/analytics',     group: 'Insights',  label: 'Analytics',          icon: 'barChart' },
   { href: '/admin/activity',      section: '/activity',      group: 'Insights',  label: 'Activity Log',       icon: 'activity' },
   { href: '/admin/contacts',      section: '/contacts',      group: 'System',    label: 'Contacts',           icon: 'contacts' },
+  { href: '/admin/notifications', section: '/notifications', group: 'System',    label: 'Notifications',      icon: 'bell' },
   { href: '/admin/email',         section: '/email',         group: 'System',    label: 'Email',              icon: 'mail' },
   { href: '/admin/settings',      section: '/settings',      group: 'System',    label: 'Site Settings',      icon: 'settings' },
 ]
