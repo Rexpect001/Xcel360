@@ -82,8 +82,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'Plus Jakarta Sans', 'Segoe UI', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Space Grotesk', 'Segoe UI', 'system-ui', 'sans-serif'],
+        display: ['var(--font-sans)', 'Space Grotesk', 'Segoe UI', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float':       'float 6s ease-in-out infinite',

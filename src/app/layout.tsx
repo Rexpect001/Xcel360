@@ -1,14 +1,12 @@
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/og'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import { ADSENSE_CLIENT } from '@/lib/ads'
 
-// Brand type: Plus Jakarta Sans for headings, Inter for body/UI - both chosen
-// for readability at small sizes on a high-traffic information site.
-const sans = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
-const display = Plus_Jakarta_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-display', weight: ['500', '600', '700', '800'] })
+// Brand type: one typeface across the site and the mobile app: Space Grotesk (weights 300-700)
+const sans = Space_Grotesk({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -80,7 +78,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${display.variable}`}>
+    <html lang="en" className={sans.variable}>
       <head>
         <meta name="theme-color" content="#2266b1" />
         <meta name="google-adsense-account" content={ADSENSE_CLIENT} />

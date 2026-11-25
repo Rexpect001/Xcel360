@@ -17,22 +17,21 @@
 
   body {
     @apply bg-surface-50 text-ink-900 antialiased;
-    font-family: var(--font-sans), 'Inter', 'Segoe UI', system-ui, sans-serif;
-    font-feature-settings: 'cv11', 'ss03';
+    font-family: var(--font-sans), 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
     text-rendering: optimizeLegibility;
     line-height: 1.6;
   }
 
-  /* Headlines: Plus Jakarta Sans, bold and tight - clear at a glance. */
+  /* Headlines: Space Grotesk bold and tight - clear at a glance. */
   h1, h2, .font-display {
-    font-family: var(--font-display), 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+    font-family: var(--font-sans), 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
     letter-spacing: -0.02em;
     font-weight: 700;
     line-height: 1.15;
   }
 
   h3, h4 {
-    font-family: var(--font-display), 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+    font-family: var(--font-sans), 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
     letter-spacing: -0.01em;
   }
 

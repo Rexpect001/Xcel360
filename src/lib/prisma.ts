@@ -28,12 +28,38 @@ function tunedDatabaseUrl(): string | undefined {
   }
 }
 
+type NotificationRow = { userId?: unknown; title?: unknown; message?: unknown; link?: unknown }
+
+/**
+ * Every in-app notification is also pushed to the user's phones (mobile app),
+ * wherever it is created: deadline reminders, admin broadcasts, credit gifts,
+ * advisor replies. Runs after the write succeeds and never blocks or fails it.
+ */
+function pushNotifications(data: NotificationRow | NotificationRow[]) {
+  const rows = (Array.isArray(data) ? data : [data]).filter(
+    (r): r is { userId: string; title: string; message: string; link?: string | null } =>
+      typeof r.userId === 'string' && typeof r.title === 'string' && typeof r.message === 'string',
+  )
+  if (!rows.length) return
+  import('@/lib/push')
+    .then(({ sendPush }) => sendPush(rows.map((r) => ({ userId: r.userId, title: r.title, body: r.message, link: r.link }))))
+    .catch((e) => console.error('[push] hook failed', e))
+}
+
 function createClient() {
   const url = tunedDatabaseUrl()
-  return new PrismaClient({
+  const client = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     ...(url ? { datasources: { db: { url } } } : {}),
   })
+  client.$use(async (params, next) => {
+    const result = await next(params)
+    if (params.model === 'Notification' && (params.action === 'create' || params.action === 'createMany')) {
+      pushNotifications(params.args?.data ?? [])
+    }
+    return result
+  })
+  return client
 }
 
 export const prisma = globalForPrisma.prisma ?? createClient()

@@ -72,6 +72,7 @@ model User {
   savedOpps     SavedOpportunity[]
   applications  Application[]
   notifications Notification[]
+  pushTokens    PushToken[]
   accounts      Account[]
   sessions      Session[]
   writingDrafts WritingDraft[]
@@ -195,6 +196,20 @@ model Notification {
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// A phone that receives push notifications (Expo push token from the mobile app).
+model PushToken {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  platform   String   // "ios" | "android"
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Event {

@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Xcel360",
+    "slug": "xcel360",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "xcel360",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.thexcel360.app",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.thexcel360.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#2266b1",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "predictiveBackGestureEnabled": true
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#2266b1",
+          "image": "./assets/icon.png",
+          "imageWidth": 96
+        }
+      ],
+      "expo-secure-store",
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "apiUrl": "https://thexcel360.com"
+    },
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

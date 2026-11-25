@@ -56,5 +56,7 @@ export const config = {
   // (non-sensitive) site settings for anonymous visitors.
   // cron/ is excluded because the Azure scheduler has no login session; every
   // cron route checks the CRON_SECRET bearer token itself (src/lib/cron-auth.ts).
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|billing/paystack/webhook|tools/|settings/|unsubscribe$|subscribe$|contact$|og|events/|certificate/|verify/|cron/).*)'],
+  // mobile/ is excluded because the app signs in with bearer tokens, not the
+  // website cookie; its signed-in routes check the token themselves (withUser).
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|billing/paystack/webhook|tools/|settings/|unsubscribe$|subscribe$|contact$|og|events/|certificate/|verify/|cron/|mobile/).*)'],
 }
