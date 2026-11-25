@@ -13,11 +13,12 @@ import prisma from '@/lib/prisma'
 import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { opportunityListSelect } from '@/types/opportunity-list'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
+import JsonLd from '@/components/seo/JsonLd'
 
 export const metadata: Metadata = {
   title: 'Scholarships & Funding Opportunities',
   description:
-    'Browse hundreds of fully funded scholarships, grants, and fellowships for African students. Filter by country, funding type, and deadline to find the right opportunity.',
+    'Browse hundreds of fully funded scholarships, grants and fellowships for African students. Filter by country, funding type and deadline to find your match.',
   keywords: [
     'fully funded scholarships',
     'scholarships for Africans',
@@ -80,7 +81,7 @@ export default async function OpportunitiesPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
       <PageHero
         eyebrow="Funding"
         title="Scholarships & Opportunities"

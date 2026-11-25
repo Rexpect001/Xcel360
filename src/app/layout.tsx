@@ -64,9 +64,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: BASE,
-  },
+  // No site-wide canonical: a canonical set here is inherited by every page that
+  // doesn't set its own, which told Google those pages were copies of the homepage.
+  // Each indexable page declares its own canonical instead.
   icons: {
     icon: [{ url: '/icon.png', type: 'image/png' }],
     apple: '/apple-icon.png',

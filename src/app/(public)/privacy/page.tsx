@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { Shield, Mail } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Xcel360',
+  title: 'Privacy Policy',
+  alternates: { canonical: '/privacy' },
   description:
     'How Xcel360 collects, uses, stores, and protects your personal data - and the rights you have over it.',
 }

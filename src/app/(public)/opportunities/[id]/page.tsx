@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const imageUrl = opp.imageUrl?.includes('/api/og') ? null : opp.imageUrl
 
   const description = opp.description
-    ? opp.description.slice(0, 155).trim() + (opp.description.length > 155 ? '...' : '')
+    ? metaDescription(opp.description)
     : `${opp.fundingType} scholarship by ${opp.hostOrg} for ${opp.programLevel.join(', ')} students in ${opp.country}. Deadline: ${opp.deadline?.toLocaleDateString('en-GB') ?? 'TBC'}.`
 
   return {
@@ -75,6 +75,8 @@ import OpportunityMatch from '@/components/opportunities/OpportunityMatch'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
 import TailorApplication from '@/components/opportunities/TailorApplication'
 import RichDescription from '@/components/opportunities/RichDescription'
+import JsonLd from '@/components/seo/JsonLd'
+import { breadcrumbLd, metaDescription } from '@/lib/seo/structured-data'
 
 function deadlineTone(days: number, closed: boolean) {
   if (closed) return { chip: 'bg-red-50 text-red-700', label: 'Closed' }
@@ -147,10 +149,7 @@ export default async function OpportunityDetailPage({ params }: { params: { id: 
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={[jsonLd, breadcrumbLd([{ name: 'Scholarships', path: '/opportunities' }, { name: opp.title, path: `/opportunities/${opp.id}` }])]} />
       <div className="min-h-screen bg-surface-50">
         {/* ── Header band ── */}
         <div className="relative overflow-hidden bg-hero-gradient text-white pt-16">

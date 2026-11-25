@@ -24,6 +24,8 @@ import TailorApplication from '@/components/opportunities/TailorApplication'
 import SaveButton from '@/components/ui/SaveButton'
 import GuestPrompt from '@/components/opportunities/GuestPrompt'
 import GoogleAd from '@/components/ads/GoogleAd'
+import JsonLd from '@/components/seo/JsonLd'
+import { breadcrumbLd, jobPostingLd, metaDescription } from '@/lib/seo/structured-data'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -31,7 +33,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const job = await getOpportunity(params.id).catch(() => null)
   if (!job) return { title: 'Job Not Found' }
   const imageUrl = job.imageUrl?.includes('/api/og') ? null : job.imageUrl
-  const description = job.description?.slice(0, 155).trim() ?? `${job.jobType ?? 'Job'} at ${job.company ?? job.hostOrg} in ${job.country}.`
+  const description = metaDescription(job.description) || `${job.jobType ?? 'Job'} at ${job.company ?? job.hostOrg} in ${job.country}.`
   return {
     title: job.title,
     description,
@@ -58,9 +60,11 @@ export default async function JobDetailPage({ params }: { params: { id: string }
 
   const days = daysUntilDeadline(job.deadline)
   const pageUrl = `${BASE}/jobs/${job.id}`
+  const posting = jobPostingLd(job, `/jobs/${job.id}`)
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
+      <JsonLd data={[breadcrumbLd([{ name: 'Jobs', path: '/jobs' }, { name: job.title, path: `/jobs/${job.id}` }]), ...(posting ? [posting] : [])]} />
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-4 py-10">
           <div className="flex flex-wrap gap-2 mb-4">

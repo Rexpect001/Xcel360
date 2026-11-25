@@ -6,9 +6,9 @@ import PageHero from '@/components/layout/PageHero'
 import HowItWorks from '@/components/landing/HowItWorks'
 
 export const metadata = {
-  title: 'About Xcel360  -  Our Mission & Story',
+  title: 'About Us: Our Mission & Story',
   description:
-    'Xcel360 was built to bridge the information gap for African students seeking scholarships and opportunities abroad. Learn about our mission, values, and the team behind the platform.',
+    'Xcel360 closes the information gap for African students seeking scholarships abroad. Read the founder\'s story and the mission behind the platform.',
   alternates: { canonical: '/about' },
   openGraph: {
     title: 'About Xcel360',

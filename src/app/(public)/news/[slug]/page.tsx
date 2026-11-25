@@ -29,7 +29,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
-    alternates: { canonical: `/news/${post.slug}` },
+    // The same post is published at /resources/{slug}, which is what the sitemap
+    // lists. Point Google there so the two copies don't compete in search.
+    alternates: { canonical: `/resources/${post.slug}` },
     openGraph: {
       title: post.title,
       description: post.excerpt ?? undefined,

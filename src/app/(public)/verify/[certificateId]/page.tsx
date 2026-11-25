@@ -4,6 +4,12 @@ import prisma from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
+// Each verification page shows a participant's full name: keep them out of search results.
+export const metadata = {
+  title: 'Certificate Verification',
+  robots: { index: false, follow: false },
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = prisma as any
 

@@ -19,6 +19,8 @@ import { formatDate } from '@/lib/utils'
 import { ArrowLeft, BookOpen, Calendar, Tag, Clock } from 'lucide-react'
 import GoogleAd from '@/components/ads/GoogleAd'
 import { isArticleAdBreak } from '@/lib/ads'
+import JsonLd from '@/components/seo/JsonLd'
+import { breadcrumbLd, metaDescription } from '@/lib/seo/structured-data'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -26,7 +28,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const post = await getPost(params.slug).catch(() => null)
   if (!post || !post.published) return { title: 'Article Not Found' }
 
-  const description = post.excerpt ?? post.content.slice(0, 155).trim() + '…'
+  const description = metaDescription(post.excerpt || post.content)
   return {
     title: post.title,
     description,
@@ -66,16 +68,15 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     datePublished: post.createdAt.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     url: `${BASE}/resources/${post.slug}`,
-    ...(post.coverImage && { image: post.coverImage }),
+    image: post.coverImage || `${BASE}${DEFAULT_OG_IMAGE.url}`,
+    publisher: { '@type': 'Organization', name: 'Xcel360', logo: { '@type': 'ImageObject', url: `${BASE}/icon.png` } },
+    mainEntityOfPage: `${BASE}/resources/${post.slug}`,
     keywords: post.tags.join(', '),
   }
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={[jsonLd, breadcrumbLd([{ name: 'Resources', path: '/resources' }, { name: post.title, path: `/resources/${post.slug}` }])]} />
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Hero */}
         <div className="bg-hero-gradient py-16 px-4">

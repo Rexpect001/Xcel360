@@ -9,9 +9,12 @@ import EmailCapture from '@/components/landing/EmailCapture'
 import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import { shortenCacheAfterDbFailure } from '@/lib/isr'
+import JsonLd from '@/components/seo/JsonLd'
 
 export const metadata: Metadata = {
-  title: 'Xcel360  -  Find Scholarships and Build Stronger Applications',
+  // absolute: skip the "- Xcel360" template so the brand isn't repeated, and
+  // lead with the phrase students search for (kept under ~60 characters).
+  title: { absolute: 'Fully Funded Scholarships for African Students | Xcel360' },
   description:
     'Find fully funded scholarships you qualify for, track every deadline, and write stronger applications. Xcel360 is built for ambitious African students.',
   alternates: { canonical: '/' },
@@ -87,14 +90,7 @@ export default async function LandingPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-      />
+      <JsonLd data={[orgJsonLd, websiteJsonLd]} />
       <div className="overflow-x-hidden">
         <Hero liveCount={liveCount} />
         <TopScholarships scholarships={latest} />

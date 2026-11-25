@@ -13,6 +13,8 @@ import Link from 'next/link'
 import RegisterForm from './RegisterForm'
 import GoogleAd from '@/components/ads/GoogleAd'
 import CountdownTimer from '@/components/events/CountdownTimer'
+import JsonLd from '@/components/seo/JsonLd'
+import { breadcrumbLd } from '@/lib/seo/structured-data'
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thexcel360.com'
 
@@ -93,7 +95,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={[jsonLd, breadcrumbLd([{ name: 'Events', path: '/events' }, { name: event.title, path: `/events/${event.id}` }])]} />
       <div className="min-h-screen bg-gray-50">
 
         {/* Hero */}

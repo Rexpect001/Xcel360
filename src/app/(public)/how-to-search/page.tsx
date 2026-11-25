@@ -8,7 +8,7 @@ import GoogleAd from '@/components/ads/GoogleAd'
 export const metadata: Metadata = {
   title: 'How to Search for Scholarships',
   description:
-    'A 60-second walkthrough of finding scholarships on Xcel360: search in plain words, filter by level and funding, compare listings, and save them for deadline reminders.',
+    'Find scholarships on Xcel360 in 60 seconds: search in plain words, filter by level and funding, compare listings, and save them for deadline reminders.',
   alternates: { canonical: '/how-to-search' },
 }
 

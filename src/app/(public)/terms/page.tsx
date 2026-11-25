@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { FileText, Mail } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Xcel360',
-  description: 'The terms that govern your use of the Xcel360 platform and services.',
+  title: 'Terms of Service',
+  description: 'The terms for using Xcel360: what we provide, your account, acceptable use, content ownership, certificates and verification, and our liability limits.',
+  alternates: { canonical: '/terms' },
 }
 
 const LAST_UPDATED = 'January 2025'

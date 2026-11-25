@@ -19,7 +19,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Logo tone="light" size="h-7" />
         </Link>
         <div className="relative max-w-md">
-          <h1 className="font-display text-4xl leading-tight text-white">Your education, fully funded.</h1>
+          {/* A paragraph, not h1: each auth page has its own h1 */}
+          <p className="font-display text-4xl leading-tight text-white">Your education, fully funded.</p>
           <ul className="mt-8 space-y-4">
             {POINTS.map((p) => (
               <li key={p} className="flex items-start gap-3 text-brand-50">
