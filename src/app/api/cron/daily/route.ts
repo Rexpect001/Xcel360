@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 import { NextResponse } from 'next/server'
+import { isCronAuthorized } from '@/lib/cron-auth'
 import { sendDeadlineReminders } from '@/lib/notifications'
 import { sendWeeklyDigestBatch } from '@/lib/weekly-digest'
 import { runCampaignSend } from '@/lib/email-utils'
@@ -18,8 +19,7 @@ import { runDraftLifecycle } from '@/lib/writing-drafts'
  * job is resumable, so a partial run simply continues tomorrow.
  */
 export async function GET(req: Request) {
-  const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

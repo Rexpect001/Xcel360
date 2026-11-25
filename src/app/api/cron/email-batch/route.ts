@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
+import { isCronAuthorized } from '@/lib/cron-auth'
 import prisma from '@/lib/prisma'
 import { Resend } from 'resend'
 
@@ -10,8 +11,7 @@ const FROM = process.env.EMAIL_FROM ?? 'Xcel360 <onboarding@resend.dev>'
  * Called by an external scheduler. Protected by CRON_SECRET.
  */
 export async function GET(req: Request) {
-  const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

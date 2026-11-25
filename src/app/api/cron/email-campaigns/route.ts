@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
+import { isCronAuthorized } from '@/lib/cron-auth'
 import prisma from '@/lib/prisma'
 import { runCampaignSend } from '@/lib/email-utils'
 
@@ -8,8 +9,7 @@ import { runCampaignSend } from '@/lib/email-utils'
 // Each run processes as far as its time budget allows and persists progress,
 // so multi-day / very large sends finish reliably with no duplicates.
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get('authorization')?.replace('Bearer ', '')
-  if (secret !== process.env.CRON_SECRET) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

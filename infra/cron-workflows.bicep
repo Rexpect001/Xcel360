@@ -7,24 +7,30 @@ param cronSecret string
 
 param location string = 'francecentral'
 
-var jobs = [
-  {
-    name: 'xcel360-daily'
-    path: '/api/cron/daily'
-    frequency: 'Day'
-    interval: 1
-    hour: 6
-    minute: 17
-  }
-  {
-    name: 'xcel360-auto-discover'
-    path: '/api/cron/auto-discover'
-    frequency: 'Day'
-    interval: 1
-    hour: 5
-    minute: 43
-  }
-]
+@description('Auto-discovery spends AI and search API credit on every run, so it is off unless asked for.')
+param enableAutoDiscover bool = false
+
+// Daily: deadline reminders, weekly digest batch (100 emails/day), email
+// campaign batches, closing expired listings, draft lifecycle.
+var dailyJob = {
+  name: 'xcel360-daily'
+  path: '/api/cron/daily'
+  frequency: 'Day'
+  interval: 1
+  hour: 6
+  minute: 17
+}
+
+var autoDiscoverJob = {
+  name: 'xcel360-auto-discover'
+  path: '/api/cron/auto-discover'
+  frequency: 'Day'
+  interval: 1
+  hour: 5
+  minute: 43
+}
+
+var jobs = enableAutoDiscover ? [dailyJob, autoDiscoverJob] : [dailyJob]
 
 resource cronWorkflows 'Microsoft.Logic/workflows@2019-05-01' = [for job in jobs: {
   name: job.name
@@ -58,6 +64,11 @@ resource cronWorkflows 'Microsoft.Logic/workflows@2019-05-01' = [for job in jobs
             headers: {
               Authorization: 'Bearer ${cronSecret}'
             }
+            // No retries: the jobs keep working after the Logic App stops waiting
+            // (~2 minutes), and a retry would send deadline reminders twice.
+            retryPolicy: {
+              type: 'none'
+            }
           }
           runAfter: {}
           runtimeConfiguration: {
@@ -76,4 +87,4 @@ resource cronWorkflows 'Microsoft.Logic/workflows@2019-05-01' = [for job in jobs
   }
 }]
 
-output workflowNames array = [for workflow in cronWorkflows: workflow.name]
+output workflowNames array = [for (job, i) in jobs: cronWorkflows[i].name]

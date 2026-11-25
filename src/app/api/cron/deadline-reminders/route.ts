@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
+import { isCronAuthorized } from '@/lib/cron-auth'
 import { sendDeadlineReminders } from '@/lib/notifications'
 
 // Called daily by the Azure Logic Apps scheduler.
 // Protect with a secret header in production
 export async function GET(req: Request) {
-  const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

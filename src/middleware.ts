@@ -54,5 +54,7 @@ export const config = {
   // NOTE: /api/auth/ must be excluded so NextAuth sign-in callbacks can complete.
   // settings/ is excluded because the announcement bar and popup read public
   // (non-sensitive) site settings for anonymous visitors.
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|billing/paystack/webhook|tools/|settings/|unsubscribe$|subscribe$|contact$|og|events/|certificate/|verify/).*)'],
+  // cron/ is excluded because the Azure scheduler has no login session; every
+  // cron route checks the CRON_SECRET bearer token itself (src/lib/cron-auth.ts).
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/((?!auth/|billing/paystack/webhook|tools/|settings/|unsubscribe$|subscribe$|contact$|og|events/|certificate/|verify/|cron/).*)'],
 }

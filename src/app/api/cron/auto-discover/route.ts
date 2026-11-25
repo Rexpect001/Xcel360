@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
+import { isCronAuthorized } from '@/lib/cron-auth'
 import { runDiscovery } from '@/lib/agent/discover'
 import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
 
@@ -11,8 +12,7 @@ import { revalidateOpportunityPages } from '@/lib/revalidate-opportunities'
  * Protected by CRON_SECRET. Requires SERPER_API_KEY + ANTHROPIC_API_KEY.
  */
 export async function GET(req: Request) {
-  const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
