@@ -30,9 +30,21 @@ export default async function ActivityLogPage() {
   const role = session.user.role
   if (role !== 'ADMIN') redirect('/admin')
 
-  const logs = await prisma.activityLog.findMany({
+  const rawLogs = await prisma.activityLog.findMany({
     orderBy: { createdAt: 'desc' },
     take: 200,
+  })
+
+  // Some rows (e.g. AI tool runs logged before Nov 2026) have a userId but no
+  // email/role. Look those users up so the feed doesn't show them as anonymous.
+  const missing = Array.from(new Set(rawLogs.filter((l) => l.userId && !l.userEmail).map((l) => l.userId as string)))
+  const users = missing.length
+    ? await prisma.user.findMany({ where: { id: { in: missing } }, select: { id: true, email: true, role: true } })
+    : []
+  const byId = new Map(users.map((u) => [u.id, u]))
+  const logs = rawLogs.map((l) => {
+    const u = l.userId && !l.userEmail ? byId.get(l.userId) : undefined
+    return u ? { ...l, userEmail: u.email, userRole: l.userRole ?? u.role } : l
   })
 
   // Stats for today

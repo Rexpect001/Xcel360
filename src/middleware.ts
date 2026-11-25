@@ -5,9 +5,11 @@ import { securityHeaders, corsConfig } from './lib/security/headers'
 
 // Security headers middleware
 function applySecurityHeaders(response: NextResponse, req: NextRequest): NextResponse {
-  // Apply all security headers
+  // Apply all security headers except the CSP. next.config.mjs sends the site-wide
+  // CSP on every path (it allows the analytics and ad scripts the root layout loads);
+  // overwriting it here blocked analytics on every dashboard and admin page.
   Object.entries(securityHeaders).forEach(([key, value]) => {
-    response.headers.set(key, value)
+    if (key !== 'Content-Security-Policy') response.headers.set(key, value)
   })
 
   // Handle CORS

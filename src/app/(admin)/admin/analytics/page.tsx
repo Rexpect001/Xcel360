@@ -54,8 +54,8 @@ export default async function AdminAnalyticsPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Popular opportunities */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        {/* Popular opportunities (min-w-0 lets long titles truncate inside the grid) */}
+        <div className="min-w-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="font-semibold text-gray-900 mb-5">Most Viewed Opportunities</h2>
           {popularOpps.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">No data yet</p>
@@ -79,7 +79,7 @@ export default async function AdminAnalyticsPage() {
         </div>
 
         {/* Recent users */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="min-w-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="font-semibold text-gray-900 mb-5">Recent Users</h2>
           {recentUsers.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">No users yet</p>

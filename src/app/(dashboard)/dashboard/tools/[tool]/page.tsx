@@ -6,7 +6,7 @@ import { pageCredits } from '@/lib/credits-page'
 import WritingToolForm, { type InitialDraft } from '@/components/dashboard/WritingToolForm'
 import { WRITING_TOOLS, isToolId } from '@/lib/writing-tools'
 import { getAuth } from '@/lib/auth'
-import { getOpportunityContext, getOwnDraft, toSummary } from '@/lib/writing-drafts'
+import { getOpportunityContext, getOwnDraft, latestLaunchpadAnswers, toSummary } from '@/lib/writing-drafts'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,6 +35,8 @@ export default async function WritingToolPage({
   const oppId = initialDraft?.opportunityId ?? searchParams.opportunity
   const opp = !startup && oppId ? await getOpportunityContext(oppId) : null
   const credits = await pageCredits(session)
+  // A new Launchpad step starts with the idea/customer/problem from the last step
+  const launchpadAnswers = startup && userId && !initialDraft ? await latestLaunchpadAnswers(userId) : null
 
   return (
     <div>
@@ -53,6 +55,7 @@ export default async function WritingToolPage({
         initialDraft={initialDraft}
         opportunity={opp ? toSummary(opp) : null}
         credits={credits}
+        launchpadAnswers={launchpadAnswers}
       />
     </div>
   )

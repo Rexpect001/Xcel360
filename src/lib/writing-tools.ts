@@ -187,6 +187,22 @@ export const WRITING_TOOLS: Record<ToolId, ToolDef> = {
 export const TOOL_ORDER = ['cv', 'sop', 'cover-letter', 'cold-email'] as const
 export const STARTUP_TOOL_ORDER = ['startup-idea', 'startup-interviews', 'startup-roadmap'] as const
 
+/** Answers that mean the same thing in every Launchpad step, so later steps start filled in. */
+export const LAUNCHPAD_SHARED_FIELDS = ['idea', 'customer', 'problem'] as const
+
+/** The shared Launchpad answers that this tool asks for, trimmed to its field limits. */
+export function launchpadAnswersFor(toolId: ToolId, answers: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {}
+  if (!toolId.startsWith('startup-')) return out
+  for (const field of WRITING_TOOLS[toolId].fields) {
+    const v = answers[field.id]
+    if ((LAUNCHPAD_SHARED_FIELDS as readonly string[]).includes(field.id) && typeof v === 'string' && v.trim()) {
+      out[field.id] = field.max ? v.slice(0, field.max) : v
+    }
+  }
+  return out
+}
+
 export function isToolId(v: unknown): v is ToolId {
   return typeof v === 'string' && Object.prototype.hasOwnProperty.call(WRITING_TOOLS, v)
 }

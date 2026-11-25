@@ -7,7 +7,9 @@ import Link from 'next/link'
 import {
   AlertTriangle, Check, Copy, Download, FileText, Info, Loader2, RefreshCw, RotateCcw, Sparkles, Target, Wand2, FilePlus2,
 } from 'lucide-react'
-import { WRITING_TOOLS, fieldVisible, opportunityPrefill, type OpportunitySummary, type ToolId } from '@/lib/writing-tools'
+import {
+  LAUNCHPAD_SHARED_FIELDS, WRITING_TOOLS, fieldVisible, launchpadAnswersFor, opportunityPrefill, type OpportunitySummary, type ToolId,
+} from '@/lib/writing-tools'
 import { checkOutput, countWords, fixableIssues, type DraftCheck } from '@/lib/writing-guardrails'
 import Modal from '@/components/ui/Modal'
 import CreditsNotice from '@/components/dashboard/CreditsNotice'
@@ -16,6 +18,8 @@ import { creditsFor } from '@/lib/billing'
 import { cn } from '@/lib/utils'
 
 const FORM_KEY = (id: string) => `xcel360_tool_${id}`
+/** Idea/customer/problem typed in any Launchpad step. Unlike FORM_KEY it survives generating a draft. */
+const LAUNCHPAD_KEY = 'xcel360_launchpad'
 
 export interface InitialDraft {
   id: string
@@ -32,12 +36,15 @@ export default function WritingToolForm({
   initialDraft = null,
   opportunity = null,
   credits: initialCredits = null,
+  launchpadAnswers = null,
 }: {
   toolId: ToolId
   initialDraft?: InitialDraft | null
   opportunity?: OpportunitySummary | null
   /** Remaining credits; null means unlimited. */
   credits?: number | null
+  /** Launchpad only: idea/customer/problem from the user's latest Launchpad draft. */
+  launchpadAnswers?: Record<string, string> | null
 }) {
   const tool = WRITING_TOOLS[toolId]
   const cost = creditsFor(toolId)
@@ -74,7 +81,15 @@ export default function WritingToolForm({
     let saved: Record<string, string> = {}
     try { saved = JSON.parse(sessionStorage.getItem(FORM_KEY(toolId)) || '{}') } catch { /* ignore */ }
     const fromListing = opportunity ? opportunityPrefill(toolId, opportunity) : {}
-    setValues({ ...defaults, ...saved, ...fromListing })
+    // Launchpad: earlier steps' answers (last saved draft, then this tab's newer typing);
+    // anything already typed into this step wins.
+    let shared: Record<string, string> = {}
+    if (startup) {
+      let typed: Record<string, unknown> = {}
+      try { typed = JSON.parse(sessionStorage.getItem(LAUNCHPAD_KEY) || '{}') } catch { /* ignore */ }
+      shared = { ...launchpadAnswersFor(toolId, launchpadAnswers ?? {}), ...launchpadAnswersFor(toolId, typed) }
+    }
+    setValues({ ...defaults, ...shared, ...saved, ...fromListing })
 
     if (!tool.fields.some((field) => field.prefill)) return
     fetch('/api/profile')
@@ -95,7 +110,7 @@ export default function WritingToolForm({
         })
       })
       .catch(() => {})
-  }, [toolId, tool.fields, initialDraft, opportunity])
+  }, [toolId, tool.fields, initialDraft, opportunity, startup, launchpadAnswers])
 
   useEffect(() => {
     if (session?.user?.name) setValues((v) => (v.name ? v : { ...v, name: session.user.name ?? '' }))
@@ -106,6 +121,12 @@ export default function WritingToolForm({
       const next = { ...v, [id]: value }
       if (!initialDraft) {
         try { sessionStorage.setItem(FORM_KEY(toolId), JSON.stringify(next)) } catch { /* ignore */ }
+      }
+      if (startup && (LAUNCHPAD_SHARED_FIELDS as readonly string[]).includes(id)) {
+        try {
+          const all = JSON.parse(sessionStorage.getItem(LAUNCHPAD_KEY) || '{}')
+          sessionStorage.setItem(LAUNCHPAD_KEY, JSON.stringify({ ...all, [id]: value }))
+        } catch { /* ignore */ }
       }
       return next
     })

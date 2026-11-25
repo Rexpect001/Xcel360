@@ -13,7 +13,7 @@
  * Bump PROMPT_VERSION whenever prompts or rules change. It is saved with each draft.
  */
 
-import type { ToolId } from '@/lib/writing-tools'
+import { WRITING_TOOLS, type ToolId } from '@/lib/writing-tools'
 
 export const PROMPT_VERSION = '2026-11-14.1'
 
@@ -170,20 +170,62 @@ const LEAK_MARKERS = [
 
 const MONTHS = /\b(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|jun(e)?|jul(y)?|aug(ust)?|sep(t|tember)?|oct(ober)?|nov(ember)?|dec(ember)?)\.?\s+(19|20)\d{2}\b/i
 
-/** Normalise numbers so "4.21" in the input matches "4.21" in the output, ignoring commas. */
+/**
+ * Normalise numbers so the same value matches however it is written:
+ * commas are ignored and trailing decimal zeros dropped ("3.50" = "3.5", "5.00" = "5").
+ */
 function normNum(s: string) {
-  return s.replace(/,/g, '').replace(/\.0+$/, '')
+  const n = s.replace(/,/g, '')
+  return n.includes('.') ? n.replace(/0+$/, '').replace(/\.$/, '') : n
+}
+
+const NUM = String.raw`\d[\d,]*(?:\.\d+)?`
+const MULTIPLIER: Record<string, number> = { k: 1e3, m: 1e6, b: 1e9 }
+
+/** Every number in the source in normalised form, with shorthand expanded: 50k, 1.2m, 2026/27. */
+function sourceNumbers(source: string): Set<string> {
+  const nums = new Set((source.match(new RegExp(NUM, 'g')) ?? []).map(normNum))
+  for (const m of Array.from(source.matchAll(new RegExp(`(${NUM})\\s?([kmb])\\b`, 'gi')))) {
+    const value = Number(m[1].replace(/,/g, '')) * MULTIPLIER[m[2].toLowerCase()]
+    if (Number.isFinite(value)) nums.add(normNum(String(Math.round(value * 100) / 100)))
+  }
+  // Academic years written short: "2026/27" also means 2027
+  for (const m of Array.from(source.matchAll(/\b(19|20)(\d{2})\s?[/-]\s?(\d{2})\b/g))) nums.add(m[1] + m[3])
+  return nums
+}
+
+/** Amounts the source states as money, in any of the ways people write it (₦, N, NGN, naira, $, USD...). */
+function sourceMoney(source: string): Set<string> {
+  const money = new Set<string>()
+  const add = (num: string, mult?: string) => {
+    const value = Number(num.replace(/,/g, '')) * (mult ? MULTIPLIER[mult.toLowerCase()] : 1)
+    if (Number.isFinite(value)) money.add(normNum(String(Math.round(value * 100) / 100)))
+  }
+  const before = new RegExp(`(?:[$£€₦]|\\b(?:N|NGN|USD|GBP|EUR|US\\$)(?=\\s?\\d))\\s?(${NUM})\\s?([kmb](?![a-z]))?`, 'gi')
+  const after = new RegExp(`(${NUM})\\s?([kmb](?![a-z]))?\\s?(?:naira|dollars?|pounds?|euros?|ngn|usd|gbp|eur)\\b`, 'gi')
+  for (const m of Array.from(source.matchAll(before))) add(m[1], m[2])
+  for (const m of Array.from(source.matchAll(after))) add(m[1], m[2])
+  return money
+}
+
+/** Plan structure, not facts: "Day 14", "Step 13", "Question 14", and the end of "Days 22-30". */
+const STRUCTURE_LABEL = /\b(?:days?|weeks?|months?|steps?|phases?|stages?|questions?|q)\s*(?:\d{1,3}\s?[-–]\s?)?$/i
+
+export interface FactCheckOptions {
+  /** Treat "Day 14" / "Week 3" style labels as structure. On for the startup planning tools. */
+  planLabels?: boolean
 }
 
 /**
  * Facts the model could have made up: numbers that matter (decimals, percentages,
  * money, years, counts above 12), emails, links. Returns those that are not in the source.
  */
-export function findUnsupportedFacts(output: string, source: string): string[] {
-  // Ignore anything inside placeholders like [add GPA]
-  const text = output.replace(/\[[^\]\n]{0,120}\]/g, ' ')
+export function findUnsupportedFacts(output: string, source: string, opts: FactCheckOptions = {}): string[] {
+  // Ignore anything inside placeholders like [add GPA], and numbered-list markers ("13. ", "14) ")
+  const text = output.replace(/\[[^\]\n]{0,120}\]/g, ' ').replace(/^(\s*)\d{1,3}[.)](?=\s)/gm, '$1')
   const src = source.toLowerCase()
-  const srcNums = new Set((source.match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map(normNum))
+  const srcNums = sourceNumbers(source)
+  const srcMoney = sourceMoney(source)
   const found = new Set<string>()
 
   for (const m of Array.from(text.matchAll(/(?:[$£€₦]\s?)?\d[\d,]*(?:\.\d+)?\s?%?/g))) {
@@ -192,17 +234,23 @@ export function findUnsupportedFacts(output: string, source: string): string[] {
     if (!n) continue
     const value = Number(n)
     const isDecimal = n.includes('.')
-    const isPercentOrMoney = /%|[$£€₦]/.test(raw)
+    const isPercent = /%/.test(raw)
+    const isMoney = /[$£€₦]/.test(raw)
     const isYear = /^(19|20)\d{2}$/.test(n)
     // Small whole counts ("two papers", "5 years") are too noisy to flag
-    if (!isDecimal && !isPercentOrMoney && !isYear && value <= 12) continue
-    if (isPercentOrMoney) {
+    if (!isDecimal && !isPercent && !isMoney && !isYear && value <= 12) continue
+    if (opts.planLabels && !isPercent && !isMoney) {
+      if (STRUCTURE_LABEL.test(text.slice(Math.max(0, m.index! - 24), m.index!))) continue
+    }
+    if (isPercent) {
       // "5%" must appear as a percentage (or "5 per cent") in the source, not just as "5.00"
       const bare = n.replace(/\./g, '\\.')
-      const re = /%/.test(raw)
-        ? new RegExp(`(^|[^\\d.])${bare}(\\.0+)?\\s?(%|per ?cent)`, 'i')
-        : new RegExp(`[$£€₦]\\s?${bare.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,?')}(?!\\d)`)
+      const re = new RegExp(`(^|[^\\d.])${bare}(\\.0+)?\\s?(%|per ?cent)`, 'i')
       if (!re.test(source.replace(/,(?=\d{3})/g, ''))) found.add(raw)
+      continue
+    }
+    if (isMoney) {
+      if (!srcMoney.has(n)) found.add(raw)
       continue
     }
     if (!srcNums.has(n)) found.add(raw)
@@ -250,7 +298,11 @@ export function checkOutput(toolId: ToolId, output: string, source: string, opts
     return checks
   }
 
-  const unsupported = findUnsupportedFacts(output, source)
+  // Numbers the tool itself sets ("30-day roadmap", "20-minute interview") are not made up
+  const tool = WRITING_TOOLS[toolId]
+  const unsupported = findUnsupportedFacts(output, `${source}\n${tool.name}\n${tool.task}`, {
+    planLabels: toolId.startsWith('startup-'),
+  })
   if (unsupported.length) {
     checks.push({
       code: 'unsupported-facts',

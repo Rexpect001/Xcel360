@@ -1,24 +1,37 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import { z } from 'zod'
 import prisma from '@/lib/prisma'
 import { REFERRAL_COOKIE, applyReferral } from '@/lib/referrals'
 
+const schema = z.object({
+  name: z.string({ required_error: 'Please enter your name.' }).trim()
+    .min(1, 'Please enter your name.')
+    .max(100, 'Please keep your name under 100 characters.'),
+  // Normalized so case/whitespace can't create duplicate accounts.
+  email: z.string({ required_error: 'Please enter your email.' }).trim().toLowerCase()
+    .email('Please enter a valid email address.')
+    .max(200, 'That email address is too long.'),
+  password: z.string({ required_error: 'Please choose a password.' })
+    .min(8, 'Password must be at least 8 characters.')
+    .max(200, 'Password must be 200 characters or fewer.'),
+})
+
 export async function POST(req: NextRequest) {
+  let body: Record<string, unknown>
   try {
-    const body = await req.json()
-    const { name, email, password } = body
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
+  }
+  const parsed = schema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.errors[0]?.message ?? 'Please check the form.' }, { status: 400 })
+  }
+  const { name, email: normEmail, password } = parsed.data
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: 'Name, email and password are required.' }, { status: 400 })
-    }
-    if (password.length < 8) {
-      return NextResponse.json({ error: 'Password must be at least 8 characters.' }, { status: 400 })
-    }
-
-    // Normalize email so case/whitespace can't create duplicate accounts.
-    const normEmail = String(email).trim().toLowerCase()
-
+  try {
     const existing = await prisma.user.findFirst({
       where: { email: { equals: normEmail, mode: 'insensitive' } },
     })

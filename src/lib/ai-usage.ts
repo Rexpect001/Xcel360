@@ -4,7 +4,12 @@ const HOURLY_LIMIT = 15
 const DAILY_LIMIT = 40
 
 /** A database transaction serializes reservations for the same user across functions. */
-export async function reserveAiRun(userId: string, feature: string): Promise<string | null> {
+export async function reserveAiRun(
+  userId: string,
+  feature: string,
+  /** Stored on the log row so the admin Activity Feed shows who ran the tool. */
+  who: { email?: string | null; role?: string | null } = {},
+): Promise<string | null> {
   const now = new Date()
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000)
   const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
@@ -21,7 +26,10 @@ export async function reserveAiRun(userId: string, feature: string): Promise<str
     ])
     if (hourly >= HOURLY_LIMIT || daily >= DAILY_LIMIT) return null
     const run = await tx.activityLog.create({
-      data: { userId, action: 'AI_RESERVED', resource: 'ai', resourceName: feature },
+      data: {
+        userId, userEmail: who.email ?? null, userRole: who.role ?? null,
+        action: 'AI_RESERVED', resource: 'ai', resourceName: feature,
+      },
       select: { id: true },
     })
     return run.id

@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 import type { OpportunityContext } from '@/lib/writing-engine'
-import type { OpportunitySummary } from '@/lib/writing-tools'
+import { LAUNCHPAD_SHARED_FIELDS, STARTUP_TOOL_ORDER, type OpportunitySummary } from '@/lib/writing-tools'
 
 /** Oldest active drafts beyond this are moved to Trash when a new one is saved. */
 export const MAX_DRAFTS_PER_USER = 100
@@ -44,6 +44,19 @@ export function toSummary(o: OpportunityContext): OpportunitySummary {
 export async function getOwnDraft(userId: string, id: unknown) {
   if (typeof id !== 'string' || id.length > 40) return null
   return prisma.writingDraft.findFirst({ where: { id, userId, trashedAt: null } })
+}
+
+/** The idea / customer / problem answers from this user's most recent Launchpad draft. */
+export async function latestLaunchpadAnswers(userId: string): Promise<Record<string, string>> {
+  const d = await prisma.writingDraft.findFirst({
+    where: { userId, trashedAt: null, tool: { in: [...STARTUP_TOOL_ORDER] } },
+    orderBy: { updatedAt: 'desc' },
+    select: { inputs: true },
+  }).catch(() => null)
+  const inputs = d?.inputs && typeof d.inputs === 'object' && !Array.isArray(d.inputs) ? (d.inputs as Record<string, unknown>) : {}
+  const out: Record<string, string> = {}
+  for (const k of LAUNCHPAD_SHARED_FIELDS) if (typeof inputs[k] === 'string' && (inputs[k] as string).trim()) out[k] = inputs[k] as string
+  return out
 }
 
 /** Any draft owned by this user, including trashed ones (for restore / delete forever). */

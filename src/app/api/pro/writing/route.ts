@@ -56,7 +56,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Writing tools are not configured yet. Please try again later.' }, { status: 503 })
   }
 
-  const runId = await reserveAiRun(userId, fixing ? `${toolId}:fix` : toolId)
+  const runId = await reserveAiRun(userId, fixing ? `${toolId}:fix` : toolId, {
+    email: session.user.email,
+    role: session.user.role,
+  })
   if (!runId) {
     return NextResponse.json({ error: 'You have reached the AI usage limit. Please try again later.' }, { status: 429 })
   }
