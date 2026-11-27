@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma'
 import { shortenCacheAfterDbFailure } from '@/lib/isr'
 import { Quote } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
+import GoogleAd from '@/components/ads/GoogleAd'
 
 export const metadata = {
   title: 'Success Stories  -  Real Students, Real Scholarships',
@@ -107,6 +108,10 @@ export default async function SuccessStoriesPage() {
             </div>
           ))}
         </div>
+
+        {/* Below the stories grid: full page of content above it, so the ad
+            can never outweigh what the visitor came for. */}
+        <GoogleAd placement="listing-top" shape="leaderboard" className="mt-10" />
       </div>
     </div>
   )

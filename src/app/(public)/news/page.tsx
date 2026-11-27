@@ -113,6 +113,9 @@ export default async function NewsPage() {
                 ))}
               </div>
             )}
+
+            {/* Second unit only on long listings - thin pages keep just the one above. */}
+            {rest.length > 3 && <GoogleAd placement="listing-top" shape="leaderboard" className="mt-8" />}
           </>
         )}
       </div>

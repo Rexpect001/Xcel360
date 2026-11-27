@@ -4,16 +4,19 @@ import type { NextRequest } from 'next/server'
 // Security headers configuration
 export const securityHeaders = {
   // Prevent XSS attacks
+  // NOTE: this CSP is NOT sent - next.config.mjs owns the site-wide CSP (which
+  // allows the AdSense/analytics domains; this copy does not). Kept in sync with
+  // it so that if it ever is applied, ads and analytics keep working.
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://www.googletagservices.com https://www.sabilytics.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     // Dashboard/admin show Azure Blob posters and YouTube thumbnails
     "img-src 'self' blob: data: https:",
     "font-src 'self' https://fonts.gstatic.com",
-    "connect-src 'self' https://*.tile.openstreetmap.org",
-    // Video Hub embeds YouTube (privacy-enhanced domain)
-    "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com",
+    "connect-src 'self' https://*.tile.openstreetmap.org https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google https://www.sabilytics.com https://sabilytics.com",
+    // Video Hub embeds YouTube (privacy-enhanced domain); ads render in Google iframes
+    "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://*.doubleclick.net https://*.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

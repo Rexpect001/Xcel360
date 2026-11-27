@@ -6,6 +6,7 @@ import ChooseYourPath from '@/components/landing/ChooseYourPath'
 import TopScholarships from '@/components/landing/TopScholarships'
 import MoreScholarships from '@/components/landing/MoreScholarships'
 import EmailCapture from '@/components/landing/EmailCapture'
+import GoogleAd from '@/components/ads/GoogleAd'
 import prisma from '@/lib/prisma'
 import { liveOpportunityWhere } from '@/lib/opportunity-filters'
 import { shortenCacheAfterDbFailure } from '@/lib/isr'
@@ -95,6 +96,9 @@ export default async function LandingPage() {
         <Hero liveCount={liveCount} />
         <TopScholarships scholarships={latest} />
         <MoreScholarships scholarships={more} />
+        {/* Mid-page leaderboard: sits after two full content sections so ads
+            never outweigh content or push the hero down. */}
+        <GoogleAd placement="home-feed" shape="leaderboard" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
         <ChooseYourPath />
         <EmailCapture />
       </div>

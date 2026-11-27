@@ -139,10 +139,12 @@ export const PRIVACY: LegalDoc = {
           '**Activity data:** opportunities you save, applications you track, and notification preferences.',
           '**Event registrations:** your name, email, phone number, and answers to event-specific questions when you register for our events.',
           '**Communications:** messages you send through our contact form and your email subscription preferences.',
+          '**Payment data:** if you pay for a premium service, our payment processor (Paystack) collects your payment details on its own secure checkout. We never see or store your card number - we only receive the payment confirmation, your plan, and a transaction reference.'
         ] },
         { h: '2.2 Information collected automatically' },
         { ul: [
           '**Usage and security logs:** sign-in events, administrative actions, IP address, and browser user-agent, kept to secure the platform and prevent abuse.',
+          '**Analytics data:** our analytics provider (Sabilytics) collects aggregate, non-identifying usage statistics - pages visited, referring site, approximate region, and device and browser type - so we can understand overall site traffic. These statistics are not tied to your account.',
           '**Cookies:** strictly necessary session cookies used to keep you signed in, plus advertising cookies and similar technologies set by Google AdSense and its partners (see [section 6](#cookies-advertising)).',
           '**Device and ad data:** when ads are shown, Google may collect your IP address, browser and device type, approximate location, the pages you visit on our site, and how you interact with ads.',
           '**Mobile app:** if you use the Xcel360 app and allow notifications, we store a push notification token for your device so we can send you deadline reminders and updates. Sign out or turn off notifications to stop them.',
@@ -184,11 +186,12 @@ export const PRIVACY: LegalDoc = {
       blocks: [
         { p: 'We **never sell** your personal data. We share it only with:' },
         { ul: [
-          '**Service providers** who help us operate the platform - hosting, database, email delivery, push notification delivery, and file storage providers - each bound by contractual data-protection obligations.',
+          '**Service providers** who help us operate the platform, each bound by contractual data-protection obligations. These include: hosting and database infrastructure (Microsoft Azure), file storage (Azure Blob Storage), email delivery (Resend), payment processing (Paystack, for premium billing), push-notification delivery for the mobile app, and privacy-focused analytics (Sabilytics).',
           '**Event and certificate verification:** the name and certificate details shown on our public certificate-verification page, so third parties can confirm a certificate we issued is genuine.',
           '**Advertising partners:** Google and its certified ad partners receive the device and cookie data described in section 2.2 when they serve ads on our pages. See [section 6](#cookies-advertising) for details and how to opt out.',
           '**Legal authorities** where required by law, court order, or to protect the rights and safety of our users.',
         ] },
+        { p: '**International transfers:** several of the providers above operate outside Nigeria, so your data may be processed in other countries, including the United States and the European Union. Where data crosses borders, it is protected by the data-processing agreements and safeguards those providers maintain, and by the transfer mechanisms recognised under the NDPA and GDPR.' },
       ],
     },
     {
@@ -201,6 +204,13 @@ export const PRIVACY: LegalDoc = {
           '**Strictly necessary:** session and security cookies that keep you signed in and protect forms from abuse. The site cannot work without them, so they do not require consent.',
           '**Advertising:** cookies and similar identifiers set by Google and its partners to show ads, limit how often you see the same ad, measure ad performance, and detect ad fraud.',
         ] },
+        { p: 'For full detail, the cookies we set ourselves are:' },
+        { ul: [
+          '**Session cookie** (set by our sign-in system): keeps you logged in. Strictly necessary. Expires when you sign out or after 30 days of inactivity.',
+          '**`xcel_ref` referral cookie:** remembers a referral code from a sign-up link so we can credit the person who invited you. Lasts 30 days and contains no personal data beyond the code itself.',
+          '**`xcel360_announcement_dismissed`:** remembers that you dismissed the announcement bar so we do not show it again. Stored on your device only.',
+        ] },
+        { p: 'Google and its partners set their own cookies when ads are served; their names and durations vary and are described in [Google’s cookie documentation](https://policies.google.com/technologies/cookies).' },
         { h: '6.2 Google AdSense' },
         { ul: [
           'Third-party vendors, including Google, use cookies to serve ads based on your prior visits to this website or other websites.',
@@ -211,6 +221,7 @@ export const PRIVACY: LegalDoc = {
         { h: '6.3 Your consent and choices' },
         { ul: [
           '**EEA, UK, and Switzerland:** we ask for your consent through a Google-certified consent message before advertising cookies are used. If you decline, you may still see non-personalised ads, which use only limited data such as your approximate location and the page you are viewing.',
+          '**Change or withdraw ad consent:** to revisit the choice you made in the consent message, clear the cookies for this site in your browser settings - the consent message will appear again on your next visit and you can make a new choice (including withdrawing consent entirely).',
           "**Personalised ads:** you can turn off personalised advertising at any time in [Google Ads Settings](https://adssettings.google.com), or opt out of third-party vendors' use of cookies at [aboutads.info](https://www.aboutads.info/choices) and (in Europe) [youronlinechoices.eu](https://www.youronlinechoices.eu).",
           '**Browser controls:** you can block or delete cookies in your browser settings. Blocking strictly necessary cookies will stop you signing in.',
           '**US state privacy laws:** we do not sell personal data for money. Where ad cookies count as "sharing" for targeted advertising under laws such as the CCPA/CPRA, you can opt out using the Google Ads Settings link above or a browser signal such as Global Privacy Control.',

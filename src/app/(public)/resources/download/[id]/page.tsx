@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, FileText } from 'lucide-react'
 import prisma from '@/lib/prisma'
-import GoogleAd from '@/components/ads/GoogleAd'
 import DownloadCountdown from '@/components/resources/DownloadCountdown'
 
 export const metadata: Metadata = {
@@ -13,9 +12,9 @@ export const metadata: Metadata = {
 }
 
 /**
- * Short stop between the Download button and the file: shows an ad while a
- * countdown runs, then starts the download. The ad sits well apart from the
- * button so it is never clicked by mistake.
+ * Short stop between the Download button and the file: a countdown runs, then
+ * the download starts. No ads here - Google policy bars ad units on
+ * wait/navigation screens like this one.
  */
 export default async function ResourceDownloadPage({ params }: { params: { id: string } }) {
   const resource = await (prisma as any).resource
@@ -56,10 +55,7 @@ export default async function ResourceDownloadPage({ params }: { params: { id: s
           />
         </div>
 
-        <GoogleAd placement="detail-top" shape="rectangle" className="mt-10" />
-
         <p className="mt-8 text-center text-sm text-ink-500">
-          Ads keep Xcel360 resources free.{' '}
           <Link href="/resources" className="font-semibold text-brand-700 hover:underline">Browse more templates</Link>
         </p>
       </div>
